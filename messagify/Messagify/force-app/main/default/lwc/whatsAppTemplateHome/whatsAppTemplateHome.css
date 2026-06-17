@@ -1,0 +1,16 @@
+.dummy{
+	color : black;
+}
+.TableRowContent{	
+	overflow: hidden;
+}
+.TableRowMessageContent{	
+	overflow: hidden;
+	white-space: initial;
+}
+table{
+	table-layout:fixed;
+}
+.delete button{
+	--slds-c-icon-color-foreground:green;
+}

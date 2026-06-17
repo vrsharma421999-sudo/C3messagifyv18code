@@ -1,0 +1,356 @@
+.slds-rich-text-editor_toolbar-only {
+	background-color: #181818;
+}
+
+.myScrollClass {
+	overflow-y: auto;
+	scroll-behavior: smooth;
+	background: white;
+	display: flex;
+	background-image: url('/resource/WhatsAppChatBGImage');
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	flex-direction: column-reverse;
+	height: var(--customHeight1, 300px);
+}
+
+.myScrollClassWithMsgCamp {
+	overflow-y: auto;
+	scroll-behavior: smooth;
+	background: white;
+	display: flex;
+	flex-direction: column-reverse;
+	height: var(--customHeight2, 250px);
+}
+
+.myScrollClassTM {
+	overflow-y: auto;
+	scroll-behavior: smooth;
+	background: white;
+	display: flex;
+	flex-direction: column-reverse;
+	height: 300px;
+}
+
+.myScrollClassWithMsgCampTM {
+	overflow-y: auto;
+	scroll-behavior: smooth;
+	background: white;
+	display: flex;
+	flex-direction: column-reverse;
+	height: 250px;
+}
+
+.myScrollAndErrorClass {
+	overflow-y: auto;
+	height: 165px;
+	scroll-behavior: smooth;
+	background: white;
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.chatHeaderWhiteBG {
+	background-color: white !important;
+	border-bottom: 1px solid #F2F2F2;
+	;
+}
+
+.chatHeaderDefaultBG {
+	background-color: #FCFBFB;
+	;
+}
+
+.outboundStyle {
+	max-width: 12rem;
+	background-color: #005d4b;
+	;
+	border-radius: 12px 12px 0 12px;
+}
+
+.utilityoutboundStyle {
+	max-width: 10rem;
+	background-color: #747474;
+	border-radius: 12px 12px 0 12px;
+}
+
+.outboundTextStyle {
+	position: static;
+	width: 150px;
+	height: 32px;
+	left: calc(100% - 146px/2);
+	top: 8px;
+
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 16px;
+	text-align: right;
+	color: #fff;
+	flex: none;
+	order: 0;
+	align-self: stretch;
+	flex-grow: 0;
+	margin: 8px 0px;
+}
+
+.inboundStyle {
+	background: #f2f2f2;
+	/* background: #f2f2f2; */
+	border-radius: 12px 12px 12px 0;
+	max-width: 12rem;
+}
+
+.utilityinboundStyle {
+	background: #faf8f8;
+	border-radius: 12px 12px 12px 0;
+	max-width: 10rem;
+}
+
+.chatHeaderMarginStyle {
+	padding-left: 14px;
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+
+.chatHeaderWithBtnStyle {
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+
+.chatHeaderInitialsMarginStyle {
+	padding-right: 14px;
+}
+
+.chatMsgMarginStyle {
+	padding: 14px;
+}
+
+.inboundTextStyle {
+	position: static;
+	width: 187px;
+	height: 48px;
+	left: 0px;
+	top: 0px;
+
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 16px;
+	color: #181818;
+	flex: none;
+	order: 0;
+	align-self: stretch;
+	flex-grow: 0;
+	margin: 8px 0px;
+}
+
+.chatHeaderStyle {
+	background: #FCFBFB;
+	border: 1px solid #F2F2F2;
+	box-sizing: border-box;
+}
+
+.recordNameStyle {
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 18px;
+	display: flex;
+	align-items: center;
+	color: #828282;
+}
+
+
+.rightAvtar {
+	margin-left: var(--lwc-spacingXSmall, 0.5rem);
+	margin-right: 0px;
+}
+
+.initialsTextStyle {
+	left: 9.38%;
+	right: 9.38%;
+	top: 25%;
+	bottom: 25%;
+
+	font-family: Arial;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 16px;
+	display: flex;
+	align-items: center;
+	text-align: center;
+
+	color: #4F4F4F;
+}
+
+/* .background-container{
+  background-image: url('/resource/WhatsAppChatBGImage');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}  */
+
+.smallDetailsStyle {
+	position: static;
+	width: 223px;
+	height: 11px;
+	left: calc(50% - 223px/2);
+	top: 0px;
+
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 9px;
+	line-height: 11px;
+	text-align: right;
+	flex: none;
+	order: 0;
+	align-self: stretch;
+	flex-grow: 0;
+	margin: 12px 0px;
+}
+
+.chat_btn {
+	position: relative;
+	width: 40px;
+}
+
+.rightAvtar[c-CCCWAChatPanel_CCCWAChatPanel] {
+	bottom: 16px;
+	position: absolute;
+}
+
+.truncate {
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	margin-left: 3px;
+	margin-top: 2px;
+}
+
+/* The Modal (background) */
+.customModal {
+	position: fixed;
+	/* Stay in place */
+	z-index: 1;
+	/* Sit on top */
+	padding-top: 100px;
+	/* Location of the box */
+	left: 0;
+	top: 0;
+	width: 100%;
+	/* Full width */
+	height: 100%;
+	/* Full height */
+	overflow: auto;
+	/* Enable scroll if needed */
+	background-color: rgb(0, 0, 0);
+	/* Fallback color */
+	background-color: rgba(0, 0, 0, 0.9);
+	/* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.custom-modal-content {
+	margin: auto;
+	display: block;
+	width: 80%;
+	max-width: 700px;
+}
+
+/* Add Animation */
+.custom-modal-content {
+	-webkit-animation-name: zoom;
+	-webkit-animation-duration: 0.6s;
+	animation-name: zoom;
+	animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+	from {
+		-webkit-transform: scale(0)
+	}
+
+	to {
+		-webkit-transform: scale(1)
+	}
+}
+
+@keyframes zoom {
+	from {
+		transform: scale(0)
+	}
+
+	to {
+		transform: scale(1)
+	}
+}
+
+/* The Close Button */
+.customClose {
+	position: absolute;
+	top: 15px;
+	right: 35px;
+	color: #f1f1f1;
+	font-size: 40px;
+	font-weight: bold;
+	transition: 0.3s;
+}
+
+.customClose:hover,
+.customClose:focus {
+	color: #bbb;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px) {
+	.custom-modal-content {
+		width: 100%;
+	}
+}
+
+.MMSMedia:hover,
+.MMSMedia:focus {
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+
+
+
+.background_img {
+	background-image: url('/resource/WABackground_B');
+}
+
+.doc-icon:hover {
+	box-shadow: 5px 5px 10px black, -5px -5px 10px #ffffff;
+}
+
+:host {
+	--sds-c-textarea-sizing-min-height: 50px;
+}
+
+.chatHeaderMarginStyle {
+	padding-left: 14px;
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+
+.chatHeaderWithBtnStyle {
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+
+
+
+/*span.slds-avatar.slds-avatar_circle.slds-chat-avatar.slds-m-top_medium.rightAvtar {
+    margin-top: 0px !important;
+}*/

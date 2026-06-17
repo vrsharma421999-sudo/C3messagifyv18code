@@ -1,0 +1,35 @@
+.dummy {
+    clear: both;
+}
+
+.title-icon-color {
+    --slds-c-icon-color-foreground: rgb(101, 223, 76);
+}
+.neu-container {
+    border-radius: 10px;
+    box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff;
+    padding: 20px;
+}
+
+.neu-input {
+    background: #e0e0e0;
+    border-radius: 8px;
+    border: none;
+    box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+}
+
+
+.full-height {
+    height: 70vh; /* Makes the component take full screen height */
+    display: flex;
+    flex-direction: column;
+}
+
+.table-container {
+    flex-grow: 1; /* Expands to take available space */
+    overflow-y: auto; /* Enables scrolling if needed */
+}
+
+.footer {
+    margin-right: 25px;
+}

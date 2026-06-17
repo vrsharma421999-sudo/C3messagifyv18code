@@ -1,0 +1,413 @@
+<template>
+	<div class="slds-theme_shade slds-p-bottom_large" style="border-radius: 10px; border: 1px solid #ccc;">
+		<div class="slds-box slds-theme_default slds-m-horizontal_large slds-p-vertical_medium slds-m-top_large" style="border-radius: 10px; border: 1px solid #ccc;">
+			<div>
+				<div class="slds-grid slds-wrap">
+					<div class="slds-col slds-size_2-of-3">
+						<span style="width: auto; padding-left: 2px; color:#54698D; padding-top:13px;" class="slds-text-heading_large">
+							<lightning-icon icon-name="standard:template"  size="large"></lightning-icon>
+							Phone Number Configuration
+						</span>
+					</div>
+					<div class="slds-col slds-size_1-of-3">
+						<div class="slds-text-align_right">
+							<lightning-button label="New" title="New" onclick={onNewConfigClick} variant="brand"
+							disabled={disable} value="" class="TACustomButton"></lightning-button>
+						</div>
+					</div>
+				</div>
+				<div class="slds-grid slds-wrap">
+					<div class="slds-col slds-size_1-of-1">
+						<p class="slds-text-color_inverse-weak slds-p-top_small" style=" color:#54698D; padding-left: 2px;">
+							To identify the phone number that will be used to send messages, select the object and the field that contains the phone number. You can only configure only one phone number field on every object.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="slds-box slds-theme_default slds-m-horizontal_large slds-p-vertical_medium slds-m-top_large" style="border-radius: 10px; border: 1px solid #ccc;">
+			<!--<div class="slds-grid">
+				<div class="slds-size_5-of-12">
+					<div class=" slds-m-bottom_small slds-p-left_medium">
+						<table style="width: auto;">
+							<tr>
+								<td style="width: auto;" class="slds-text-heading_medium"><span class="slds-text-color_error">*</span>Object</td>
+							</tr>
+						</table>
+						<lightning-combobox
+							label="Object"
+							name="objectName"
+							value={objectName}
+							onchange={onGenericChange}
+							variant="label-hidden"
+							disabled={disable}
+							required
+							options={objectPicklist}
+							placeholder="Select Object"
+							class="validate"
+							
+						>
+						</lightning-combobox>
+					</div>
+				</div>
+					
+				<div class=" slds-size_5-of-12">
+					<div class=" slds-m-bottom_small slds-p-left_medium">
+						<table style="width: auto;">
+							<tr>
+								<td style="width: auto;" class="slds-text-heading_medium"><span class="slds-text-color_error">*</span>Phone Field</td>
+							</tr>
+						</table>
+						<lightning-combobox
+							label=""
+							name="fieldName"
+							value={fieldName}
+							onchange={onGenericChange}
+							variant="label-hidden"
+							disabled={disable}
+							required
+							options={fieldPicklist}
+							placeholder="Select Mobile Field"
+							class="validate"
+						>
+						</lightning-combobox>
+					</div>
+				</div>
+				<div class="slds-size_2-of-12">
+					<div class="  slds-p-left_small slds-p-top_large">
+						<lightning-button label="Save" title="Save" onclick={handleSave} variant="brand"
+							disabled={disable} value="" class="TACustomButton"></lightning-button>
+						<lightning-button label="Clear" title="Clear" onclick={handleClear} disabled={disable}
+							class="slds-p-left_small TACustomButton" variant="brand-outline"></lightning-button>
+					</div>
+				</div>
+			</div>-->
+
+			<template if:true={isNewConfigPopup}>
+				<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+					aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+					<!-- slds-modal_medium -->
+					<div class="slds-modal__container">
+						<!-- Modal/Popup Box LWC header here -->
+						<header class="slds-modal__header">
+							<div class="slds-m-left--small">
+								<b class="slds-p-vertical_medium slds-text-align--left">
+									<h1 class="slds-text-heading--medium slds-truncate slds-text-align_center"
+										title="Create New Number Configuration">Create New Number Configuration</h1>
+								</b>
+							</div>
+						</header>
+	
+						<!-- Modal/Popup Box LWC body starts here -->
+						<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3"
+							style="position: relative;" data-id="TATemplateModalPopupID">
+							<lightning-layout class="slds-m-top--x-small slds-m-left--small">
+								<lightning-layout-item size="12">
+									<div class=" slds-m-bottom_small slds-p-left_medium">
+										<table style="width: auto;">
+											<tr>
+												<td style="width: auto;" class="slds-text-heading_medium"><span class="slds-text-color_error">*</span>Object</td>
+											</tr>
+										</table>
+										<lightning-combobox
+											label="Object"
+											name="objectName"
+											value={objectName}
+											onchange={onGenericChange}
+											variant="label-hidden"
+											disabled={disable}
+											required
+											options={objectPicklist}
+											placeholder="Select Object"
+											class="validate"
+											
+										>
+										</lightning-combobox>
+									</div>
+								</lightning-layout-item>
+							</lightning-layout>
+							<lightning-layout class="slds-m-top--x-small slds-m-left--small">
+								<lightning-layout-item size="12">
+									<div class=" slds-m-bottom_small slds-p-left_medium">
+										<table style="width: auto;">
+											<tr>
+												<td style="width: auto;" class="slds-text-heading_medium"><span class="slds-text-color_error">*</span>Phone Field</td>
+											</tr>
+										</table>
+										<lightning-combobox
+											label=""
+											name="fieldName"
+											value={fieldName}
+											onchange={onGenericChange}
+											variant="label-hidden"
+											disabled={disable}
+											required
+											options={fieldPicklist}
+											placeholder="Select Mobile Field"
+											class="validate"
+										>
+										</lightning-combobox>
+									</div>
+								</lightning-layout-item>
+							</lightning-layout>
+						</div>
+	
+						<!-- Modal/Popup Box LWC footer starts here -->
+						<footer class="slds-modal__footer">
+							<lightning-button label="Save" title="Save" onclick={handleSave} variant="brand"
+								disabled={disable} value="" class="slds-m-left_x-small"></lightning-button>
+							<lightning-button label="Cancel" title="Cancel" onclick={handleClear} disabled={disable}
+								class="slds-p-left_small" variant="brand-outline"></lightning-button>
+						</footer>
+					</div>
+				</section>
+				<div class="slds-backdrop slds-backdrop_open"></div>
+			</template>
+
+			<template if:true={hasRecords}>
+				<div class="slds-m-horizontal_medium slds-m-top_medium" >
+					<table class="slds-table slds-table_cell-buffer slds-m-top--small" style="border-radius: 5px; border: 1px solid #ccc;">
+						<thead>
+							<tr class="slds-line-height_reset">
+								<th class="" scope="col">
+									<div class="slds-truncate slds-p-right_small"
+										title="Object Name">Object
+										Name</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate slds-p-left_large" style="padding-left:137px"
+										title="Field Name">Field Name
+									</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate slds-p-right_x-large"
+										title="Action">Action</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<template for:each={configRecords} for:item="savedItem" for:index="index">
+								<tr key={savedItem.Id}>
+									<th scope="col">
+										<div >
+											{savedItem.CCCWA__Object_Name__c}
+										</div>
+									</th>
+									<th scope="col" style="width:33.33%;">
+										<div  style="padding-left:137px">
+											<template if:false={savedItem.isEditMode}>
+												<span key={savedItem.CCCWA__Field_Name__c}>{savedItem.CCCWA__Field_Name__c}</span>
+											</template>
+		
+											<template if:true={savedItem.isEditMode}>
+												<div >
+													<lightning-combobox
+														label=""
+														name="fieldName"
+														value={savedItem.CCCWA__Field_Name__c}
+														data-index={index}
+														onchange={onTableGenericChange}
+														variant="label-hidden"
+														required
+														options={inLinefieldPicklist}
+														placeholder="Select Mobile Field"
+														class="validate"
+													>
+													</lightning-combobox>
+												</div>
+											</template>
+										</div>
+									</th>
+									<th scope="col">
+										<div>
+											
+											<template if:false={savedItem.isEditMode}>
+												<lightning-button-icon icon-name="action:edit" variant="brand"
+													value={savedItem.Id} data-index={index}
+													onclick={handleEdit} alternative-text="Edit" title="Edit">
+												</lightning-button-icon>
+
+												<lightning-button-icon icon-name="action:delete"
+													variant="destructive"
+													value={savedItem.Id} data-index={index}
+													onclick={handleDelete} alternative-text="Delete"
+													title="Delete" class="slds-m-left_x-small sldsButtonIcon">
+												</lightning-button-icon>
+											</template>
+											<template if:true={savedItem.isEditMode}>
+												<lightning-button-icon icon-name="action:approval" data-index={index}
+													variant="brand" value={savedItem.Id}
+													onclick={handleInlineSave} alternative-text="Save" title="Save">
+												</lightning-button-icon>
+
+												<lightning-button-icon icon-name="action:close" variant="base"
+													value={savedItem.Id} data-index={index}
+													onclick={handleCancel} alternative-text="Cancel"
+													title="Cancel" class="slds-m-left_x-small sldsButtonIcon">
+												</lightning-button-icon>
+											</template>
+											
+										</div>
+									</th>									
+						
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
+			</template>
+			
+		</div>
+	</div>
+
+	
+	<!-- <lightning-card title="" class="cardBody">
+		<div class="slds-p-horizontal_x-large fontFamilyStyle">
+            <template if:true={isDisplayComp}>
+                <b class="slds-p-vertical_medium CCCWAHeader">Sending Messages</b>
+				<p class="slds-p-top_large CCCWASetupScreenText">When you send text messages our app needs to
+					know
+					what phone number to use per
+					object. For example, the most common use case is the Mobile Phone field on the Contact object. You
+					can
+					specify one field on every object you wish to text to.
+				</p>
+                <div class="slds-grid slds-wrap slds-p-top_medium ">					
+					<div
+						class="slds-col slds-size_4-of-12 slds-small-size_12-of-12 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-top_medium slds-p-right_small">
+						<select class="slds-select" data-id="objOption" name={objectValue} onchange={handleObjectSelect}
+                        disabled={disable}>
+                        <template for:each={lstObjectDetailsWrapper} for:item="obj">
+                            <option key={obj.strObject3DigitCode} value={obj.strObjectAPIName}>{obj.strObjectName}
+                            </option>
+                        </template>
+                    </select>
+					</div>
+					<div
+						class="slds-col slds-size_0-of-12 slds-small-size_0-of-12 slds-medium-size_0-of-12 slds-large-size_0-of-12">
+					</div>
+					<div
+						class="slds-col slds-size_4-of-12 slds-small-size_12-of-12 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-top_medium slds-p-right_small">
+
+						<select class="slds-select" data-id="objOption" name={fieldValue} onchange={handleFieldSelect}
+                        disabled={disable}>
+                        <template for:each={lstField} for:item="obj">
+                            <option key={obj.value} value={obj.value} >{obj.label}</option>
+                        </template>
+                    </select>
+					</div>
+					<div
+						class="slds-col slds-size_4-of-12 slds-small-size_12-of-12 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-top_medium">
+						<lightning-button label="Save" title="Save" onclick={handleNCSave} variant="brand"
+							disabled={disable} value="" class="TACustomButton"></lightning-button>
+						<lightning-button label="Clear" title="Clear" onclick={handleNCClear} disabled={disable}
+							class="slds-p-left_small TACustomButton" variant="brand-outline"></lightning-button>
+					</div>
+				</div>
+                </template>
+		</div>
+        				<template if:true={isDisplayComp}>
+				
+					<div class={cssClass}>
+						<table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top--small ">
+							<thead>
+								<tr class="slds-line-height_reset">
+									<th class="" scope="col">
+										<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+											title="Object Name">Object
+											Name</div>
+									</th>
+									<th class="" scope="col">
+										<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+											title="Field Name">Field Name
+										</div>
+									</th>
+									<th class="" scope="col">
+										<div class="slds-truncate CCCWATableHeader slds-p-right_x-large"
+											title="Action">Action</div>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<template for:each={lstRecords} for:item="savedItem">
+									<tr key={savedItem.ToNumberConfiguration.Id}>
+										<th scope="col">
+											<div class="CCCWATableRowContent">
+												{savedItem.ToNumberConfiguration.CCCWA__Object_Name__c}
+											</div>
+										</th>
+										<th scope="col" style="width:33.33%;">
+											<div class="CCCWATableRowContent">
+												<template if:false={savedItem.isShow}>
+													<span
+														key={savedItem.ToNumberConfiguration.CCCWA__Field_Name__c}>{savedItem.ToNumberConfiguration.CCCWA__Field_Name__c}</span>
+												</template>
+
+												<template if:true={savedItem.isShow}>
+													<select class="slds-select"  data-id="objOption" data-name="selectedVal"
+														onchange={handleFieldSelect}>
+
+														
+
+
+													<template if:true={hasDefaultResults}> 
+														<option value={hasDefaultResults.strAPIName}>{hasDefaultResults.strLabel}</option>
+													</template>
+														<template for:each={lstFieldCreatedMapping} for:item="obj">
+															<option key={obj.value} value={obj.value}>{obj.label}</option>
+														</template>
+													</select>
+												</template>
+											</div>
+										</th>
+                                        <th scope="col">
+											<div>
+												<template if:true={showMapping}>
+													<template if:false={savedItem.isShow}>
+														<lightning-button-icon icon-name="action:edit" variant="brand"
+															value={savedItem.ToNumberConfiguration.Id}
+															onclick={handleNCEdit} alternative-text="Edit" title="Edit">
+														</lightning-button-icon>
+
+														<lightning-button-icon icon-name="action:delete"
+															variant="destructive"
+															value={savedItem.ToNumberConfiguration.Id}
+															onclick={handleNCDelete} alternative-text="Delete"
+															title="Delete" class="slds-m-left_x-small sldsButtonIcon">
+														</lightning-button-icon>
+													</template>
+													<template if:true={savedItem.isShow}>
+														<lightning-button-icon icon-name="action:approval"
+															variant="brand" value={savedItem.ToNumberConfiguration.Id}
+															onclick={handleNCSave} alternative-text="Save" title="Save">
+														</lightning-button-icon>
+
+														<lightning-button-icon icon-name="action:close" variant="base"
+															value={savedItem.ToNumberConfiguration.Id}
+															onclick={handleNCCancel} alternative-text="Cancel"
+															title="Cancel" class="slds-m-left_x-small sldsButtonIcon">
+														</lightning-button-icon>
+													</template>
+												</template>
+											</div>
+										</th>									
+							
+									</tr>
+								</template>
+							</tbody>
+						</table>
+					</div>
+				</template>
+
+		<template if:true={loaded}>
+			<lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
+		</template>
+	</lightning-card> -->
+
+	<template if:true={isLoading}>
+		<div>
+			<lightning-spinner alternative-text="Loading" size="large" variant="brand"></lightning-spinner>
+		</div>
+	</template>
+</template>

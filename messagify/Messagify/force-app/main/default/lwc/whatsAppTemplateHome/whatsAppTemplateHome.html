@@ -1,0 +1,329 @@
+<template>
+	<template if:true={isTemplateTab}>
+		<div class="slds-theme_shade slds-p-bottom_large" style="border-radius: 10px; border: 1px solid #ccc;">
+			<div class="slds-box slds-theme_default slds-m-horizontal_large slds-p-vertical_medium slds-m-top_large"
+				style="border-radius: 10px; border: 1px solid #ccc;">
+
+				<div>
+					<div class="slds-grid">
+						<div class="slds-size_6-of-12">
+							<table style="width: auto;">
+								<tr>
+									<td>
+										<lightning-icon icon-name="standard:template" size="large"></lightning-icon>
+									</td>
+									<td style="width: auto; padding-left: 6px; color:#54698D; padding-top:13px;"
+										class="slds-text-heading_large"><span>Template</span></td>
+
+								</tr>
+							</table>
+						</div>
+						<div style="text-align: right;" class="slds-size_6-of-12">
+							<lightning-button variant="brand" label="New Template" title="New Template"	onclick={handleNCSave}></lightning-button>
+						</div>
+					</div>
+					<p class="slds-text-color_inverse-weak" style=" color:#54698D; width: 90%">
+						<br/>
+						Templates are used in template messages to initiate marketing, utility, and authentication conversations with customers. Unlike free-form messages, template messages are the only type of message that can be sent to customers who have not Help for this Pageyet messaged you or have not sent you a message in the last 24 hours.
+						<br/>
+						Templates must undergo approval before they can be used in template messages. Additionally, templates may be automatically disabled based on customer feedback. Once disabled, a template cannot be used in a template message until its quality rating has improved or it no longer violates our business or commerce policies.
+						<br/>
+						<br/>
+						<b>Approval Process</b>
+						<br/>
+						After creating your template, you can submit it for approval. The approval decision may take up to 24 hours. Once a decision has been reached, the status of the template will be updated in the list.
+						<br/>
+						<br/>
+						<b>Editing</b>
+						<br/>
+						Please note that if you edit a message template and resubmit it for approval, its status will be changed to "In Review," and it cannot be sent to customers until its status has been set to "Active/Approved".
+						<br/><br/>
+
+					</p>
+
+				</div>
+				<div>
+					<div class="slds-p-top_medium slds-p-right_medium" style="text-align: right; color:#54698D;"><a href="https://developers.facebook.com/docs/whatsapp/message-templates/guidelines/"><b>Help for this Page</b></a>
+					</div>
+
+				</div>
+
+
+			</div>
+
+
+			<!-- <div class="slds-grid slds-gutters">
+			<div class="slds-col slds-size_2-of-3 ">
+				<span>Templates are used in template messages to open marketing, utility, and authentication conversations with customers. Unlike free-form messages, template messages are the only type of message that can be sent to customers who have yet to message you, or who have not sent you a message in the last 24 hours.
+				<br/>
+Temp					lates must be approved before they can be sent in template messages. In addition, templates may be disabled automatically based on customer feedback. Once disabled, a template cannot be sent in a template message until its quality rating has improved or it no longer violates our business or commerce policies.</span>
+			</div>
+		</div> -->
+
+			<div class="slds-m-horizontal_large slds-m-top_medium" style="border-radius: 5px; border: 1px solid #ccc;">
+				<table class="slds-table slds-table_cell-buffer slds-table_bordered  ">
+					<thead>
+						<tr class="slds-line-height_reset">
+							<th class="" scope="col" style="width:10%;">
+								<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+									title="Object Name">Template
+									Name</div>
+							</th>
+							<th class="" scope="col" style="width:10%;">
+								<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+									title="Field Name">Language
+								</div>
+							</th>
+							<th class="" scope="col" style="width:10%;">
+								<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+									title="Field Name">Status
+								</div>
+							</th>
+							<th class="" scope="col" style="width:10%;">
+								<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+									title="Field Name">Category
+								</div>
+							</th>
+							<th class="" scope="col" style="width:10%;">
+								<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+									title="Field Name">Object Name
+								</div>
+							</th>
+							<th class="" scope="col" style="width:10%;">
+								<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+									title="Field Name">Project Name
+								</div>
+							</th>
+							<th class="" scope="col" style="width:35%;">
+								<div class="slds-truncate CCCWATableHeader slds-p-right_small"
+									title="Field Name">Message
+								</div>
+							</th>
+							<th class="" scope="col" style="width:15%;">
+								<div class="slds-truncate " style="text-align: right; padding-right:55px"
+									title="Action">Action</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<template for:each={filtered} for:item="savedItem">
+							<tr key={savedItem.Id}>
+								<td scope="col">
+									<div class="TableRowContent">
+										{savedItem.Template.Name}
+									</div>
+								</td>
+								<td scope="col">
+									<div class="TableRowContent">
+										{savedItem.Template.CCCWA__Language_Code__c}
+									</div>
+								</td>
+								<td scope="col">
+									<div class="TableRowContent">
+										<template if:true={savedItem.APPROVED}>
+											<lightning-badge class="slds-badge slds-theme_success"
+												label={savedItem.Template.CCCWA__Status__c}></lightning-badge>
+										</template>
+										<template if:true={savedItem.REJECTED}>
+											<lightning-badge class="slds-badge slds-theme_error"
+												label={savedItem.Template.CCCWA__Status__c}></lightning-badge>
+										</template>
+										<template if:true={savedItem.PENDING}>
+											<lightning-badge class="slds-badge_lightest"
+												label={savedItem.Template.CCCWA__Status__c}></lightning-badge>
+										</template>
+									</div>
+								</td>
+								<td scope="col">
+									<div class="TableRowContent">
+										{savedItem.Template.CCCWA__Category__c}
+									</div>
+								</td>
+								<td scope="col">
+									<div class="TableRowContent">
+										{savedItem.Template.CCCWA__Object__c}
+									</div>
+								</td>
+								<td scope="col">
+									<div class="TableRowContent">
+										{savedItem.Template.CCCWA__Project__c}
+									</div>
+								</td>
+								<td scope="col">
+									<div class="TableRowMessageContent">
+										{savedItem.Template.CCCWA__Template_Message__c}
+									</div>
+								</td>
+								<td scope="col">
+									<div style="text-align: right; padding-right:5px">
+										<template if:true={showMapping}>
+											<lightning-button-icon icon-name="action:preview" variant="brand"
+												value={savedItem.Template.Id} onclick={handlePreview}
+												alternative-text="Preview" title="Preview">
+											</lightning-button-icon>
+											<lightning-button-icon icon-name="action:edit" variant="brand"
+												value={savedItem.Template.Id} onclick={handleNCEdit}
+												alternative-text="Edit" title="Edit"
+												class="slds-m-left_x-small sldsButtonIcon">
+											</lightning-button-icon>
+											<lightning-button-icon style="color:red" icon-name="action:delete"
+												variant="destructive" value={savedItem.Template.Id}
+												onclick={handleDelete} alternative-text="Delete" title="Delete"
+												class="delete button slds-m-left_x-small sldsButtonIcon">
+											</lightning-button-icon>
+										</template>
+									</div>
+								</td>
+							</tr>
+
+						</template>
+					</tbody>
+				</table>
+			</div>
+
+			<template if:true={isModalOpen}>
+				<div class="slds-modal slds-fade-in-open">
+					<div class="slds-modal__container">
+						<header class="slds-modal__header">
+							<button class="slds-button slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+							<lightning-icon icon-name="utility:close" size="medium" alternative-text="Close"></lightning-icon>
+							<span class="slds-assistive-text">Close</span>
+						</button>
+							<h2 class="slds-text-heading_medium">Preview Template</h2>
+						</header>
+						<div class="slds-modal__content slds-p-horizontal_medium slds-p-bottom_small">
+							<!-- Display the value of Whatsapp_Template__c -->
+							<div class="slds-p-horizontal_medium slds-p-top_medium slds-theme_default">
+
+
+								<div class="slds-grid slds-p-top_small slds-align_absolute-center">
+
+									<div class=" slds-box  " style="background-color: #e3d9d1; width: 400px">
+
+										<section role="log" class="slds-chat">
+											<ul class="slds-chat-list">
+												<li class="slds-chat-listitem slds-chat-listitem_inbound">
+													<div class="slds-chat-message">
+														<div class="slds-chat-message__body">
+															<div class="slds-chat-message__text slds-chat-message__text_inbound "
+																style="background-color:white; width:350px">
+
+																<template if:true={isMediaImage}>
+																	<img width="300" height="350x" src={objTemplate.publicDocUrl}>
+																</template>
+																<template if:true={isMediaDoc}>
+																	<div class="slds-p-around_small slds-theme_shade">
+																		<lightning-icon icon-name="doctype:attachment"
+																			size="large" alternative-text="Image"
+																			title="Image">
+																		</lightning-icon>
+																		<a href="#">{objTemplate.fileName}</a>
+																	</div>
+																</template>
+																<template if:true={isMediaVideo}>
+																	<div class="slds-p-around_small slds-theme_shade">
+																		<lightning-icon icon-name="doctype:mp4"
+																			size="large" alternative-text="mp4"
+																			title="mp4">
+																		</lightning-icon>
+																		<a href="#">{objTemplate.fileName}</a>
+																	</div>
+																</template>
+																<lightning-formatted-rich-text value={templateViewBody}>
+																</lightning-formatted-rich-text>
+															</div>
+															<template for:each={previewActionButtons} for:item="objMap">
+
+																<template if:true={isQuickReplyList}>
+																	<div key={objMap.buttonText}
+																		style="margin-top : 5px; padding: 5; background-color:white; font-size : 18px; border-radius: 10px; text-align:center; color: #4191e1;  text-decoration: underline">
+																		{objMap.buttonText}</div>
+																</template>
+
+																<template if:true={isActionList}>
+																	<table key={objMap.buttonText}
+																		style="margin-top : 5px;">
+																		<tr>
+																			<td
+																				style="width: 40%; background-color:white; font-size : 18px; border-radius: 5px 0px 0px 5px; padding : 5px; padding-right:0px; margin-top : 5px; text-align:right; color: #4191e1;  text-decoration: underline">
+																				<template if:true={objMap.isIcon}>
+																					<lightning-icon
+																						icon-name={objMap.iconName}
+																						size="small">
+																					</lightning-icon>
+																				</template>
+																			</td>
+																			<td
+																				style="width: 60%; background-color:white; font-size : 18px; border-radius: 0px 5px 5px 0px; padding : 5px; margin-top : 5px; padding-left:12px; text-align:left; color: #4191e1;  text-decoration: underline">
+																				{objMap.buttonText}</td>
+																		</tr>
+																	</table>
+																</template>
+
+															</template>
+														</div>
+													</div>
+												</li>
+											</ul>
+										</section>
+									</div>
+
+								</div>
+
+							</div>
+						</div>
+						<footer class="slds-modal__footer">
+							<button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
+						</footer>
+					</div>
+				</div>
+				<div class="slds-backdrop slds-backdrop_open"></div>
+			</template>
+			<template if:true={showPopup}>
+
+				<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+					class="slds-modal slds-fade-in-open">
+					<template if:true={isLoading}>
+						<lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
+					</template>
+					<div class="slds-modal__container">
+						<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+					<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+						<!-- <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close" onclick={handleCancel} ></use> -->
+					</svg>
+					<span class="slds-assistive-text">Cancel and close</span>
+					</button>
+						<div class="slds-modal__header">
+							<h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" style="color:#54698D;">
+								Confirmation</h1>
+						</div>
+						<div class="slds-modal__content slds-p-around_medium slds-text-heading_large"
+							id="modal-content-id-1">
+							<p class="slds-text-heading_small slds-align_absolute-center" style="color:#54698D;">Are you
+								sure you want to delete this template?</p>
+						</div>
+						<div class="slds-modal__footer">
+							<button class="slds-button slds-button_neutral" onclick={handleCancel} aria-label="Cancel and close">Cancel</button>
+							<button class="slds-button slds-button_brand" onclick={handleDeleteYes}>Yes</button>
+						</div>
+					</div>
+				</section>
+				<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+			</template>
+
+
+		</div>
+
+	</template>
+	<template if:true={isEditTemplate}>
+		<c-whats-app-template-approver record-id={recordId}></c-whats-app-template-approver>
+	</template>
+
+	<template if:true={isCreateNewTemplate}>
+		<c-whats-app-template-approver></c-whats-app-template-approver>
+	</template>
+	<template if:true={isLoading}>
+		<lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
+	</template>
+
+</template>

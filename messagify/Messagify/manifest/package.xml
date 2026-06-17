@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+
+    <types>
+        <members>Admin_Panel</members>
+        <members>WhatsApp_Access</members>
+        <members>WhatsApp_Named_Credential</members>
+        <members>WhatsApp_Site_Access</members>
+        <members>Messagify_WhatsApp</members>
+        <name>PermissionSet</name>
+    </types>
+
+    <types>
+        <members>FaceBookAuth</members>
+        <members>FileHandlerHeader</members>
+        <members>GetMediaUrl</members>
+        <name>ExternalCredential</name>
+    </types>
+
+    <types>
+        <members>FacebookAPI</members>
+        <members>FacebookFileAuth</members>
+        <members>WhatsAppGetMedia</members>
+        <name>NamedCredential</name>
+    </types>
+
+    <types>
+        <members>C3AdminPanelLwcController</members>
+        <members>C3AdminPanelLwcControllerTest</members>
+        <members>C3CreateWhatsAppConversationQueue</members>
+        <members>C3CreateWhatsAppConversationQueueTest</members>
+        <members>C3DeleteTemplateQueue</members>
+        <members>C3DeleteTemplateQueueTest</members>
+        <members>C3HttpCalloutMockBundleClass</members>
+        <members>C3InboundWrapper</members>
+        <members>C3RefreshTemplateSchedulable</members>
+        <members>C3RefreshTemplateSchedulableTest</members>
+        <members>C3SendtriggerMessagesFlow</members>
+        <members>C3SendtriggerMessagesFlowTest</members>
+        <members>C3TemplateTriggerHandler</members>
+        <members>C3TemplateTriggerHandlerTest</members>
+        <members>C3TestDataFactory</members>
+        <members>C3Utility</members>
+        <members>C3UtilityTest</members>
+        <members>C3WhatsAppChatPanelCtrl</members>
+        <members>C3WhatsAppChatPanelCtrlTest</members>
+        <members>C3WhatsAppHomeAndConfigurationTest</members>
+        <members>C3WhatsAppSendTemplateBulkBatch</members>
+        <members>C3WhatsAppTemplateHomeController</members>
+        <members>C3WhatsAppUtilityBarCtrlTest</members>
+        <members>C3WhatsAppTemplateScreenLWCCtrl</members>
+        <members>C3WhatsAppTemplateScreenLWCCtrlTest</members>
+        <members>C3WhatsAppUtilityBarCtrl</members>
+        <members>C3WhatsAppWebService</members>
+        <members>C3WhatsAppWebServiceTest</members>
+        <members>C3WhatsappNumberConfiguration</members>
+        <members>C3WhatsappWebhookAPI</members>
+        <members>C3WhatsappWebhookAPITest</members>
+        <members>C3BulkTemplateSenderLwcController</members>
+        <members>C3BulkTemplateSenderLwcControllerTest</members>
+        <name>ApexClass</name>
+    </types>
+
+    <types>
+        <members>WhatsAppUtilityAPI</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+
+    <types>
+        <members>Admin</members>
+        <members>Number_Configuration</members>
+        <members>WA_Templates</members>
+        <members>Send_Bulk_Templates</members>
+        <members>Template_Object__c</members>
+        <members>Error_Log__c</members>
+        <name>CustomTab</name>
+    </types>
+
+    <types>
+        <members>adminPanelLwc</members>
+        <members>customToast</members>
+        <members>loadingSpinner</members>
+        <members>whatsAppChatPanelLwc</members>
+        <members>whatsAppNumberConfiguration</members>
+        <members>whatsAppTemplateApprover</members>
+        <members>whatsAppTemplateHome</members>
+        <members>whatsAppUtilityBar</members>
+        <members>bulkTemplateSenderLwc</members>
+        <name>LightningComponentBundle</name>
+    </types>
+
+    <types>
+        <members>CCCWA__Error_Log__c.CCCWA__Class_Name__c</members>
+        <members>CCCWA__Error_Log__c.CCCWA__Error_Message__c</members>
+        <members>CCCWA__Error_Log__c.CCCWA__Line_Number__c</members>
+        <members>CCCWA__Error_Log__c.CCCWA__Method_Name__c</members>
+        <members>CCCWA__Error_Log__c.CCCWA__Request__c</members>
+        <members>CCCWA__Error_Log__c.CCCWA__Response__c</members>
+        <members>CCCWA__Error_Log__c.CCCWA__Stack_Trace__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Button_Type__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Button_text__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Country_Code__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Phone_Number__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Template__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Type__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Type_of_Action__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__URL_Type__c</members>
+        <members>CCCWA__Template_Button__c.CCCWA__Website_URL__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Category__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Content_Version_Id__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Document_Url__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__File_Name__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Footer__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Header_Type__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Header__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Language_Code__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Media_Handler__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Media_Type__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Mime_Type__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Object__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Project__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Status__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__TemplateID__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Template_Label__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Template_Message__c</members>
+        <members>CCCWA__Template_Object__c.CCCWA__Whatsapp_Template__c</members>
+        <members>CCCWA__Template_Parameter__c.CCCWA__Example_Text__c</members>
+        <members>CCCWA__Template_Parameter__c.CCCWA__Field_Name__c</members>
+        <members>CCCWA__Template_Parameter__c.CCCWA__Object_name__c</members>
+        <members>CCCWA__Template_Parameter__c.CCCWA__Parameter_Name__c</members>
+        <members>CCCWA__Template_Parameter__c.CCCWA__Template__c</members>
+        <members>CCCWA__WhatsApp_Admin__c.CCCWA__NumberID__c</members>
+        <members>CCCWA__WhatsApp_Admin__c.CCCWA__WabaId__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Created_Date__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Direction__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__File_Name__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__From_Phone__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Interaction_Type__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Media_Type__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Media_URL__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Message__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Message_formatted__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Read__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Record_ID__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Response_Body__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Status_From_Agent__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Status__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__To_Phone__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Unique_Key__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__sid__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Template_Name__c</members>
+        <members>CCCWA__WhatsApp_Number_Configuration__c.CCCWA__Field_Name__c</members>
+        <members>CCCWA__WhatsApp_Number_Configuration__c.CCCWA__Object_Name__c</members>
+        <members>CCCWA__WhatsApp_Number_Configuration__c.CCCWA__Object_Label__c</members>
+        <!-- Project CMT custom field -->
+        <members>CCCWA__Project__mdt.CCCWA__Project_Name__c</members>
+        <name>CustomField</name>
+    </types>
+
+    <types>
+        <members>Access_Token</members>
+        <members>Phone_Number_ID</members>
+        <members>WABA_ID</members>
+        <name>CustomLabel</name>
+    </types>
+
+    <types>
+        <members>WhatsApp_Notification</members>
+        <members>enablement_coaching_feedback_ready</members>
+        <name>CustomNotificationType</name>
+    </types>
+
+    <types>
+        <!-- All custom objects + CMT merged into one block -->
+        <members>CCCWA__Error_Log__c</members>
+        <members>CCCWA__Template_Button__c</members>
+        <members>CCCWA__Template_Object__c</members>
+        <members>CCCWA__Template_Parameter__c</members>
+        <members>CCCWA__WhatsApp_Admin__c</members>
+        <members>CCCWA__WhatsApp_Conversation__b</members>
+        <members>CCCWA__WhatsApp_Number_Configuration__c</members>
+        <members>CCCWA__Whatsapp_Attachment__c</members>
+        <members>CCCWA__Project__mdt</members>
+        <name>CustomObject</name>
+    </types>
+
+    <types>
+        <members>Error_Log__c-Error Log Layout</members>
+        <members>Template_Button__c-Template Button Layout</members>
+        <members>Template_Object__c-Template Layout</members>
+        <members>Template_Parameter__c-Template Mapping Layout</members>
+        <name>Layout</name>
+    </types>
+
+    <types>
+        <members>SiteSamples</members>
+        <members>DocumentPreview</members>
+        <members>DoubleTickWhatsApp</members>
+        <members>ReadDoubleTick</members>
+        <members>VideoPreview</members>
+        <members>WhatappIcon</members>
+        <members>WhatsAppChatBGImage</members>
+        <members>custom_style</members>
+        <name>StaticResource</name>
+    </types>
+
+    <types>
+        <members>C3WhatsApp</members>
+        <name>CustomApplication</name>
+    </types>
+
+    <types>
+        <members>WhatappIcon</members>
+        <name>ContentAsset</name>
+    </types>
+
+    <types>
+        <members>C3WhatsApp_UtilityBar</members>
+        <name>FlexiPage</name>
+    </types>
+
+    <types>
+        <members>WhatsAppMedia</members>
+        <members>WhatsappAPI</members>
+        <name>RemoteSiteSetting</name>
+    </types>
+
+    <version>63.0</version>
+</Package>

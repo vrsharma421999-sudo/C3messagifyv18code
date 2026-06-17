@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Send Templates in Bulk</masterLabel>
+	<apiVersion>63.0</apiVersion>
+	<description>Select Object with already configuration Fieldset and number setting. </description>
+	<isExposed>true</isExposed>
+	<targets>
+		<target>lightning__Tab</target>
+	</targets>
+</LightningComponentBundle>

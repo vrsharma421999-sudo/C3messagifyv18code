@@ -1,0 +1,346 @@
+<template>
+    <!-- Chat Section -->
+    <section role="log" class="slds-chat slds-m-horizontal_small slds-m-bottom_small slds-m-top_small slds-theme_default"
+        style="border-radius: 15px; border: 2px solid #ccc; box-shadow: 5px 5px 10px #b8b8b8, -5px -5px 10px #ffffff;">
+        
+        <!-- Chat Header -->
+        <lightning-layout class={strChatHeaderClass} style="border-radius: 15px 15px 0px 0px;">
+            <template if:true={displayBackBtn}>
+                <lightning-layout-item size="1" class="slds-text-align--left chatHeaderWithBtnStyle">
+                    <div style="text-align: center;">
+                        <lightning-button-icon onclick={backToTextList} size="medium" icon-name="utility:chevronleft"
+                            variant="bare" alternative-text="Back" class="slds-text-color_weak" title="Back">
+                        </lightning-button-icon>
+                    </div>
+                </lightning-layout-item>
+                <lightning-layout-item size="7" class="recordNameStyle chatHeaderWithBtnStyle truncate">
+                    <span title={wrapMain.sendFrom} class="truncate">
+                        <a onclick={handleClickRecord}>{wrapMain.sendFrom}</a>
+                    </span>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+
+        <!-- Chat Body -->
+        <lightning-layout class="slds-theme_shade slds-m-horizontal_small slds-m-top_small"
+            style="border-radius: 5px; box-shadow: 5px 5px 10px #b8b8b8, -5px -5px 10px #ffffff;">
+            <lightning-layout-item size="1" class="slds-text-align--left chatHeaderWithBtnStyle slds-m-left_x-small">
+                <div style="text-align: center;">
+                    <img src={whatappIconUrl} />
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="recordNameStyle chatHeaderMarginStyle truncate">
+                <span title={wrapMain.sendFrom} class="truncate" style="color:#54698D;">
+                    {wrapMain.sendFrom}
+                    <template if:true={strSelectedFromNumber}>
+                        <br />
+
+                        <!-- <label class="slds-form-element__label" style="font-size:10px; color:#54698D;"></label> -->
+                        <!-- added by Vanshika  -->
+                                         <label class="slds-form-element__label" style="font-size:10px; color:#54698D;">Sending From: {strSelectedFromNumber}</label>
+
+                    </template>
+                </span>
+            </lightning-layout-item>
+             <lightning-layout-item size="4" class="recordNameStyle slds-m-left--medium"> 
+                 <!--<lightning-combobox 
+        label="Projects" 
+        name="Projects" 
+        disabled={notNumberConfigurationImplemented} 
+        value={selectedProjectId}
+        placeholder="Select a project" 
+        options={projectOptions}
+        onchange={handleProjectChange} 
+        variant="label-hidden" 
+        class="slds-m-right_x-small">
+    </lightning-combobox>-->
+    
+    <!-- Templates Combobox (Updated) -->
+    <lightning-combobox 
+        label="Templates" 
+        name="MessagingTemplate" 
+        disabled={notNumberConfigurationImplemented} 
+        value={strSelectedMessagingTemplate}
+        placeholder="Select a template" 
+        options={lstMessagingTemplateOptions}
+        onchange={onMessagingTemplateChange} 
+        variant="label-hidden">
+    </lightning-combobox>
+                
+            </lightning-layout-item>
+           <!-- <lightning-layout-item size="4" class="recordNameStyle slds-m-left--medium">
+                <lightning-combobox label="Send using Template" name="MessagingTemplate"
+                    disabled={notNumberConfigurationImplemented} value={strSelectedMessagingTemplate}
+                    placeholder="Select a messaging template" options={lstMessagingTemplateOptions}
+                    onchange={onMessagingTemplateChange} variant="label-hidden" class="slds-m-right_x-small">
+                </lightning-combobox>
+            </lightning-layout-item> -->
+            
+        </lightning-layout>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <c-loading-spinner></c-loading-spinner>
+        </template>
+
+        <!-- Error Message -->
+        <template if:false={isLoading}>
+            <template if:false={NumberConfigurationImplemented}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert" style="margin-bottom:300px;">
+                    <span class="slds-icon_container slds-m-right_small slds-no-flex slds-align-top">
+                        <lightning-icon icon-name="utility:error" alternative-text="Error"></lightning-icon>
+                    </span>
+                    <h2>{erroMessage}</h2>
+                </div>
+            </template>
+        </template>
+
+        <!-- Chat Messages -->
+        <template if:true={NumberConfigurationImplemented}>
+            <div class={strChatBodyClass} id="chatDivId" data-id="chatDivId" style={componentHeight}>
+                <div class="background-container">
+                    <section role="log" class="slds-chat">
+                        <ul style="margin-right:14px;">
+                            <template for:each={lstMessage} for:item="msg">
+                                <li style="padding-left:5px;" class={msg.styleClass} key={msg.objDetails.Id}>
+                                    <div class="slds-chat-message" style="margin-bottom:15px;margin-right: -20px">
+                                        <span if:true={msg.showAvatar} aria-hidden="true" class="slds-avatar slds-avatar_circle slds-chat-avatar">
+                                            <abbr class="slds-avatar__initials slds-avatar__initials_inverse initialsTextStyle"
+                                                style="background-color:#EDF3FA; box-shadow: 5px 5px 10px #b8b8b8, -5px -5px 10px #ffffff;"
+                                                title={msg.avatr}>{msg.avatr}</abbr>
+                                        </span>
+                                        <div class="slds-chat-message__body">
+                                                <!-- Media Messages -->
+                                            <template if:true={msg.isMMS}>
+                                                <div class={msg.styleDiv} style={msg.shadowCss}>
+                                                    <template for:each={msg.lstMMSFiles} for:item="mms">
+                                                        <div  key={mms} style="padding: 5px;">
+                                                            <template if:true={mms.isImage}>
+                                                                <div onclick={handleOnDocClick} >
+                                                                    <img width="200" onclick={handleOnDocClick} data-id={msg.objDetails.CCCWA__Media_URL__c} height="250" src={msg.objDetails.CCCWA__Media_URL__c}>
+                                                                </div>
+                                                            </template>
+                                                            <template if:false={mms.isImage}>
+                                                                <template if:true={mms.isVideo}>
+                                                                    <div class="slds-p-around_small">
+                                                                        <lightning-icon icon-name="doctype:video" alternative-text={msg.objDetails.CCCWA__File_Name__c}
+                                                                            title={msg.objDetails.CCCWA__File_Name__c} onclick={handleOnDocClick} data-id={msg.objDetails.CCCWA__Media_URL__c}
+                                                                            style="cursor: pointer; margin-bottom: 5px;"></lightning-icon>
+                                                                        <a href="#">{msg.objDetails.CCCWA__File_Name__c}</a>
+                                                                    </div>
+                                                                </template>
+                                                                <template if:true={mms.isUnknown}>
+                                                                    <div class="slds-p-around_small">
+                                                                        <lightning-icon icon-name="doctype:unknown" alternative-text={msg.objDetails.CCCWA__File_Name__c}
+                                                                            title={msg.objDetails.CCCWA__File_Name__c} onclick={handleOnDocClick} data-id={msg.objDetails.CCCWA__Media_URL__c}
+                                                                            style="cursor: pointer; margin-bottom: 5px;"></lightning-icon>
+                                                                        <a href="#">{msg.objDetails.CCCWA__File_Name__c}</a>
+                                                                    </div>
+                                                                </template>
+                                                                <template if:true={mms.isAudio}>
+                                                                    <div class="slds-p-around_small">
+                                                                        <lightning-icon icon-name="doctype:audio" alternative-text={msg.objDetails.CCCWA__File_Name__c}
+                                                                            title={msg.objDetails.CCCWA__File_Name__c} onclick={handleOnDocClick} data-id={msg.objDetails.CCCWA__Media_URL__c}
+                                                                            style="cursor: pointer; margin-bottom: 5px;"></lightning-icon>
+                                                                        <a href="#">{msg.objDetails.CCCWA__File_Name__c}</a>
+                                                                    </div>
+                                                                </template>
+                                                                <template if:true={mms.isDocument}>
+                                                                    <div class="slds-p-around_small">
+                                                                        <lightning-icon icon-name="doctype:gdoc" alternative-text={msg.objDetails.CCCWA__File_Name__c}
+                                                                            title={msg.objDetails.CCCWA__File_Name__c} onclick={handleOnDocClick} data-id={msg.objDetails.CCCWA__Media_URL__c}
+                                                                            style="cursor: pointer; margin-bottom: 5px;"></lightning-icon>
+                                                                        <a href="#">{msg.objDetails.CCCWA__File_Name__c}</a>
+                                                                    </div>
+                                                                </template>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                    <div if:true={msg.showSmallDetails} class="slds-text-align--right" aria-label="">
+                                                        <div style="font-size: 9px;text-align: right;">
+                                                            <template if:true={msg.isPending}>
+                                                                <div style="font-size: 9px;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <lightning-icon icon-name="utility:clock" alternative-text="Pending!" title="Pending"
+                                                                        size="xx-small" variant="inverse"></lightning-icon>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isSent}>
+                                                                <div style="font-size: 9px;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <lightning-icon icon-name="utility:check" alternative-text="Sent!" title="Sent"
+                                                                        size="xx-small" variant="inverse"></lightning-icon>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isDelivered}>
+                                                                <div style="font-size: 9px;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <img style="max-height: 20px" alt="Company logo" src={doubletick} />
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isRead}>
+                                                                <div style="font-size: 9px;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <img style="max-height: 20px" alt="Company logo" src={readDoubleTick} />
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isFailed}>
+                                                                <div style="font-size: 9px;color:red;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName} Failed
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <template if:true={msg.objDetails.CCCWA__Message__c}>
+                                                    <div class={msg.styleDivText}>
+                                                        <div>
+                                                            <lightning-formatted-rich-text value={msg.objDetails.CCCWA__Message__c}></lightning-formatted-rich-text>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </template>
+
+                                            <!-- Text Messages -->
+                                            <template if:false={msg.isMMS}>
+                                                <div class="slds-p-right_medium">
+                                                    <div class={msg.styleDiv} style={msg.shadowCss}>
+                                                        <div>
+                                                            <lightning-formatted-rich-text value={msg.objDetails.CCCWA__Message__c}></lightning-formatted-rich-text>
+                                                        </div>
+                                                        <div if:true={msg.showAvatar} class="slds-text-align--left" aria-label="">
+                                                            <div style="font-size: 9px; color: #747474;"> {msg.strMsgOwnerInitials} {msg.senderName}</div>
+                                                        </div>
+                                                        <template if:false={msg.showAvatar}>
+                                                            <template if:true={msg.isPending}>
+                                                                <div style="font-size: 9px;text-align: right; justify-content: space-between; display: flex;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <lightning-icon icon-name="utility:clock" alternative-text="Pending!" title="Pending"
+                                                                        size="xx-small" variant="inverse"></lightning-icon>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isSent}>
+                                                                <div style="font-size: 9px;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <lightning-icon icon-name="utility:check" alternative-text="Sent!" title="Sent"
+                                                                        size="xx-small" variant="inverse"></lightning-icon>
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isDelivered}>
+                                                                <div style="font-size: 9px;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <img style="max-height: 20px" alt="Company logo" src={doubletick} />
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isRead}>
+                                                                <div style="font-size: 9px;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName}
+                                                                    <img style="max-height: 20px" alt="Company logo" src={readDoubleTick} />
+                                                                </div>
+                                                            </template>
+                                                            <template if:true={msg.isFailed}>
+                                                                <div style="font-size: 9px;color:red;text-align: right;">
+                                                                    {msg.strMsgOwnerInitials} {msg.senderName} Failed
+                                                                </div>
+                                                            </template>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </template>
+
+        <!-- File Upload Popup -->
+        <template if:true={isFileUploadPopup}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open slds-p-bottom_small">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <div class="slds-m-left--small">
+                            <b class="slds-p-vertical_medium slds-text-align--left">
+                                <h1 class="slds-text-heading--medium slds-truncate slds-text-align_center" title="Upload MMS">Upload File</h1>
+                            </b>
+                        </div>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2" style="position: relative;" data-id="TAModalPopupID">
+                        <template if:true={isErrorMessage}>
+                            <template if:true={wrapMain.strMsg}>
+                                <div style="margin:14px;">
+                                    <div class="error uiMessage" role="alert">
+                                        <div class="slds-grid slds-wrap">
+                                            <div class="slds-col slds-size_1-of-12 slds-align_absolute-center">
+                                                <lightning-icon icon-name="utility:warning" alternative-text="Warning!" title="Warning" variant="error" size="small"></lightning-icon>
+                                            </div>
+                                            <div class="slds-col slds-size_10-of-12">
+                                                <div class="slds-m-around_x-small">
+                                                    <lightning-formatted-rich-text value={wrapMain.strMsg}></lightning-formatted-rich-text>
+                                                </div>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-12 slds-align_absolute-center">
+                                                <template if:true={isSetUpCompleted}>
+                                                    <lightning-icon icon-name="utility:close" alternative-text="Close!" title="Close" size="small" onclick={onClearMessage}></lightning-icon>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
+                        <div class="slds-m-around_medium slds-align_absolute-center">
+                            <lightning-file-upload name="fileUploader" record-id={recordId} accept={acceptedFormats} onuploadfinished={handleInputFileChange}></lightning-file-upload>
+                        </div>
+                        <template if:true={fileData}>
+                            <p class="slds-align_absolute-center">{fileData.filename}</p><br />
+                        </template>
+                        <p class="slds-align_absolute-center">Supported file formats: JPG, JPEG, PNG, GIF, CSV, PDF</p>
+                        <p class="slds-align_absolute-center">Maximum upload file size: 4.3 MB</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <template if:true={fileData}>
+                            <lightning-button label="Upload &amp; Send" title="Upload &amp; Send" onclick={uploadFiles} variant="brand" class="slds-m-left_x-small TACustomButton"></lightning-button>
+                        </template>
+                        <lightning-button label="Cancel" title="Cancel" onclick={closeMMSPopup} class="slds-m-left_x-small TACustomButton" variant="brand-outline"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Chat Footer -->
+        <div class="slds-grid slds-wrap slds-p-around_xx-small slds-m-bottom_small chat-footer"
+            style="border-radius: 0px 0px 15px 15px; background: #FFFFFF; border-top:1px solid #F2F2F2; font-family: Arial; font-style: normal; font-weight: normal;">
+            <div class="file-upload-btn slds-col slds-size_1-of-12 slds-small-size_1-of-12 slds-medium-size_1-of-12 slds-large-size_1-of-12 slds-p-top_medium">
+                <div class="file-upload-btn">
+                    <template if:true={isAttachment}>
+                    <lightning-button-icon icon-name="utility:attach" variant="bare" size="large"
+                        alternative-text="Utility image" title="Files" onclick={handleImageUploadClick}
+                        class="slds-align_absolute-center" disabled={isBtn}></lightning-button-icon>
+                    </template>
+                </div>
+            </div>
+            <div class="input-box slds-col slds-size_9-of-12 slds-small-size_9-of-12 slds-medium-size_9-of-12 slds-large-size_9-of-12">
+                <div class="input-box">
+                    <lightning-input-rich-text class="slds-rich-text-editor__toolbar_detached"
+                        placeholder="Type a message" type="text" name="templateBody" value={txtMsg}
+                        onchange={keyUpHandler} onkeyup={isBtn} disabled={notNumberConfigurationImplemented}
+                        disabled-categories="INSERT_CONTENT,FORMAT_FONT,FORMAT_TEXT,FORMAT_BODY,ALIGN_TEXT,REMOVE_FORMATTING"
+                        variant="label-hidden">
+                    </lightning-input-rich-text>
+                </div>
+            </div>
+            <div class="send-btn slds-col slds-size_1-of-12 slds-small-size_1-of-12 slds-medium-size_1-of-12 slds-large-size_1-of-12 slds-p-left_small slds-p-top_medium">
+                <div class="send-btn">
+                    <lightning-button-icon icon-name="utility:send" variant="bare" size="large" onclick={handleSend}
+                        alternative-text="Send" title="Send" disabled={isButtonDisabled}></lightning-button-icon>
+                </div>
+            </div>
+        </div>
+    </section>
+</template>

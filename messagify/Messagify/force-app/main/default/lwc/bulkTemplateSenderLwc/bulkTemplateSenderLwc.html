@@ -1,0 +1,230 @@
+<template>
+    <div class="slds-theme_shade slds-p-bottom_small" style="border-radius: 10px; border: 1px solid #ccc;">
+        <div class="slds-box slds-theme_default slds-m-horizontal_large slds-p-vertical_medium slds-m-top_large neu-container"
+            style="border-radius: 10px; border: 1px solid #ccc; margin-bottom: 10px;">
+
+            <div>
+                <div class="slds-grid">
+                    <div class="slds-size_6-of-12">
+                        <table style="width: auto;">
+                            <tr>
+                                <td>
+                                    <lightning-icon icon-name="standard:messaging_conversation"  size="large"></lightning-icon>
+                                </td>
+                                <td style="width: auto; padding-left: 6px; color:#54698D; padding-top:13px;"
+                                    class="slds-text-heading_large"><span>Send Bulk Template</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <ul class="slds-text-color_inverse-weak slds-list_dotted slds-p-top_medium" style=" color:#54698D; width: 90%">
+                    <li>Ensure <strong>WhatsApp Number Configuration</strong> is set up for the object.</li>
+                    <li>Create a <strong>Field Set</strong> with name <strong>C3WAFieldSet</strong> for the object to define the columns displayed in the table.</li>
+                    <li>There must be a <strong>Template</strong> configured to send messages for the object.</li>
+                </ul>
+            </div>
+            
+        </div>
+        <div class="slds-box slds-theme_default slds-p-vertical_large  slds-m-horizontal_large slds-m-bottom_small neu-container">
+            <table style="width: auto;">
+                <tr>
+                    <td style="width: auto;" class="slds-text-heading_medium"><span class="slds-text-color_error">*</span>Object</td>
+                    <td><lightning-helptext class="slds-p-bottom_medium" content="Select Object on which you wish to send the template."></lightning-helptext></td>
+                </tr>
+            </table>
+            
+            
+            <p class="slds-text-color_inverse-weak">
+                Select Object on which you wish to send the template.
+            </p>
+            
+            <div class="slds-grid slds-p-top_small" >
+                <div class="slds-size_4-of-12">
+                    
+                    <lightning-combobox 
+                        name="templateObject"
+                        label="Select Object"
+                        variant="label-hidden"
+                        options={objectOptions}
+                        value={selectedObject}
+                        onchange={genericChange}
+                        class="neu-input">
+                    </lightning-combobox>
+                </div>
+                <div class="slds-size_8-of-12"></div>   
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_vertical full-height">
+            <div class="slds-box slds-theme_default slds-p-top_large slds-p-bottom_small slds-m-horizontal_large slds-m-bottom_small neu-container table-container">
+                <template if:true={showRecordTable}>
+                    <lightning-datatable
+                        key-field="Id"
+                        data={tableData}
+                        sortable="true"
+                        show-row-number-column
+                        columns={columns}>
+                    </lightning-datatable>
+                </template>
+                <template if:true={showTemplateSelector}>
+                    <div>
+                        <div class="slds-box slds-theme_default "  >
+                            <div style="display: flex; flex: auto; justify-content: left;" >
+                                <div>
+                                    <lightning-icon icon-name="standard:messaging_conversation"  size="large"></lightning-icon>
+                                </div>
+                                <div style="width: auto; padding-left: 6px; color:#54698D; padding-top:13px;"
+                                    class="slds-text-heading_large"><span>Select Template</span>
+                                </div>
+                            </div>
+                            <div style="margin-right: 8px; padding-top: 2px;margin-top: 10px;"><b>Template Name</b></div>
+                            <div style="display: flex; flex: auto; justify-content: left; ">
+                                
+                                <div style="width: 320px;">
+                                    <lightning-record-picker
+                                        object-api-name="CCCWA__Template_Object__c"
+                                        label="templates"
+                                        variant="label-hidden"
+                                        onchange={handleGetSelectedRecordId}
+                                        filter={filter}>
+                                    </lightning-record-picker>
+                                </div>
+                                <div class="slds-grid slds-grid_align-center slds-m-left_small ">
+                                    <lightning-button 
+                                        label="Send Template" 
+                                        variant="brand" 
+                                        class="slds-m-right_small"
+                                        onclick={handleSendTemplate}>
+                                    </lightning-button>
+                                    
+                                    <lightning-button 
+                                        label="View" 
+                                        variant="neutral"
+                                        onclick={handlePreviewTemplate}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                   <!-- Modal Content -->
+                    <template if:true={isModalOpen}>
+                        <div class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <header class="slds-modal__header">
+                                    <button class="slds-button slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                                        <lightning-icon icon-name="utility:close" size="medium" alternative-text="Close"></lightning-icon>
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                    <h2 class="slds-text-heading_medium">Preview Template</h2>
+                                </header>
+                                <div class="slds-modal__content slds-p-horizontal_medium slds-p-bottom_small">
+                                    <!-- Display the value of Whatsapp_Template__c -->
+                                    <div class="slds-p-horizontal_medium slds-p-top_medium slds-theme_default">
+                                            
+                                                
+                                                <div class="slds-grid slds-p-top_small slds-align_absolute-center" >   
+                                                        
+                                                    <div class=" slds-box  " style="background-color: #e3d9d1; width: 400px">
+                                                        
+                                                        <section role="log" class="slds-chat">
+                                                            <ul class="slds-chat-list"> 
+                                                                <li class="slds-chat-listitem slds-chat-listitem_inbound">
+                                                                    <div class="slds-chat-message">
+                                                                        <div class="slds-chat-message__body" >
+                                                                            <div class="slds-chat-message__text slds-chat-message__text_inbound " style="background-color:white; width:350px">
+                                                                                
+                                                                                <template if:true={isMediaImage}>
+                                                                                    <img width="300" height="350x" src={objTemplate.publicDocUrl}>
+                                                                                </template>
+                                                                                <template if:true={isMediaDoc}>
+                                                                                    <div class="slds-p-around_small slds-theme_shade">
+                                                                                        <lightning-icon
+                                                                                            onclick={clickOnMedia}
+                                                                                            icon-name="doctype:attachment"
+                                                                                            size="large"
+                                                                                            alternative-text="Image"
+                                                                                            title="Image"
+                                                                                        >
+                                                                                        </lightning-icon>
+                                                                                        <a href="#">{objTemplate.fileName}</a>
+                                                                                    </div>
+                                                                                </template>
+                                                                                <template if:true={isMediaVideo}>
+                                                                                    <div class="slds-p-around_small slds-theme_shade">
+                                                                                        <lightning-icon
+                                                                                            onclick={clickOnMedia}
+                                                                                            icon-name="doctype:mp4"
+                                                                                            size="large"
+                                                                                            alternative-text="mp4"
+                                                                                            title="mp4"
+                                                                                        >
+                                                                                        </lightning-icon>
+                                                                                        <a href="#">{objTemplate.fileName}</a>
+                                                                                    </div>
+                                                                                </template>
+                                                                                <lightning-formatted-rich-text
+                                                                                    value={templateViewBody}
+                                                                                ></lightning-formatted-rich-text>
+                                                                            </div>
+                                                                            <template for:each={previewActionButtons} for:item="objMap" >
+
+                                                                                <template if:true={isQuickReplyList}>
+                                                                                    <div key={objMap.buttonText} style="margin-top : 5px; padding: 5; background-color:white; font-size : 18px; border-radius: 5px; text-align:center; color: #4191e1;  text-decoration: underline">{objMap.buttonText}</div>
+                                                                                </template>
+
+                                                                                <template if:true={isActionList}>
+                                                                                    <table key={objMap.buttonText} style="margin-top : 5px;">
+                                                                                        <tr >
+                                                                                            <td style="width: 40%; background-color:white; font-size : 18px; border-radius: 5px 0px 0px 5px; padding : 5px; padding-right:0px; margin-top : 5px; text-align:right; color: #4191e1;  text-decoration: underline">
+                                                                                                <template if:true={objMap.isIcon}>
+                                                                                                    <lightning-icon 
+                                                                                                        icon-name={objMap.iconName} 
+                                                                                                        size="small" 
+                                                                                                        >
+                                                                                                    </lightning-icon>
+                                                                                                </template>
+                                                                                            </td>
+                                                                                            <td style="width: 60%; background-color:white; font-size : 18px; border-radius: 0px 5px 5px 0px; padding : 5px; margin-top : 5px; padding-left:12px; text-align:left; color: #4191e1;  text-decoration: underline">{objMap.buttonText}</td>
+                                                                                        </tr>
+                                                                                    </table>   
+                                                                                </template>
+                                                                                
+                                                                            </template>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </section>
+                                                    </div>
+                                                    
+                                                </div>
+                                            
+                                        </div>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
+                                </footer>
+                            </div>
+                        </div>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </template>
+                </template>
+            </div>
+            <template if:true={showRecordTable}>
+                <div class="slds-grid slds-grid_align-end footer">
+                    <lightning-button 
+                        label="Next" 
+                        variant="brand" 
+                        onclick={handleNext}>
+                    </lightning-button>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <template if:true={isLoading}>
+        <div>
+            <lightning-spinner alternative-text="Loading" size="large" variant="brand"></lightning-spinner>
+        </div>
+    </template>
+</template>

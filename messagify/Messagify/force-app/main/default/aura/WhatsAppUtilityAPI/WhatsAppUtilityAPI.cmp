@@ -1,0 +1,4 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+    <lightning:utilityBarAPI aura:id="utilitybar" />
+    <c:whatsAppUtilityBar onchatnotification="{!c.handleChatNotification}" />
+</aura:component>

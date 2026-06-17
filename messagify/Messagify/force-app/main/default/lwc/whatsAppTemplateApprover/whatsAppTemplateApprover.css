@@ -1,0 +1,21 @@
+.table-container {
+    width: 100%;
+    overflow-x: hidden; 
+  }
+
+  .table-slider {
+    overflow-x: auto; 
+  }
+
+  .slds-table {
+    table-layout: auto;
+  }
+
+  .slds-table td {
+    white-space: normal;
+  }
+
+
+  .combobox-custom-width{
+    --lwc-sizeXSmall: 21rem;
+  }

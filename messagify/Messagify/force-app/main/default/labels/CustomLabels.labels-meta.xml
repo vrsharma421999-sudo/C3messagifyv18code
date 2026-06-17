@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Access_Token</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Access Token</shortDescription>
+        <value>EAAD0mJuUlyABO2GpPgGMxw2AUnEXmuq6MSyNt4jKa9yf6fAa3c66oZCGBqAI9cvypDuxXlKjO0tXMGaLqMlFwyUUx3s6Ts3bwRKzSioNvA7lEILPyqRtZAd0ZABKdm6fzHKDUyra8IZCsNbkMS8ZCO45BwIoToQYlWqLhvU0mGzS1p3CDfaVLBAgfVLf6FLRC</value>
+    </labels>
+    <labels>
+        <fullName>Phone_Number_ID</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Phone Number ID</shortDescription>
+        <value>108193625692105</value>
+    </labels>
+    <labels>
+        <fullName>WABA_ID</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>WABA ID</shortDescription>
+        <value>108445142322979</value>
+    </labels>
+</CustomLabels>

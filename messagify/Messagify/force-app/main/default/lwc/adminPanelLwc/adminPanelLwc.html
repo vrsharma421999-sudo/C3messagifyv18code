@@ -1,0 +1,144 @@
+<template>
+    <div class="modal-container" style="width: 100%;">
+        <div class=" modal-content slds-theme_default slds-scrollable " style="100%">
+            <div class="slds-modal__header" style="width: 100%;">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate slds-text-heading_large">Admin</h1>
+            </div>
+            <template if:true={isWelcome}>
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+                    class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+
+                        <div class="slds-modal__header ">
+                            <div class="slds-grid slds-p-top_small"
+                                style=" border-radius: 5px; box-shadow: 5px 5px 10px #b8b8b8, -5px -5px 10px #ffffff;">
+                                <div
+                                    class="slds-size_3-of-12 slds-align_absolute-center slds-p-bottom_small slds-p-left_small">
+                                    <img src={whatappIconUrl}/>
+                                </div>
+                                <div class="slds-size_6-of-12"
+                                    style="font-size: 40px; text-align: left; padding-left : 2px">
+                                    <p style="padding-left: 0px; text-align: bottom; " class=" slds-p-top_large  ">
+                                        Welcome!</p>
+                                    <p style="font-size:17px; text-align: bottom; "
+                                        class="slds-welcome-mat__tile-description slds-text-heading_small">Lets setup
+                                        essential details first!</p>
+
+                                </div>
+                                <div class="slds-size_3-of-12" style="text-align : right; padding-top: 80px">
+                                    <lightning-button class="slds-p-right_small" variant="Brand" onclick={letsGo}
+                                        name="letsgo" label="Let's Go!">
+                                    </lightning-button>
+                                </div>
+
+                            </div>
+                            <!-- <h1 id="modal-heading-02" class="slds-modal__title slds-hyphenate">Welcome</h1> -->
+                            <!-- <div class="slds-media__body slds-m-top_x-small" style=" border-radius: 5px; box-shadow: 5px 5px 10px #b8b8b8, -5px -5px 10px #ffffff;">
+                                <div class="slds-welcome-mat__tile-body">
+                                    <h3 class="slds-welcome-mat__tile-title slds-text-heading_large "> <img src={whatappIconUrl} height="50px" width="50px" /><p>&nbsp;Welcome!</p></h3>
+                                    <p class="slds-welcome-mat__tile-description slds-text-heading_small">Lets setup essential details first!</p>
+                                </div>
+                            </div> -->
+                        </div>
+
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+
+
+
+
+            <div class=" slds-p-vertical_small  slds-p-horizontal_small">
+                <div class="slds-theme_default slds-p-around_small"
+                    style="min-height: 300px;  border-radius: 10px; border: 1px solid #ccc;box-shadow: 5px 5px 10px #b8b8b8, -5px -5px 10px #ffffff;">
+
+                    <lightning-tabset>
+                        <lightning-tab label="Admin">
+                            <div class="slds-p-horizontal_medium slds-box slds-theme_shade">
+                                <div class="slds-box slds-theme_default slds-p-vertical_large slds-m-bottom_small">
+                                    <table style="width: auto;">
+                                        <tr>
+                                            <td style="width: auto;" class="slds-text-heading_medium">
+                                                <span class="slds-text-color_error">*</span> WABA ID
+                                            </td>
+
+                                        </tr>
+                                    </table>
+
+
+                                    <p class="slds-text-color_inverse-weak">
+                                        WhatsApp bussiness account ID.
+                                    </p>
+
+                                    <div class="slds-grid slds-p-top_small">
+                                        <div class="slds-size_4-of-12">
+                                            <lightning-input type="password" name="wabaId" required disabled={isDisabled}
+                                                class="validate" value={objWhatsAppAdmin.CCCWA__WabaId__c}
+                                                onchange={genericHandler}
+                                                placeholder="Enter WhatsApp bussiness account ID..."
+                                                variant="label-hidden">
+                                            </lightning-input>
+                                        </div>
+                                        <div class="slds-size_8-of-12"></div>
+                                    </div>
+                                </div>
+
+                                <div class="slds-box slds-theme_default slds-p-vertical_large slds-m-bottom_small">
+                                    <table style="width: auto;">
+                                        <tr>
+                                            <td style="width: auto;" class="slds-text-heading_medium">
+                                                <span class="slds-text-color_error">*</span> Number ID
+                                            </td>
+
+                                        </tr>
+                                    </table>
+
+
+                                    <p class="slds-text-color_inverse-weak">
+                                        WhatsApp Number ID.
+                                    </p>
+
+                                    <div class="slds-grid slds-p-top_small">
+                                        <div class="slds-size_4-of-12">
+                                            <lightning-input type="password" name="numId"
+                                                value={objWhatsAppAdmin.CCCWA__NumberID__c} required
+                                                disabled={isDisabled} class="validate" onchange={genericHandler}
+                                                placeholder="Enter WhatsApp Number ID..." variant="label-hidden">
+                                            </lightning-input>
+                                        </div>
+                                        <div class="slds-size_8-of-12"></div>
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                        </lightning-tab>
+                    </lightning-tabset>
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-modal__footer slds-align_absolute-center" style=" width: 100%; font-size: 18">
+            <template if:true={isSave}>
+                <lightning-button class="slds-p-right_small" variant="Brand" onclick={handleSave} name="save"
+                    label="Save">
+                </lightning-button>
+            </template>
+            <template if:false={isSave}>
+                <lightning-button class="slds-p-right_small" variant="neutral" onclick={edit} name="edit" label="Edit">
+                </lightning-button>
+            </template>
+        </div>
+    </div>
+
+
+    <template if:true={isLoading}>
+
+        <lightning-spinner alternative-text="Loading" size="large" variant="brand"
+            class="slds-is-fixed slds-align--absolute-center">
+
+        </lightning-spinner>
+
+    </template>
+</template>

@@ -1,0 +1,287 @@
+.slds-progress {
+    max-width: 100%;
+}
+
+.fontFamilyStyle{
+	font-family: Arial;
+	font-style: normal;
+}
+
+.mytextarea{
+    display: block;
+}
+
+.mytextarea .slds-textarea{
+    background: #F2F2F2;
+    border-radius: 10px;
+	font-size: 14px;
+	border-color:#FFF;
+	color: #282828;
+}
+
+.mytextarea .slds-textarea:focus, .slds-textarea:active{
+    outline: 0;
+	background: #F2F2F2;
+	border-color:#FFF;
+	box-shadow: 0 0 3px #F2F2F2; 
+}
+
+.textAnythingHeader{
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 21px;
+    color: #4F4F4F;
+}
+
+.textAnythingSetupScreenText{
+    font-family: Arial;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 21px;
+    color: #5D5C5C;
+}
+
+
+.textAnythingWelcomeSubHeader{
+	font-family: Arial;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 18px;
+	line-height: 21px;
+	color: #4F4F4F;
+}
+
+.textAnythingTrailNumber{
+	font-family: Arial;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 24px;
+	line-height: 18px;
+	letter-spacing: 0.1em;
+	color: #2C2C2C;
+}
+
+.textAnythingTableHeaderRow{
+	height: 48px;
+	background: #E7E7E7;
+	border-radius: 8px;
+}
+
+.textAnythingTableHeader{
+	font-family: Arial;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 16px;
+	line-height: 18px;
+	color: #2C2C2C;
+}
+
+.textAnythingTableRowContent{
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 18px;
+	color: #2C2C2C;
+}
+
+.slds-checkbox .slds-checkbox__label .slds-form-element__label{
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 18px;
+	color: #2C2C2C;
+}
+
+.slds-radio .slds-form-element__label {
+    font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 16px;
+	color: #2C2C2C;
+}
+
+.slds-checkbox .slds-checkbox_faux{
+	border: 1.25px solid #7654F5;
+	box-sizing: border-box;
+	border-radius: 4px;
+}
+
+.slds-radio .slds-radio_faux{
+	border: 1.25px solid #7654F5;
+}
+
+.slds-radio [type=radio]:checked+.slds-radio__label .slds-radio_faux{
+	border: 1.25px solid #7654F5;
+}
+
+.slds-radio [type=radio]:checked+.slds-radio__label .slds-radio_faux:after{
+	background-color: #7654F5;
+}
+
+.checkboxStyle{
+	border: 1.25px solid #7654F5;
+	box-sizing: border-box;
+	border-radius: 4px;
+}
+
+.anchorStyle{
+	color: #7654F5;
+}
+
+.slds-button_icon-brand {
+    background-color: #7654F5;
+	border: 1.5px solid #7654F5;
+}
+
+.slds-button_icon-brand:hover, .slds-button_icon-brand:focus {
+    background-color: #7654F5;
+	border: 1.5px solid #7654F5;
+}
+
+.sldsButtonIcon .slds-button_icon-border{
+	border: 1.5px solid #7654F5;
+    color: #7654F5;
+}
+
+.sldsBareButton .slds-button{
+    color: #7654F5;
+}
+
+.backButton{
+	vertical-align: super;
+}
+
+.backButton .slds-button_icon{
+	color: #828282;
+}
+
+.TACustomButton .slds-button_brand[disabled], .slds-button_brand:disabled {
+    background-color: #A9A9A9 !important;
+	border: 1.5px solid #A9A9A9 !important;
+	box-sizing: border-box;
+	border-radius: 8px;
+    color: var(--lwc-colorTextButtonBrandDisabled,rgb(255, 255, 255));
+	font-family: Arial;
+}
+
+.TACustomButton .slds-button_brand {
+	background-color: #7654F5 !important;
+    border: 1.5px solid #7654F5 !important;
+	box-sizing: border-box;
+	border-radius: 8px;
+    color: var(--sds-c-button-brand-text-color-hover, var(--lwc-colorTextBrandPrimary,rgb(255, 255, 255)));
+	font-family: Arial;
+}
+.TACustomButton .slds-button_brand:hover, .slds-button_brand:focus {
+    background-color: #7654F5 !important;
+    border: 1.5px solid #7654F5 !important;
+	box-sizing: border-box;
+	border-radius: 8px;
+    color: var(--sds-c-button-brand-text-color-hover, var(--lwc-colorTextBrandPrimary,rgb(255, 255, 255)));
+	font-family: Arial;
+}
+
+.TACustomButton .slds-button_outline-brand{
+	border: 1.5px solid #7654F5 !important;
+	box-sizing: border-box;
+	border-radius: 8px;
+	color: #7654F5;
+	font-family: Arial;
+}
+
+.TACustomButton .slds-button_outline-brand[disabled]{
+	border: 1.5px solid #7654F5 !important;
+	box-sizing: border-box;
+	border-radius: 8px;
+	color: #7654F5;
+	font-family: Arial;
+}
+
+.textAnythingButton{
+	background: #7654F5;
+	border: 1.5px solid #7654F5;
+	box-sizing: border-box;
+	border-radius: 8px;
+	font-family: Arial;
+}
+
+.textAnythingErrorMessageStyle{
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 16px;
+	color: #A51111;
+}
+
+.textAnythingSuccessMessageStyle{
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 16px;
+}
+
+
+.slds-progress-bar__value{
+	color: #2C6D22;
+	background: #2C6D22;
+}
+
+.slds-progress__item.slds-is-completed .slds-progress__marker_icon, .slds-progress__item.slds-is-completed .slds-progress__marker--icon {
+    color: #2C6D22;
+	background: #2C6D22;
+	border-color:lightgrey;
+}
+
+.slds-progress__item.slds-is-completed .slds-progress__marker, .slds-progress__item.slds-is-active .slds-progress__marker {
+    border-color:#2C6D22;
+}
+
+.slds-form-element__label {
+	font-family: Arial;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 14px;
+    color: #727272;
+}
+
+.TAToggle .slds-checkbox_toggle [type=checkbox]:checked+.slds-checkbox_faux_container .slds-checkbox_faux{
+	background-color: #7654F5;
+}
+.selectedButton .slds-button_neutral{
+    background-color: gray !important;
+    color: white !important;
+	border: 1.5px solid #7654F5;
+	box-sizing: border-box;
+	border-radius: 8px;
+	font-family: Arial;
+}
+
+.selectedButton .slds-button--neutral{
+    background-color: gray !important;
+    color: white !important;
+	border: 1.5px solid #7654F5;
+	box-sizing: border-box;
+	border-radius: 8px;
+	font-family: Arial;
+}
+.selectedButton .slds-button_neutral:hover, .slds-button_neutral:focus {
+    background-color: gray !important;
+    color: white !important;
+    border: 1.5px solid #7654F5;
+	box-sizing: border-box;
+	border-radius: 8px;
+	font-family: Arial;
+}
+
+.slds-utility-panel__body{
+	overflow: initial;
+}
