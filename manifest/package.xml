@@ -189,6 +189,7 @@
         <members>Template_Button__c-Template Button Layout</members>
         <members>Template_Object__c-Template Layout</members>
         <members>Template_Parameter__c-Template Mapping Layout</members>
+        <members>Project__mdt-Project Layout</members> 
         <name>Layout</name>
     </types>
 
