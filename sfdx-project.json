@@ -2,11 +2,20 @@
   "packageDirectories": [
     {
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "Messagify",
+      "versionName": "ver 1.12",
+      "versionNumber": "1.12.0.NEXT",
+      "ancestorVersion": "1.9.0"
     }
   ],
   "name": "Messagify",
-  "namespace": "",
+  "namespace": "CCCWA",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "66.0"
+  "sourceApiVersion": "66.0",
+  "packageAliases": {
+    "Messagify": "0HogL0000000QLtSAM",
+    "Messagify@1.11.0-1": "04tgL000000HIgTQAW",
+    "Messagify@1.12.0-1": "04tgL000000HIzpQAG"
+}
 }
