@@ -4,8 +4,8 @@
       "path": "force-app",
       "default": true,
       "package": "Messagify",
-      "versionName": "ver 1.12",
-      "versionNumber": "1.12.0.NEXT",
+      "versionName": "ver 1.13",
+      "versionNumber": "1.13.0.NEXT",
       "ancestorVersion": "1.9.0"
     }
   ],
@@ -16,6 +16,7 @@
   "packageAliases": {
     "Messagify": "0HogL0000000QLtSAM",
     "Messagify@1.11.0-1": "04tgL000000HIgTQAW",
-    "Messagify@1.12.0-1": "04tgL000000HIzpQAG"
+    "Messagify@1.12.0-1": "04tgL000000HIzpQAG",
+    "Messagify@1.13.0-1": "04tgL000000HJ9VQAW"
 }
 }
