@@ -456,7 +456,11 @@ public with sharing class C3WhatsAppChatPanelCtrl {
             if(string.isNotBlank(templateName)){
                 
                 result = C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(new List<string>{recordId}, strtempid);
-                clsResponse = (ClsValue)json.deserialize(result,ClsValue.class);              
+                if (String.isNotBlank(result)) {
+                    clsResponse = (ClsValue)json.deserialize(result,ClsValue.class);
+                } else {
+                    C3Utility.logError('Empty response from sendWhatsAppMessage', '', 0, '', 'C3WhatsAppChatPanelCtrl', 'saveMessage', 'recordId=' + recordId + ', templateId=' + strtempid);
+                }
             }
             if(clsResponse.messages!=null)
             {

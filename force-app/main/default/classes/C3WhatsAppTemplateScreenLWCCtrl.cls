@@ -118,8 +118,18 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 }
                 set<String> fieldSet = new Set<String>(mapParamNumWithFieldName.values());
                 phoneField = C3Utility.getFieldName(objectName);
-                fieldSet.add(phoneField);
-                fieldSet.add('Name');
+                if (String.isNotBlank(phoneField)) {
+                    fieldSet.add(phoneField);
+                }
+                if (Schema.getGlobalDescribe().containsKey(objectName)) {
+                    Schema.DescribeSObjectResult describe = Schema.getGlobalDescribe().get(objectName).getDescribe();
+                    if (describe.fields.getMap().containsKey('Name')) {
+                        fieldSet.add('Name');
+                    }
+                }
+                if (fieldSet.isEmpty()) {
+                    throw new AuraHandledException('Template field mappings do not resolve to any fields for object ' + objectName);
+                }
                 String query = 'SELECT Id, '+ String.join(fieldSet, ',') + ' FROM '+objectName+' WHERE Id IN: setOfIds';
                 List<SObject> listOfSObject = new List<SObject>();                
                 List<String> fieldsToQuery = new List<String>(fieldSet);
