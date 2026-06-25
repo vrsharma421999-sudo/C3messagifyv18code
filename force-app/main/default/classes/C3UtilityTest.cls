@@ -402,12 +402,12 @@ public class C3UtilityTest {
         String fileDownloadUrl = C3Utility.uploadFile(fileContent, 'TestFile.txt', 'text/plain', testAccount.Id);
         
         Test.stopTest();
-        //System.assertNotEquals(null, fileDownloadUrl, 'The file download URL should not be null.');
+        System.assertNotEquals(null, fileDownloadUrl, 'The file download URL should not be null.');
         
-        List<ContentVersion> contentVersions = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Title = 'TestFile.txt'];
+        //List<ContentVersion> contentVersions = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Title = 'TestFile.txt'];
         //System.assertEquals(1, contentVersions.size(), 'Exactly one ContentVersion record should be created.');
         
-        List<ContentDocumentLink> contentDocLinks = [SELECT Id, ContentDocumentId, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId = :testAccount.Id];
+        //List<ContentDocumentLink> contentDocLinks = [SELECT Id, ContentDocumentId, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId = :testAccount.Id];
         //System.assertEquals(1, contentDocLinks.size(), 'Exactly one ContentDocumentLink record should be created.');
         
         //List<ContentDistribution> contentDistributions = [SELECT Id, ContentDownloadUrl FROM ContentDistribution WHERE ContentVersionId = :contentVersions[0].Id];
@@ -496,13 +496,8 @@ Test.stopTest();
             // Test.setMock(FieldPermissionRequest.class, new FieldPermissionMock(false, false));
             
             // Call the logError method and expect an exception
-            try {
-                //  LogError.logError(errorMessage, stackTrace, lineNumber, response, className, methodName, request);
-                //System.assert(false, 'Expected exception due to insufficient permissions');
-            } catch (AuraHandledException ex) {
-                // Verify exception message
-                // System.assertEquals('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.', ex.getMessage());
-            }
+            C3Utility.logError(errorMessage, stackTrace, lineNumber, response, className, methodName, request);
+            System.assert(true, 'Method should handle insufficient permissions gracefully without throwing an exception');
             
             // End the test execution
             Test.stopTest();
@@ -514,8 +509,9 @@ Test.stopTest();
         Test.startTest();
         try {
             C3Utility.getObjectFields('Invalid_Object__c');
+            System.assert(false, 'Expected exception was not thrown');
         } catch (Exception e) {
-            System.assert(true);
+            System.assertNotEquals(null, e.getMessage(), 'Expected exception message for invalid object');
         }
         Test.stopTest();
     }
@@ -527,8 +523,9 @@ Test.stopTest();
         Test.startTest();
         try {
             C3Utility.fetchPhoneNumber(a.Id);
+            System.assert(false, 'Expected AuraHandledException when phone configuration is missing');
         } catch (AuraHandledException e) {
-            //System.assert(e.getMessage().contains('not configured'));
+            System.assertNotEquals(null, e.getMessage(), 'Expected exception message when no phone configuration exists');
         }
         Test.stopTest();
     }

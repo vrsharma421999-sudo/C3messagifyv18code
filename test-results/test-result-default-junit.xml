@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="force.apex" timestamp="2026-06-23T08:57:31.087Z" hostname="https://enterprise-momentum-6579-dev-ed.scratch.my.salesforce.com" tests="7" failures="0"  errors="0"  time="4.61">
+        <properties>
+            <property name="outcome" value="Successful"/>
+            <property name="testsRan" value="7"/>
+            <property name="passing" value="7"/>
+            <property name="failing" value="0"/>
+            <property name="skipped" value="0"/>
+            <property name="passRate" value="100%"/>
+            <property name="failRate" value="0%"/>
+            <property name="testStartTime" value="Tue Jun 23 2026 2:27:31 pm"/>
+            <property name="testExecutionTime" value="4.61 s"/>
+            <property name="testTotalTime" value="4.61 s"/>
+            <property name="commandTime" value="0.00 s"/>
+            <property name="hostname" value="https://enterprise-momentum-6579-dev-ed.scratch.my.salesforce.com"/>
+            <property name="orgId" value="00DAq00000FOd1PMAT"/>
+            <property name="username" value="test-a5ugm2c7qvcm@example.com"/>
+            <property name="coveredLines" value="1348"/>
+            <property name="testRunCoverage" value="81%"/>
+            <property name="orgWideCoverage" value="82%"/>
+        </properties>
+        <testcase name="testCheckNumberConfigAndUtility" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.24">
+        </testcase>
+        <testcase name="testGetPublicUrl" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.84">
+        </testcase>
+        <testcase name="testGetTemplatesByProject_NoFilters" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.15">
+        </testcase>
+        <testcase name="testGetTemplatesByProject_ProjectOnly" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.10">
+        </testcase>
+        <testcase name="testInitAndFetchTemplates" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.70">
+        </testcase>
+        <testcase name="testLoadTextMessages_AndMedia" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.54">
+        </testcase>
+        <testcase name="testSaveMessage_TextMessage" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.23">
+        </testcase>
+    </testsuite>
+</testsuites>

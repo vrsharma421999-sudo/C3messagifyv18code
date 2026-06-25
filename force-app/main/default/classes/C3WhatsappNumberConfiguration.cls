@@ -21,39 +21,42 @@ public with sharing class C3WhatsappNumberConfiguration {
             objMain.hasRecords = false;
             objMain.lstToNumberConfiguration = new List<WhatsApp_Number_Configuration__c>();
             objMain.objectPickList = new List<PickList>();
-            Map<String, String> mapObjectNamewithLable = new Map<String, String>();
             Set<String> setOfObjectSaved = new Set<String>();
             if(!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('WhatsApp_Number_Configuration__c','isAccessible',new List<String>{'Field_Name__c', 'Object_Name__c'},False))){
                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
             }else{
                 objMain.lstToNumberConfiguration = WhatsApp_Number_Configuration__c.getAll().values();
-                
             }
             
             for(WhatsApp_Number_Configuration__c objCustToNumber : objMain.lstToNumberConfiguration){
-                setOfObjectSaved.add(objCustToNumber.Object_Name__c);
-                objMain.hasRecords = true;
-                
-            }
-
-            //List<String> listAllObjectNames = new List<String>();
-            for(Schema.SObjectType strObjType : Schema.getGlobalDescribe().Values()){
-                String name = strObjType.getDescribe().getName();
-                String label = strObjType.getDescribe().getlabel();
-                if(!setOfObjectSaved.contains(strObjType.getDescribe().getName()) && strObjType.getDescribe().isAccessible() && strObjType.getDescribe().isCreateable() && !strObjType.getDescribe().isCustomSetting() 
-                && strObjType.getDescribe().isQueryable() && strObjType.getDescribe().isUpdateable() && !strObjType.getDescribe().getName().containsignorecase('history') && !strObjType.getDescribe().getName().containsignorecase('tag') && !strObjType.getDescribe().getName().containsignorecase('event') &&
-                !strObjType.getDescribe().getName().containsignorecase('share') && !strObjType.getDescribe().getName().containsignorecase('feed')){      
-                    mapObjectNamewithLable.put(name, label);
-                   
+                if(objCustToNumber.Object_Name__c != null){
+                    setOfObjectSaved.add(objCustToNumber.Object_Name__c.toLowerCase());
                 }
+                objMain.hasRecords = true;
             }
 
-            for(String objectName : mapObjectNamewithLable.keySet()){
-                if(hasPhoneField(objectName)){
-                    PickList objPickList = new PickList();
-                    objPickList.label = mapObjectNamewithLable.get(objectName);
-                    objPickList.value = objectName;
-                    objMain.objectPickList.add(objPickList);
+            Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+            List<String> allNames = new List<String>(gd.keySet());
+            List<String> candidates = new List<String>();
+            for (String nm : allNames) {
+                String ln = nm.toLowerCase();
+                if (setOfObjectSaved.contains(ln)) continue;
+                if (ln.contains('history') || ln.contains('tag') || ln.contains('event') || ln.contains('share') || ln.contains('feed')) continue;
+                candidates.add(nm);
+            }
+            if (!candidates.isEmpty()) {
+                for (String name : candidates) {
+                    if (!gd.containsKey(name)) continue;
+                    Schema.DescribeSObjectResult d = gd.get(name).getDescribe();
+                    if (d == null) continue;
+                    if (d.isAccessible() && d.isCreateable() && !d.isCustomSetting() && d.isQueryable() && d.isUpdateable()) {
+                        if(hasPhoneField(d)){
+                            PickList objPickList = new PickList();
+                            objPickList.label = d.getLabel();
+                            objPickList.value = d.getName();
+                            objMain.objectPickList.add(objPickList);
+                        }
+                    }
                 }
             }
             return json.serialize(objMain);
@@ -72,8 +75,10 @@ public with sharing class C3WhatsappNumberConfiguration {
     public static string getObjectLabel(String objectName){
     try{
         if(String.isNotBlank(objectName)){
-            SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
-            return sobjectType.getDescribe().getlabel();
+            Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+            if(!gd.containsKey(objectName)) return null;
+            Schema.DescribeSObjectResult objectDescribe = gd.get(objectName).getDescribe();
+            return objectDescribe.getLabel();
         }
         return null;
         }catch(exception ex){
@@ -89,22 +94,18 @@ public with sharing class C3WhatsappNumberConfiguration {
  */
 
     public static Boolean hasPhoneField(String sObjectName){
-        SObjectType sObjectType = Schema.getGlobalDescribe().get(sObjectName);
-        Map<String, Schema.SObjectField> objectFieldsMap = SObjectType.getDescribe().fields.getMap();
+        Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+        if(!gd.containsKey(sObjectName)) return false;
+        Schema.DescribeSObjectResult objectDescribe = gd.get(sObjectName).getDescribe();
+        return hasPhoneField(objectDescribe);
+    }
+    
+    public static Boolean hasPhoneField(Schema.DescribeSObjectResult objectDescribe){
+        Map<String, Schema.SObjectField> objectFieldsMap = objectDescribe.fields.getMap();
         for (Schema.SObjectField field : objectFieldsMap.values()) {
-            //Schema.DescribeFieldResult desribeResult = field.getDescribe();
-            //String fieldName = field.getDescribe().getLabel();
-            //String fieldAPIName = field.getDescribe().getName();
-            String strType = String.valueOf(field.getDescribe().getType());
-            
-            if(field.getDescribe().isAccessible() && !(field.getDescribe().getName() == 'Id'))
-            {
-                switch on strType 
-                {
-                    when 'PHONE' {
-                        return true;
-                    }
-                }
+            Schema.DescribeFieldResult dfr = field.getDescribe();
+            if(dfr.isAccessible() && dfr.getType() == Schema.DisplayType.PHONE && dfr.getName() != 'Id') {
+                return true;
             }
         }
         return false;
@@ -119,8 +120,10 @@ public with sharing class C3WhatsappNumberConfiguration {
     public static String getAllPhoneField(String sObjectName){
         try{
             List<PickList> listPickList = new List<PickList>();
-            SObjectType sobjectType = Schema.getGlobalDescribe().get(sObjectName);
-            Map<String, Schema.SObjectField> objectFieldsMap = sobjectType.getDescribe().fields.getMap();
+            Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+            if(!gd.containsKey(sObjectName)) return null;
+            Schema.DescribeSObjectResult objectDescribe = gd.get(sObjectName).getDescribe();
+            Map<String, Schema.SObjectField> objectFieldsMap = objectDescribe.fields.getMap();
             for (Schema.SObjectField field : objectFieldsMap.values()) {
                // Schema.DescribeFieldResult desribeResult = field.getDescribe();
                 String fieldName = field.getDescribe().getLabel();
@@ -162,9 +165,12 @@ public with sharing class C3WhatsappNumberConfiguration {
         try{
             if(String.isnotblank(jsonNumberConfig)){
                 WhatsApp_Number_Configuration__c objWhatsAppNumConfig = (WhatsApp_Number_Configuration__c)JSON.deserialize(jsonNumberConfig, WhatsApp_Number_Configuration__c.class);
-                Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-                Schema.DescribeSObjectResult objectDescribe = globalDescribe.get(objWhatsAppNumConfig.Object_Name__c).getDescribe();
-                objWhatsAppNumConfig.Object_Label__c = objectDescribe.getLabel();
+                Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+                if (gd.containsKey(objWhatsAppNumConfig.Object_Name__c)) {
+                    objWhatsAppNumConfig.Object_Label__c = gd.get(objWhatsAppNumConfig.Object_Name__c).getDescribe().getLabel();
+                } else {
+                    objWhatsAppNumConfig.Object_Label__c = '';
+                }
                 
                 List<String> listFields = new List<String>{'Field_Name__c', 'Object_Name__c'};
                 if(C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('WhatsApp_Number_Configuration__c', 'isAccessible', null, true))

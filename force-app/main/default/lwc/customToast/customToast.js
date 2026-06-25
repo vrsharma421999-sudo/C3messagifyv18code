@@ -48,8 +48,8 @@
                     }, this.autoCloseTime);
                 }
             } catch (error) {
-                console.log('toast error');
-            }
+                console.log('toast error', error);
+            }  
         }
     
         /**

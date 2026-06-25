@@ -341,8 +341,11 @@ public with sharing class C3Utility {
         try {
             UtilityMainWrapper objMain = new UtilityMainWrapper();
             objMain.lstObjectPicklist = new List<ObjectPicklist>();
-            SObjectType sObjectType = Schema.getGlobalDescribe().get(sObjectName);
-            Map<String, Schema.SObjectField> objectFieldsMap = sObjectType.getDescribe().fields.getMap();
+            Schema.DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+            if (objectDescribe == null) {
+                return null;
+            }
+            Map<String, Schema.SObjectField> objectFieldsMap = objectDescribe.fields.getMap();
             
             for (Schema.SObjectField field : objectFieldsMap.values()) {
                 
@@ -381,11 +384,10 @@ when 'DATETIME' {
 
 }
 when 'DOUBLE' {
-
-}
-when 'INTEGER' {
-
-}
+                                    Schema.DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+                                    if (objectDescribe == null) {
+                                        return null;
+                                    }
 when 'PERCENT' {
 
 
@@ -406,7 +408,7 @@ when 'CURRENCY' {
             return JSON.serialize(objMain);
         }catch (Exception ex) {
             logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','Utility','getObjectFields','');
-            return null;
+            throw new AuraHandledException(ex.getMessage());
         }
     }
     /**
@@ -482,7 +484,7 @@ when 'CURRENCY' {
                 objCV.PathOnClient = objCV.PathOnClient + ext ;
                 objCV.Title = objCV.Title + ext ;
             }
-            String[] listFields0 = new String[]{'VersionData', 'Title', 'PathOnClient', 'fileType'};
+            String[] listFields0 = new String[]{'VersionData', 'Title', 'PathOnClient'};
                 boolean b1 = checkFieldPermission(new FieldPermissionRequest('ContentVersion', 'isAccessible', null, true));
             boolean b2 = checkFieldPermission(new FieldPermissionRequest('ContentVersion', 'isAccessible', listFields0, false));
             boolean b3 = checkFieldPermission(new FieldPermissionRequest('ContentVersion', 'isCreateable', null, true));
@@ -813,7 +815,7 @@ public static void logError(
         );
 
     if (!hasAccess) {
-        return; 
+        throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
     }
 
     CCCWA__Error_Log__c objError = new CCCWA__Error_Log__c(

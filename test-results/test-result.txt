@@ -1,0 +1,38 @@
+=== Test Results
+TEST NAME                                                                OUTCOME  MESSAGE  RUNTIME (MS)
+───────────────────────────────────────────────────────────────────────  ───────  ───────  ────────────
+CCCWA.C3WhatsAppChatPanelCtrlTest.testCheckNumberConfigAndUtility        Pass              242         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testGetPublicUrl                       Pass              844         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testGetTemplatesByProject_NoFilters    Pass              154         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testGetTemplatesByProject_ProjectOnly  Pass              105         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testInitAndFetchTemplates              Pass              700         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testLoadTextMessages_AndMedia          Pass              543         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testSaveMessage_TextMessage            Pass              226         
+
+
+=== Apex Code Coverage by Class
+CLASSES                          PERCENT  UNCOVERED LINES       
+───────────────────────────────  ───────  ──────────────────────
+C3WhatsAppChatPanelCtrl          78%      68,97,141,160,161,... 
+C3WhatsAppWebService             84%      47,48,49,50,51,...    
+C3Utility                        79%      38,159,199,228,279,...
+C3WhatsAppTemplateScreenLWCCtrl  84%      37,38,43,83,136,...   
+
+
+
+
+=== Test Summary
+NAME                 VALUE                        
+───────────────────  ─────────────────────────────
+Outcome              Passed                       
+Tests Ran            7                            
+Pass Rate            100%                         
+Fail Rate            0%                           
+Skip Rate            0%                           
+Test Run Id                                       
+Test Setup Time      0 ms                         
+Test Execution Time  4614 ms                      
+Test Total Time      4614 ms                      
+Org Id               00DAq00000FOd1PMAT           
+Username             test-a5ugm2c7qvcm@example.com
+Org Wide Coverage    82%                          

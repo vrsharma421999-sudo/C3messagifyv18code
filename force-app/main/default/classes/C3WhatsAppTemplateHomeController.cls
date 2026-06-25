@@ -78,16 +78,15 @@ public with sharing class C3WhatsAppTemplateHomeController {
             if (String.isNotBlank(recordId)) {
                 List<CCCWA__Template_Object__c > deleteTemp = new List<CCCWA__Template_Object__c >();
                 
-                if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c ', 'isAccessible', new List<String>{'Id'}, true))) {
+                if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', new List<String>{'Id'}, true))) {
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 } else {
                     deleteTemp = [SELECT Id FROM CCCWA__Template_Object__c WHERE Id = :recordId WITH SECURITY_ENFORCED];
                 }
                 
                 if (!deleteTemp.isEmpty()) {
-                    Schema.DescribeSObjectResult describeResult = CCCWA__Template_Object__c.SObjectType.getDescribe();
-                    
-                    if (describeResult.isAccessible() && describeResult.isDeletable()) {
+                    if (C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', null, true))
+                        && C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isDeletable', null, true))) {
                         Database.delete(deleteTemp, AccessLevel.USER_MODE);
                     } else {
                         throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');

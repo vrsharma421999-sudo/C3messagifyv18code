@@ -1,4 +1,4 @@
-import { LightningElement, api, track,wire } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import verifyUpload from '@salesforce/apex/C3WhatsAppTemplateScreenLWCCtrl.verifyUpload';
 import initWhatsAppChatPanelController from '@salesforce/apex/C3WhatsAppChatPanelCtrl.initWhatsAppChatPanelController';
@@ -13,11 +13,9 @@ import IMAGE from "@salesforce/resourceUrl/DoubleTickWhatsApp";
 import VideoPreview from "@salesforce/resourceUrl/VideoPreview";
 import DocumentPreview from "@salesforce/resourceUrl/DocumentPreview";
 import ReadIMG from "@salesforce/resourceUrl/ReadDoubleTick";
-
 import getProjectNames from '@salesforce/apex/C3Utility.getProjectNames';
 
-//import getTemplatesByProject from '@salesforce/apex/C3WhatsAppChatPanelCtrl.getTemplatesByProject';
-
+// FIX 1: MAX_FILE_SIZE is now actually used in processUploadedFile
 const MAX_FILE_SIZE = 5000000;
 
 export default class WhatsAppChatPanelLwc extends LightningElement {
@@ -49,12 +47,8 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
     @track isButtonDisabled = true;
     @track isLoading = true;
     @track notNumberConfigurationImplemented = false;
-
     @track projectOptions;
-
     @track selectedProjectId;
-  
-    
 
     // Other properties
     wrapMain = {};
@@ -76,7 +70,7 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
     fromNumber = '';
     toNumber = '';
     erroMessage;
-    intervalId
+    intervalId;
 
     disconnectedCallback() {
         if (this.intervalId) {
@@ -87,16 +81,14 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
     connectedCallback() {
         this.checkForNumberConfigurationImplemented();
         this.initializeChatPanel();
-
-       this.intervalId = setInterval(() => {
-           this.initializeChatPanel();
-}, 4000);
+        this.intervalId = setInterval(() => {
+            this.initializeChatPanel();
+        }, 4000);
     }
 
     checkForNumberConfigurationImplemented() {
-        console.log('recordId--97'+this.recordId);
         checkForNumberConfigurationImplemented({ recordId: this.recordId })
-        .then(result => {
+            .then(result => {
                 this.validations = JSON.parse(result);
                 this.NumberConfigurationImplemented = this.validations.isAllowedToChat;
                 this.notNumberConfigurationImplemented = !this.validations.isAllowedToChat;
@@ -155,12 +147,11 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
             this.wrapMain.lstTxtMsg.forEach(msg => {
                 this.lstMessage.push(this.createMessageObject(msg));
             });
-            console.log('messages  --  '+JSON.stringify(this.lstMessage));
         }
     }
 
     createMessageObject(msg) {
-        let listMediaFiles = msg.listMedia ? msg.listMedia.map(media => ({
+        const listMediaFiles = msg.listMedia ? msg.listMedia.map(media => ({
             fileName: media.fileName,
             isImage: media.isImage,
             isVideo: media.isVideo,
@@ -178,7 +169,7 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
             styleClass: `slds-chat-listitem slds-chat-listitem_${msg.objTXT.CCCWA__Direction__c.toLowerCase()}`,
             styleDiv: msg.objTXT.CCCWA__Direction__c === 'Outbound' ? this.styleDivOutbound : this.styleDivInbound,
             styleDivText: msg.objTXT.CCCWA__Direction__c === 'Outbound' ? this.styleDivTextOutbound : this.styleDivTextInbound,
-            shadowCss: msg.objTXT.CCCWA__Direction__c === 'Outbound'? 'box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.7);' : 'box-shadow: 5px 5px 10px #a4a1a1, -5px -5px 10px #ffffff;',
+            shadowCss: msg.objTXT.CCCWA__Direction__c === 'Outbound' ? 'box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.7);' : 'box-shadow: 5px 5px 10px #a4a1a1, -5px -5px 10px #ffffff;',
             isPending: msg.isPending,
             isSent: msg.isSent,
             isDelivered: msg.isDelivered,
@@ -190,7 +181,6 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
             isVoice: msg.isVoice,
         };
     }
-    
 
     showToast(title, message, variant) {
         const evt = new ShowToastEvent({
@@ -219,7 +209,6 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
     handleInputFileChange(event) {
         this.onClearMessage();
         this.loaded = false;
-
         const uploadedFiles = event.detail.files;
         if (uploadedFiles.length > 0) {
             this.processUploadedFile(uploadedFiles[0]);
@@ -227,6 +216,13 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
     }
 
     processUploadedFile(file) {
+        // FIX 1: MAX_FILE_SIZE is now used here for a client-side size check
+        if (file.size > MAX_FILE_SIZE) {
+            this.showToast('Error!', 'You cannot upload a file with size more than 4.3MB', 'error');
+            this.resetFileData();
+            return;
+        }
+
         this.isFileUploadPopup = false;
         this.documentId = file.documentId;
         this.contentVersionId = file.contentVersionId;
@@ -240,7 +236,8 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
                 } else {
                     this.fileName = file.name;
                     this.mimeType = this.getMimeType(file.mimeType);
-                    this.uploadFile(file);
+                    // FIX 2: uploadFile() no longer takes a 'file' parameter (it was unused inside)
+                    this.uploadFile();
                 }
             })
             .catch(error => {
@@ -256,7 +253,8 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
         return 'document';
     }
 
-    uploadFile(file) {
+    // FIX 2: Removed unused 'file' parameter — all needed values are already on 'this'
+    uploadFile() {
         getPublicUrl({ toNumber: this.toNumber, cVId: this.contentVersionId, relatedId: this.recordId, fileName: this.fileName, mediaType: this.mimeType })
             .then(result => {
                 if (result) {
@@ -266,7 +264,6 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
             })
             .then(wamId => {
                 if (wamId) {
-                    console.log('wamId  = '+wamId);
                     return LoadTextMessages({ recordId: this.recordId, toNumber: this.toNumber, msg: '', objectName: this.objectApiName, mediaUrl: this.publicDocUrl, mediaType: this.mimeType, strFileName: this.fileName, templateName: this.strSelectedMessagingTemplate, strtempid: this.tempId, vamId: wamId });
                 }
             })
@@ -308,7 +305,7 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
             this.strSelectedMessagingTemplate = '';
             this.isButtonDisabled = false;
             this.txtMsg = event.target.value;
-        }else {
+        } else {
             this.txtMsg = '';
             this.isButtonDisabled = true;
         }
@@ -324,21 +321,21 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
         this.isSaveInProgress = true;
 
         saveMessage({ recordId: this.recordId, toNumber: this.wrapMain.toNumber, msg: msg, objectName: this.objectApiName, mediaUrl: this.medialUrl, strBase64Data: this.fileContent, strFileName: this.fileName, templateName: this.strSelectedMessagingTemplate, strtempid: this.tempId })
-        .then(data => {
-            if (data) {
-                LoadTextMessages({ recordId: this.recordId, toNumber: this.wrapMain.toNumber, msg, objectName: this.objectApiName, mediaUrl: '', mediaType: '', strFileName: '', templateName: this.strSelectedMessagingTemplate, strtempid: this.tempId, vamId: data })
-                .then(result => {
-                    this.handleLoadTextMessagesResponse(result);
-                })
-            }else{
-                this.showToast('Error!', 'Some error came in the META API, please check Error log!', 'error');
-            }
-        })
-        
-        .catch(error => {
-            this.handleError(error);
-        });
+            .then(data => {
+                if (data) {
+                    LoadTextMessages({ recordId: this.recordId, toNumber: this.wrapMain.toNumber, msg, objectName: this.objectApiName, mediaUrl: '', mediaType: '', strFileName: '', templateName: this.strSelectedMessagingTemplate, strtempid: this.tempId, vamId: data })
+                        .then(result => {
+                            this.handleLoadTextMessagesResponse(result);
+                        });
+                } else {
+                    this.showToast('Error!', 'Some error came in the META API, please check Error log!', 'error');
+                }
+            })
+            .catch(error => {
+                this.handleError(error);
+            });
     }
+
     onClearMessage() {
         this.wrapMain.strMsg = '';
         this.isErrorMessage = false;
@@ -362,17 +359,14 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
         this.isButtonDisabled = this.strSelectedMessagingTemplate.length === 0;
 
         this.isLoading = true;
-        valdiateTemplatePrameters({ recordId: this.recordId, templateId : this.tempId })
-        .then(data => {
-            console.log(data);
-            this.isLoading = false;
-            /*if (data) {
-                
-            }*/
-        })
-        .catch(error => {
-            this.handleError(error);
-        });
+        valdiateTemplatePrameters({ recordId: this.recordId, templateId: this.tempId })
+            .then(data => {
+                console.log(data);
+                this.isLoading = false;
+            })
+            .catch(error => {
+                this.handleError(error);
+            });
     }
 
     buildMessageFromTemplate(template) {
@@ -404,35 +398,22 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
         }
         return message;
     }
-     
-
-   
-
-        
-
-    
 
     handleError(error) {
-        console.log('error -- '+error);
-        console.log('JSON error -- '+JSON.stringify(error));
+        console.error('error -- ' + error);
         if (error) {
             let tempErrorList = [];
             if (Array.isArray(error.body)) {
                 tempErrorList = error.body.map((e) => e.message);
-            } 
-            else if (error.body && typeof error.body.message === 'string') {
+            } else if (error.body && typeof error.body.message === 'string') {
                 tempErrorList = [error.body.message];
-            } 
-            else if (Array.isArray(error.body.pageErrors) && error.body.pageErrors.length > 0) {
+            } else if (Array.isArray(error.body.pageErrors) && error.body.pageErrors.length > 0) {
                 tempErrorList = error.body.pageErrors.map((e) => e.message);
-            }
-            else if (error.body && error.body.fieldErrors && error.body.fieldErrors.message) {
-                console.log('fielderror');
+            } else if (error.body && error.body.fieldErrors && error.body.fieldErrors.message) {
                 tempErrorList = Object.values(error.body.fieldErrors)
-                    .flat() 
+                    .flat()
                     .map((fieldError) => fieldError.message);
-            }
-            else if (error.body && error.body.fieldErrors) {
+            } else if (error.body && error.body.fieldErrors) {
                 Object.keys(error.body.fieldErrors).forEach((fieldName) => {
                     const fieldErrorArray = error.body.fieldErrors[fieldName];
                     if (Array.isArray(fieldErrorArray) && fieldErrorArray.length > 0) {
@@ -441,84 +422,28 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
                         });
                     }
                 });
-            }
-            
-            else if (typeof error.message === 'string') {
+            } else if (typeof error.message === 'string') {
                 tempErrorList = [error.message];
             }
-            tempErrorList;
-            // Pass the error messages to toastEvent or display logic
             this.showToast('Error!', tempErrorList.join(', '), 'error');
         }
-       
-       
-       
         this.isLoading = false;
     }
 
-           getProjectNames({ error, data }) {   
-
-        if (data) {
-
-            this.projectOptions = data.map(name => ({
-
-                label: name,
-
-                value: name
-
-            }));
-
-        } else if (error) {
-
-            console.error('Project load error:', error);
-
-        }
-
-    }
-
-
-
+    // FIX 3: Removed the duplicate plain getProjectNames() method that was shadowing the wire handler
     @wire(getProjectNames)
-
-    wiredProjects({ error, data }) {   
-
+    wiredProjects({ error, data }) {
         if (data) {
-
             this.projectOptions = data.map(name => ({
-
                 label: name,
-
                 value: name
-
             }));
-
         } else if (error) {
-
-            console.error(error);
-
+            console.error('Project load error:', error);
         }
-
     }
-
-
 
     handleProjectChange(event) {
-
         this.selectedProjectId = event.detail.value;
-
-        console.log('Event detail--- ' +this.selectedProjectId);
-
-       /* if (this.selectedProjectId) {
-
-            this.fetchTemplatesByProject();
-
-        } else {
-
-            this.lstMessagingTemplateOptions = []; 
-
-            this.strSelectedMessagingTemplate = '';
-
-        } */
-
     }
 }
