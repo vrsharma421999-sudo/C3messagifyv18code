@@ -5,20 +5,20 @@
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>Access Token</shortDescription>
-        <value>EAAD0mJuUlyABO2GpPgGMxw2AUnEXmuq6MSyNt4jKa9yf6fAa3c66oZCGBqAI9cvypDuxXlKjO0tXMGaLqMlFwyUUx3s6Ts3bwRKzSioNvA7lEILPyqRtZAd0ZABKdm6fzHKDUyra8IZCsNbkMS8ZCO45BwIoToQYlWqLhvU0mGzS1p3CDfaVLBAgfVLf6FLRC</value>
+        <value>EAASLhZAv3PgkBPEiKux8Gdx5AjZAI2BxcccF0cD0j4ehX1XNIZBuFZA0fgOHL77yJ6wL05e8AXkZCqGiIktX9zGrMvMdw1wDCRpRpqPLLjx0LSr5hhGKYl5gBNtDHsFDj5eBzKZCfTPh8iZBbKgmJTD9xv6Nq0TG5EZC9HLmcN46NvdwVN4VEe7klUExGuH5GwZDZD</value>
     </labels>
     <labels>
         <fullName>Phone_Number_ID</fullName>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>Phone Number ID</shortDescription>
-        <value>108193625692105</value>
+        <value>739159002605278</value>
     </labels>
     <labels>
         <fullName>WABA_ID</fullName>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>WABA ID</shortDescription>
-        <value>108445142322979</value>
+        <value>1274103690816918</value>
     </labels>
 </CustomLabels>
