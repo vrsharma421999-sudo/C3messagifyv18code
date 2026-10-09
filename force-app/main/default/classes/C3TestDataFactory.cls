@@ -344,7 +344,7 @@ public with sharing class C3TestDataFactory {
 */
     
     public static WhatsApp_Admin__c insertWhatsAppAdmin() {
-        WhatsApp_Admin__c objAdminConfig = new WhatsApp_Admin__c(Name = 'admin', NumberID__c = 'asdasdasd', WabaId__c = 'dsfgasdas');
+        WhatsApp_Admin__c objAdminConfig = new WhatsApp_Admin__c(Name = 'admin', NumberID__c = 'asdasdasd', WabaId__c = 'dsfgasdas', App_Secret__c = 'c02a44143f272da9a1a171b3158ffbd0', Webhook_Verify_Token__c = 'CloudCentric@2025');
         insert objAdminConfig; // SYSTEM MODE by default
         //Database.INSERT(objAdminConfig, AccessLevel.USER_MODE);
         

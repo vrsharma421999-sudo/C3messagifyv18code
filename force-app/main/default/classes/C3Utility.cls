@@ -42,7 +42,7 @@ public with sharing class C3Utility {
             
             for (String fieldName : request.fieldNames) {
                 String lowerFieldName = fieldName.toLowerCase();
-                if (lowerFieldName.endsWith('__c')) {
+                if (lowerFieldName.endsWith('__c') && !lowerFieldName.startsWith(apiNamePrefix.toLowerCase())) {
                     lowerFieldName = apiNamePrefix + lowerFieldName;
                 }
                 

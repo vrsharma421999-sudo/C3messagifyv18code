@@ -48,7 +48,7 @@
                     }, this.autoCloseTime);
                 }
             } catch (error) {
-                console.log('toast error', error);
+                // Toast presentation error handling
             }  
         }
     

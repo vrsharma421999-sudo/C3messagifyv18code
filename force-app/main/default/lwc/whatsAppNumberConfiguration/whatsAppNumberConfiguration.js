@@ -64,14 +64,12 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
                         this.configRecords[index].isEditMode = false;
                     }
                 }
-                this.hasRecords =  this.objMainWrap.hasRecords
-                    
-                console.log('this.objMainWrap---  '+JSON.stringify(this.objMainWrap));
+                this.hasRecords =  this.objMainWrap.hasRecords;
             }
         })
         .catch(error => {
             this.isLoading = false;  
-            console.log(error);
+            this.showToast('Error', error?.body?.message || 'Error loading configurations', 'error');
         });
     }
 
@@ -86,7 +84,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         })
         .catch(error => {
             this.isLoading = false;  
-            console.log(error);
+            this.showToast('Error', error?.body?.message || 'Error loading fields', 'error');
         });
     }
 
@@ -101,7 +99,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         })
         .catch(error => {
             this.isLoading = false;  
-            console.log(error);
+            this.showToast('Error', error?.body?.message || 'Error loading fields', 'error');
         });
     }
 
@@ -122,8 +120,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
     }
 
     onNewConfigClick(event){
-    console.log('New config clicked:', event.target);
-    this.isNewConfigPopup = true;
+        this.isNewConfigPopup = true;
     }
 
 
@@ -147,15 +144,12 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
     handleInlineSave(event){
         this.disable = false;
         let index = event.target.dataset.index;
-        console.log(JSON.stringify(this.configRecords[index]));
         this.configRecords[index].isEditMode = false;
         this.saveMethod(this.configRecords[index]);
     }
 
     handleSave(){
-        console.log('--before--');
         if (this.isInputValid('.validate')) {
-            console.log('--later--');
             for(let i = 0; i < this.objectPicklist.length; i++){
                 if(this.objectPicklist[i].value == this.objectName){
                     let tempList = this.objectPicklist;
@@ -164,7 +158,6 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
                     break;
                 }
             }
-            console.log(this.objectName+'--'+this.fieldName);
             this.saveMethod({Name : this.objectName, CCCWA__Object_Name__c :  this.objectName, CCCWA__Field_Name__c : this.fieldName});
             this.objectName = '';
             this.fieldName = '';
@@ -178,32 +171,27 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         .then(result => {
             this.isLoading = false;   
             if (result) {
-                console.log('came here')
                 this.configRecords = JSON.parse(result);
                 for (let index = 0; index < this.configRecords.length; index++) {
                     this.configRecords[index].isEditMode = false;
                     this.hasRecords = true;
                 }
-                this.showToast('Success!', 'Config setting saved successfully!', 'success')
+                this.showToast('Success!', 'Config setting saved successfully!', 'success');
             }
         })
         .catch(error => {
             this.isLoading = false;  
-            console.log(error);
+            this.showToast('Error', error?.body?.message || 'Error saving configuration', 'error');
         });
     }
 
     handleDelete(event){
         this.isLoading = true;
         let index = event.target.dataset.index;
-        // this.configRecords[index].isEditMode = true;
-        // this.handleAfterDelete(this.configRecords[index].CCCWA__Object_Name__c);
         deleteWhatsAppNumberConfig({jsonNumberConfig : JSON.stringify(this.configRecords[index])})
         .then(result => {
             this.isLoading = false; 
-            console.log(result);
             if (result) {
-                
                 this.configRecords = JSON.parse(result);
                 if(this.configRecords != null && this.configRecords != undefined && this.configRecords.length > 0){
                     this.hasRecords = true;
@@ -213,12 +201,12 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
                 }else{
                     this.hasRecords = false;
                 }
-                this.showToast('Success!', 'Config setting has been deleted successfully!', 'success')
+                this.showToast('Success!', 'Config setting has been deleted successfully!', 'success');
             }
         })
         .catch(error => {
             this.isLoading = false;  
-            console.log(error);
+            this.showToast('Error', error?.body?.message || 'Error deleting configuration', 'error');
         });
     }
 
@@ -240,7 +228,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         })
         .catch(error => {
             this.isLoading = false;  
-            console.log(error);
+            this.showToast('Error', error?.body?.message || 'Error retrieving object label', 'error');
         });
     }
 

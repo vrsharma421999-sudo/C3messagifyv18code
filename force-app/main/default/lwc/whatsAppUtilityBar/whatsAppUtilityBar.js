@@ -46,32 +46,12 @@ export default class WhatsAppUtilityBar extends LightningElement {
         this.onClearMessage();
         getAllTextMessages()
             .then((result) => {
-                  console.log('Full result:', JSON.stringify(result));
-        this.lstMessage = result?.wrapperMessageList || [];
-                    //this.lstMessage = result.WrapperMessageList;
-                    // this.lstMessage = JSON.parse(result).WrapperMessageList;
-                         //this.lstMessage = result.wrapperMessageList;
-
-                        this.currentUserId = result.currentUserId;
-                        this.organizationId = result.organizationId;
-                        this.wsChatEndpoint = result.wsChatEndpoint;
-                       //this.currentUserId = JSON.parse(result).currentUserId;
-
-                       // this.organizationId = JSON.parse(result).organizationId;
-
-                        //this.wsChatEndpoint = JSON.parse(result).wsChatEndpoint;
-
-                        console.log('this.lstMessage---- '+this.currentUserId);
-                        console.log('this.lstMessage---- '+this.organizationId);
-                        console.log('this.lstMessage---- '+this.wsChatEndpoint);
-                           console.log('this.lstMessage---- ' + JSON.stringify(this.lstMessage));
-
-                    this.totalUnreadCount = result.totalUnreadCount;
-                    //console.log('this.lstMessage---- '+this.lstMessage);
-                    this.totalUnreadCount = (JSON.parse(result).totalUnreadCount);
-
-                    console.log('this.lstMessage---- '+JSON.stringify(this.lstMessage))
-                    this.displayUnreadMsgCount(this.totalUnreadCount);
+                this.lstMessage = result?.wrapperMessageList || [];
+                this.currentUserId = result.currentUserId;
+                this.organizationId = result.organizationId;
+                this.wsChatEndpoint = result.wsChatEndpoint;
+                this.totalUnreadCount = result.totalUnreadCount;
+                this.displayUnreadMsgCount(this.totalUnreadCount);
 
 
                     

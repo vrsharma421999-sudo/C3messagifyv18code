@@ -32,13 +32,13 @@ public with sharing class C3WhatsAppTemplateHomeController {
             if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(
                 'Template_Object__c',
                 'isAccessible',
-                new List<String>{'Id', 'Name', 'Language_Code__c', 'Template_Message__c', 'Object__c', 'CCCWA__Project__c','Category__c'},
+                new List<String>{'Id', 'Name', 'Language_Code__c', 'Template_Message__c', 'Object__c', 'Project__c','Category__c'},
                 true
             ))) {
                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
             } else {
                 listOfTemplates = [
-                    SELECT Id, Name, Status__c, Language_Code__c, Template_Message__c, Object__c,CCCWA__Project__c, Category__c
+                    SELECT Id, Name, Status__c, Language_Code__c, Template_Message__c, Object__c, Project__c, Category__c
                     FROM CCCWA__Template_Object__c
                     WITH SECURITY_ENFORCED
                     LIMIT 49000

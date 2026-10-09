@@ -270,7 +270,6 @@ export default class BulkTemplateSenderLwc extends LightningElement {
 
     // Setup filter for fetching templates
     setupFilter() {
-        console.log(this.selectedObject);
         this.filter = {
             criteria: [
                 {
@@ -346,10 +345,8 @@ export default class BulkTemplateSenderLwc extends LightningElement {
                 // var expression = "^[" + this.lstMapping[i].placeHolder + "].*$";
                 // const regex = new RegExp(expression, 'i'); ;
             }
-            console.log('list -- ' + list);
             body = this.replacePlaceholders(body, list);
             this.templateViewBody = body;
-            console.log('this.templateViewBody -- ' + this.templateViewBody);
         }
         this.previewActionButtons = this.isQuickReplyList ? this.objTemplate.listQuickReply : this.objTemplate.listActions; // Set action buttons
     }

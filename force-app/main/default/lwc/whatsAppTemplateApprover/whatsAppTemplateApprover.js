@@ -72,7 +72,6 @@ export default class whatsAppTemplateApprover extends LightningElement {
 
     connectedCallback() {
         this.isLoading = true;
-        console.log('recordId---  '+ this.recordId);
         if(this.recordId){
             this.fieldDisabled = true;
         }
@@ -91,7 +90,6 @@ export default class whatsAppTemplateApprover extends LightningElement {
                 this.isLoading = false;
                 if(result){
                     this.objTemplate = JSON.parse(result);
-                    console.log('objTemplate---  '+ JSON.stringify(this.objTemplate));
                     this.isQuickReplyList = this.objTemplate.isQuickReplyList;
                     this.isActionList = this.objTemplate.isActionList;
                     if(this.objTemplate.listMapping != null && this.objTemplate.listMapping != undefined && this.objTemplate.listMapping.length > 0){
@@ -129,8 +127,6 @@ export default class whatsAppTemplateApprover extends LightningElement {
                 }
             })
             .catch(error => {
-                console.log('Error: ', JSON.stringify(error));
-
                 this.isLoading = false;
                 this.error = error;
                 this.handleError(error);
@@ -145,7 +141,6 @@ export default class whatsAppTemplateApprover extends LightningElement {
             this.objectOptions = JSON.parse(result);
         })
         .catch(error => {
-            console.log('Error: ', JSON.stringify(error));
             this.handleError(error);
         });
     }
@@ -166,17 +161,7 @@ wiredProjects({ error, data }) {
 
     
 
-    // @wire(getTemplateData)
-    // wiredData({data, error}){
-    //     if(data){
-    //         this.templateDetails = data;
-    //         console.log('data: ' + data);
-    //         console.log('temp: ' + this.templateDetails);
-    //     }
-    //     else{
-    //         console.log('Error');
-    //     }
-    // }
+
 
   
 
@@ -705,7 +690,6 @@ get ProjectOptions() {
     }
     codeDelivery_radioGroupChange(event) {
         this.codeDeliveryOptionValue = event.detail.value;
-        // console.log(this.codeDeliveryOptionValue);
         if (this.codeDeliveryOptionValue == 'autofill') {
             this.isAutofill = true;
             this.autofillInputValue = 'Autofill';
@@ -730,7 +714,6 @@ get ProjectOptions() {
     
     handleMessageContentChange(event) {
         this.mesaageOptionsValue = event.detail.value;
-        // console.log(JSON.stringify(this.mesaageOptionsValue));
         this.isExpirationTime = false;
         if (this.mesaageOptionsValue.includes('expirationTime')) {
             this.isExpirationTime = true;
@@ -862,7 +845,6 @@ get ProjectOptions() {
     }
     @track _acceptedFormats  = '';
     get acceptedFormats() {
-        console.log('this.acceptedFormats '+this._acceptedFormats );
         return this._acceptedFormats ;
     }
 
@@ -876,8 +858,6 @@ get ProjectOptions() {
         const filteredFiles = Array.from(files).filter(file => {
             return file.type.includes(selectedFileType);
         });
-
-        console.log(filteredFiles); 
     }
 
     handleHeaderType(value){
@@ -924,7 +904,6 @@ get ProjectOptions() {
         deleteUploadedDocument({documentId : this.objTemplate.documentId})
         .then(result => {
             this.isLoading = false;
-            console.log('result-=----'+result);
             /*if(result){
             }*/
         })
@@ -965,7 +944,6 @@ get ProjectOptions() {
                 }
                 this.objTemplate.templateBody = event.detail.value;
                 this.objTemplate.templateBodyText = event.detail.value;
-                console.log(event.detail.value);
                 this.processBody(event.detail.value);
                 if(event.detail.value)
                     this.bodyLength = 1024 - event.detail.value.length;
@@ -1047,14 +1025,11 @@ get ProjectOptions() {
                 }
             }
         }
-        console.log(JSON.stringify(this.listQuickReply));
-        console.log(JSON.stringify(this.lstActions));
     }
 
 
     @track marketingClass = 'cursor: pointer; border-radius: 5px';
-    divClick(event){
-         console.log(event); // using 'event' avoids the lint warning
+    divClick(){
         this.marketingClass = 'cursor: pointer; border-radius: 5px;background-color:#bceae7;';
         this.utilityClass = 'cursor: pointer; border-radius: 5px';
         this.authClass = 'cursor: pointer; border-radius: 5px';
@@ -1063,8 +1038,7 @@ get ProjectOptions() {
     }
 
     @track utilityClass = 'cursor: pointer; border-radius: 5px';
-    divUtilityClick(event){
-         console.log(event); // using 'event' avoids the lint warning
+    divUtilityClick(){
         this.utilityClass = 'cursor: pointer; border-radius: 5px;background-color:#bceae7;';
         this.marketingClass = 'cursor: pointer; border-radius: 5px';
         this.authClass = 'cursor: pointer; border-radius: 5px';
@@ -1073,22 +1047,18 @@ get ProjectOptions() {
     }
 
     @track authClass = 'cursor: pointer; border-radius: 5px';
-    divAuthClick(event){
-         console.log(event); // using 'event' avoids the lint warning
+    divAuthClick(){
         this.authClass = 'cursor: pointer; border-radius: 5px;background-color:#bceae7;';
         this.utilityClass = 'cursor: pointer; border-radius: 5px';
         this.marketingClass = 'cursor: pointer; border-radius: 5px';
         this.objTemplate.category = 'AUTHENTICATION';
-        
-        console.log('-----AUTHENTICATION----');
     }
 
 
 
     
     @track videoClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
-    divVideoClick(event){
-         console.log(event); // using 'event' avoids the lint warning
+    divVideoClick(){
         this.videoClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;  background-color:#bceae7;';
         this.imageClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
         this.docClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
@@ -1104,8 +1074,7 @@ get ProjectOptions() {
     }
 
     @track imageClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
-    divImageClick(event){
-         console.log(event); // using 'event' avoids the lint warning
+    divImageClick(){
         this.imageClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;  background-color:#bceae7;';
         this.videoClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
         this.docClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
@@ -1115,13 +1084,10 @@ get ProjectOptions() {
         this.isMediaDoc = false;
         this.showUploadFiles = true;
         this._acceptedFormats ='.png','.jpg','.jpeg';
-        console.log('this.acceptedFormat:- '+this.acceptedFormat);
-
     }
 
     @track docClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
-    divDocClick(event){
-         console.log(event); // using 'event' avoids the lint warning
+    divDocClick(){
         this.docClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;  background-color:#bceae7;';
         this.imageClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
         this.videoClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
@@ -1141,12 +1107,10 @@ get ProjectOptions() {
         this.isLoading = true;
         objectFields({sObjectName: objectName})
         .then((result)=>{
-            console.log('resultFields==='+result);
             this.fieldNameOptions = JSON.parse(result).lstObjectPicklist;
             this.isLoading = false;
             
         }).catch((error) => {
-            console.log('Error: ', JSON.stringify(error));
             this.isLoading = false;
             this.handleError(error);
         });
@@ -1163,7 +1127,6 @@ get ProjectOptions() {
         let fieldName = event.target.name;
         let fieldValue = event.target.value;
         let index = event.target.dataset.index;
-        console.log('Field Value ' +fieldValue);
          switch (fieldName) {
             case "actionType":
                 this.lstActions[index].actionType = fieldValue;
@@ -1238,8 +1201,6 @@ get ProjectOptions() {
         try {
             this.isLoading = true;
             const uploadedFiles = event.detail.files;
-            console.log(uploadedFiles.length);
-            //console.log(JSON.stringify(uploadedFiles));
             let file = uploadedFiles[0];
             if(file){
                 this.objTemplate.documentId = file.documentId;
@@ -1247,12 +1208,10 @@ get ProjectOptions() {
                 this.objTemplate.fileName = file.name;
                 this.objTemplate.mimeType = file.mimeType;
             }
-            console.log(JSON.stringify(file));
 
             verifyUpload({contentVersionId : this.objTemplate.contentVersionId})
             .then(result => {
                 this.isLoading = false;
-                console.log('result-=----'+result);
                 if(!result){
                     this.showToast('Error!', 'You cannot upload a file with size more than 4.3MB', 'error' );
                     this.uploadError = true;
@@ -1271,7 +1230,7 @@ get ProjectOptions() {
             });
             
         } catch (error) {
-            console.log(error);
+            this.handleError(error);
         }
         
     }
@@ -1414,7 +1373,6 @@ get ProjectOptions() {
             }else{
                 body = body + ' {{1}} ';
             }
-            console.log('body-----------   '+body);
             this.objTemplate.templateBody = body;
             this.processBody(body);
         }
@@ -1435,8 +1393,6 @@ get ProjectOptions() {
         const myString = body;
         const placeholderRegex = /\{\{(\d+)\}\}/g;
         const placeholders = Array.from(myString.matchAll(placeholderRegex));
-        console.log('placeholders--- '+JSON.stringify(placeholders));
-        console.log('tempListMapping--- '+JSON.stringify(this.tempListMapping));
         this.showMapping = false;
         if(placeholders != null && placeholders != undefined && placeholders.length > 0){
             this.showMapping = true;
@@ -1461,7 +1417,6 @@ get ProjectOptions() {
                 }
                 this.lstMapping = this.tempListMapping;
                 const secondPart = placeholders.slice(tempListMappinglength );
-                console.log('secondPart--- '+JSON.stringify(secondPart));
                 secondPart.forEach((match) => {
                     const placeholderNumber = match[1];
                     let placeHolder ='{{'+placeholderNumber+'}}';
@@ -1485,15 +1440,12 @@ get ProjectOptions() {
                     this.tempListMapping[index].objectName = this.objTemplate.objectName;
                 }
                 const firstPart = this.tempListMapping.slice(0, placeholdersLength);
-                console.log(firstPart.length);
                 this.lstMapping = firstPart;
             }
         }
-        console.log('this.lstMapping--- '+JSON.stringify(this.lstMapping));
     }
 
     buildPreview(){
-        console.log('this.objTemplate-- '+ JSON.stringify(this.objTemplate));
         let header = '';
         if(this.isHeaderText){
             header = '<div style="text-align:center"><b>'+ this.objTemplate.headerText + '</b></div><div style"style=" padding-left: 3px">' + this.objTemplate.templateBody+ '</div>';
@@ -1513,7 +1465,6 @@ get ProjectOptions() {
            header = header + footer;
         }
 
-        console.log('header---- '+ header);
         this.templateViewBody = header;
         let body = this.templateViewBody;
 
@@ -1534,8 +1485,6 @@ get ProjectOptions() {
         if(this.isActionList){
             this.previewActionButtons = this.lstActions;
         }
-        
-        console.log(JSON.stringify(this.previewActionButtons));
 
     }
 
@@ -1558,15 +1507,12 @@ get ProjectOptions() {
                 if(this.lstMapping && this.lstMapping.length >0)
                     this.objTemplate.listMapping = this.lstMapping;
                 
-                console.log('json body:: '+ JSON.stringify(this.objTemplate));
                 saveTemplateData({jsonData : JSON.stringify(this.objTemplate)})
                 .then(result => {
                     this.isLoading = false;
                     if(result){
                         this.objTemplate = JSON.parse(result);
                         this.strDocPublicUrl = this.objTemplate.publicDocUrl;
-                        console.log(this.strDocPublicUrl);
-                        console.log('this.objTemplate----- '+JSON.stringify(this.objTemplate));
                     }
                     this.currentStep = "6";
                     this.buildPreview();
@@ -1578,15 +1524,13 @@ get ProjectOptions() {
                     
                     this.isPath6 = true;
                     this.showToast('Alert!', 'Do you want to submit it? it will take upto 24hrs to be approved from Meta!', 'info' );
-                    console.log('result== '+result);
                 })
                 .catch(error => {
                     this.isLoading = false;
                     this.handleError(error);
-                    console.log(JSON.stringify(error));
                 });
            }catch(error){
-               console.log('error----'+error)
+               this.handleError(error);
            }
         }
     }
@@ -1596,7 +1540,6 @@ get ProjectOptions() {
         try{
             sendWhatsAppTemplateToMeta({jsonObject : JSON.stringify(this.objTemplate)})
             .then(data => {
-                console.log('data ' +JSON.stringify(this.objTemplate));
                 this.isLoading = false;
                 if(data){
                     let result = JSON.parse(data);
@@ -1610,12 +1553,10 @@ get ProjectOptions() {
                         this.showToast('error', result.message, 'error', false);
                     } 
                 }
-                console.log('result== '+data);
             })
             .catch(error => {
                 this.isLoading = false;
                 this.handleError(error);
-                console.log(error);
             });
         }catch(error){
             this.isLoading = false;
@@ -1624,7 +1565,6 @@ get ProjectOptions() {
     }
 
     validateData(step){
-        console.log(step);
         switch (step) {
             case "1":
                 if(this.objTemplate.category != '' && this.objTemplate.category != null && this.objTemplate.category != undefined){
@@ -1636,7 +1576,6 @@ get ProjectOptions() {
                 //break;
 
             case "2":
-                console.log('Camehere');
                
                 if(this.isInputValid('.validate-step2') && ((this.isHeaderText == false && this.isHeaderMedia == false) || ((this.isHeaderText == true && (this.objTemplate.headerText != '' && this.objTemplate.headerText != null && this.objTemplate.headerText != undefined) ) || (this.isHeaderMedia && (this.objTemplate.mediaType != '' && this.objTemplate.mediaType != null && this.objTemplate.mediaType != undefined) && (this.objTemplate.fileName != '' && this.objTemplate.fileName != null && this.objTemplate.fileName != undefined)))) && (this.uploadError == false)){
                     return true;
@@ -1652,8 +1591,6 @@ get ProjectOptions() {
                 //break;
 
             case "3":
-                console.log(this.isInputValid('.validate-step3'));
-                console.log(this.objTemplate.objectName);
                 if(this.isInputValid('.validate-step3')){
                     return true;
                 }
@@ -1715,7 +1652,6 @@ get ProjectOptions() {
                 tempErrorList = [error.body.message];
             } 
             else if (error.body && error.body.fieldErrors && error.body.fieldErrors.message) {
-                console.log('fielderror');
                 tempErrorList = Object.values(error.body.fieldErrors)
                     .flat() 
                     .map((fieldError) => fieldError.message);
@@ -1737,7 +1673,6 @@ get ProjectOptions() {
     isInputValid(selector) {
         let isValid = true;
         let inputFields = this.template.querySelectorAll(selector);
-        console.log(inputFields.length);
         // inputFields.push(this.template.querySelectorAll('lightning-combobox'));
         inputFields.forEach(inputField => {
           if (!inputField.checkValidity()) {

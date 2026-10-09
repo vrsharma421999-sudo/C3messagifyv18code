@@ -360,8 +360,7 @@ export default class WhatsAppChatPanelLwc extends LightningElement {
 
         this.isLoading = true;
         valdiateTemplatePrameters({ recordId: this.recordId, templateId: this.tempId })
-            .then(data => {
-                console.log(data);
+            .then(() => {
                 this.isLoading = false;
             })
             .catch(error => {

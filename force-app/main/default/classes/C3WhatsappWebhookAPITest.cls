@@ -7,6 +7,56 @@
 */
 @isTest
 private class C3WhatsappWebhookAPITest {
+
+    // Keep in sync with the secret configured for the webhook.
+    // Prefer secure/protected configuration in production rather than hard-coding secrets.
+    private static final String TEST_APP_SECRET = 'c02a44143f272da9a1a171b3158ffbd0';
+
+    private static String generateSignature(String body) {
+        Blob mac = Crypto.generateMac(
+            'HmacSHA256',
+            Blob.valueOf(body),
+            Blob.valueOf(TEST_APP_SECRET)
+        );
+        return 'sha256=' + EncodingUtil.convertToHex(mac);
+    }
+
+    private static RestResponse sendSignedPost(String body) {
+        RestRequest req = new RestRequest();
+        req.requestURI = '/services/apexrest/WhatsappWebhook';
+        req.httpMethod = 'POST';
+        req.addHeader('Content-Type', 'application/json');
+
+        if (body != null) {
+            req.requestBody = Blob.valueOf(body);
+            req.addHeader('X-Hub-Signature-256', generateSignature(body));
+        }
+
+        RestContext.request = req;
+        RestContext.response = new RestResponse();
+        C3WhatsappWebhookAPI.doPost();
+        return RestContext.response;
+    }
+
+    private static RestResponse sendPostWithSignature(String body, String signature) {
+        RestRequest req = new RestRequest();
+        req.requestURI = '/services/apexrest/WhatsappWebhook';
+        req.httpMethod = 'POST';
+        req.addHeader('Content-Type', 'application/json');
+
+        if (body != null) {
+            req.requestBody = Blob.valueOf(body);
+        }
+        if (signature != null) {
+            req.addHeader('X-Hub-Signature-256', signature);
+        }
+
+        RestContext.request = req;
+        RestContext.response = new RestResponse();
+        C3WhatsappWebhookAPI.doPost();
+        return RestContext.response;
+    }
+
     /**
 *  @description Sets up test data including a test user and related permission sets.
 */
@@ -65,7 +115,7 @@ private class C3WhatsappWebhookAPITest {
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
             
             // Call the doPost method
-            C3WhatsappWebhookAPI.doPost();
+            sendSignedPost(jsonBody);
             
             System.assertNotEquals(null, jsonBody, 'Expected jsonBody to not be null');
             Test.stopTest();
@@ -88,7 +138,7 @@ private class C3WhatsappWebhookAPITest {
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
             
             // Call the doPost method
-            C3WhatsappWebhookAPI.doPost();
+            sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
             
             Test.stopTest();
@@ -108,7 +158,7 @@ private class C3WhatsappWebhookAPITest {
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
             
             // Call the doPost method
-            C3WhatsappWebhookAPI.doPost();
+            sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
             
             Test.stopTest();
@@ -129,7 +179,7 @@ private class C3WhatsappWebhookAPITest {
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
             
             // Call the doPost method
-            C3WhatsappWebhookAPI.doPost();
+            sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
             
             Test.stopTest();
@@ -150,7 +200,7 @@ private class C3WhatsappWebhookAPITest {
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
             
             // Call the doPost method
-            C3WhatsappWebhookAPI.doPost();
+            sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
             
             Test.stopTest();
@@ -171,7 +221,7 @@ private class C3WhatsappWebhookAPITest {
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
             
             // Call the doPost method
-            C3WhatsappWebhookAPI.doPost();
+            sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
             
             Test.stopTest();
@@ -192,7 +242,7 @@ private class C3WhatsappWebhookAPITest {
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
             
             // Call the doPost method
-            C3WhatsappWebhookAPI.doPost();
+            sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
             
             Test.stopTest();
@@ -208,18 +258,21 @@ private class C3WhatsappWebhookAPITest {
             insert objLead;
             C3WhatsappWebhookAPI.sendPushWhatsAppNotification(objLead.Id, 'New MEessage');
             
-            //C3WhatsappWebhookAPI.doPost();
+            //sendSignedPost(jsonBody);
             //C3WhatsappWebhookAPI.uploadFile(fileContent, fileName, fileType, recordId)
             System.assertNotEquals(null, objLead.Id, 'Lead Id should not be null');
             Test.stopTest();
         }
     }
+    @isTest
     static void testDoGetValidToken() {
         // Set up simulated request
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
         req.httpMethod = 'GET';
-        req.requestURI = '/services/apexrest/yourendpoint?hub.verify_token=TestToken123&hub.challenge=challengeString123';
+        req.requestURI = '/services/apexrest/WhatsappWebhook';
+        req.addParameter('hub.verify_token', 'CloudCentric@2025');
+        req.addParameter('hub.challenge', 'challengeString123');
         
         RestContext.request = req;
         RestContext.response = res;
@@ -295,4 +348,53 @@ private class C3WhatsappWebhookAPITest {
         System.assertEquals(1, links.size(), 'One file should be linked to the account');
     }
     
+
+
+    @isTest
+    static void testDoPostRejectsMissingSignature() {
+        RestResponse res = sendPostWithSignature(
+            '{"object":"whatsapp_business_account"}',
+            null
+        );
+        System.assertEquals(401, res.statusCode,
+            'Webhook requests without a signature should be rejected.');
+    }
+
+    @isTest
+    static void testDoPostRejectsInvalidSignature() {
+        RestResponse res = sendPostWithSignature(
+            '{"object":"whatsapp_business_account"}',
+            'sha256=invalid'
+        );
+        System.assertEquals(401, res.statusCode,
+            'Webhook requests with an invalid signature should be rejected.');
+    }
+
+    @isTest
+    static void testDoPostRejectsEmptyBody() {
+        RestResponse res = sendPostWithSignature('', 'sha256=invalid');
+        System.assertEquals(401, res.statusCode,
+            'Webhook requests with an empty body should be rejected.');
+    }
+
+    @isTest
+    static void testDoPostValidSignatureIsAccepted() {
+        String jsonBody =
+            '{"object":"whatsapp_business_account","entry":[{"id":"entry1",' +
+            '"changes":[{"field":"messages","value":{' +
+            '"messaging_product":"whatsapp",' +
+            '"metadata":{"display_phone_number":"16505553333",' +
+            '"phone_number_id":"27681414235104944"},' +
+            '"contacts":[{"profile":{"name":"Kerry Fisher"},"wa_id":"16315551234"}],' +
+            '"messages":[{"from":"16315551234","id":"wamid.test.text.signature",' +
+            '"timestamp":"1603059201","text":{"body":"Hello from test"},"type":"text"}]}}]}]}';
+
+        Test.startTest();
+        RestResponse res = sendSignedPost(jsonBody);
+        Test.stopTest();
+
+        System.assertNotEquals(401, res.statusCode,
+            'A correctly signed webhook should pass signature validation.');
+    }
+
 }

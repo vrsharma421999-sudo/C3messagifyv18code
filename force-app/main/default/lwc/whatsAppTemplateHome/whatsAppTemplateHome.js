@@ -62,26 +62,29 @@ export default class WhatsAppTemplateHome extends LightningElement {
     }
 
     init(){
-        console.log('came here')
         whatsAppTemplates({})
         .then(result => {
-            if(JSON.parse(result).success){
-                console.log(JSON.parse(result));
-                this.filtered = [];
-                this.lstRecords=JSON.parse(result);
-                for (let i = 0; i < this.lstRecords.listOfTemplates.length; i++) {
-                    if(this.lstRecords.listOfTemplates[i].CCCWA__Status__c=='APPROVED'){
-                        this.filtered.push({ APPROVED: true, Template: this.lstRecords.listOfTemplates[i] });    
-                    }
-                    else if(this.lstRecords.listOfTemplates[i].CCCWA__Status__c=='REJECTED'){
-                        this.filtered.push({ REJECTED: true, Template: this.lstRecords.listOfTemplates[i] });      
-                    }
-                    else{
-                        this.filtered.push({ PENDING: true, Template: this.lstRecords.listOfTemplates[i] });      
-                    }    
-                    this.showPopup = false;                            
-                }                         
-            } else{
+            if(result){
+                let parsed = JSON.parse(result);
+                if(parsed && parsed.success){
+                    this.filtered = [];
+                    this.lstRecords = parsed;
+                    for (let i = 0; i < this.lstRecords.listOfTemplates.length; i++) {
+                        if(this.lstRecords.listOfTemplates[i].CCCWA__Status__c=='APPROVED'){
+                            this.filtered.push({ APPROVED: true, Template: this.lstRecords.listOfTemplates[i] });    
+                        }
+                        else if(this.lstRecords.listOfTemplates[i].CCCWA__Status__c=='REJECTED'){
+                            this.filtered.push({ REJECTED: true, Template: this.lstRecords.listOfTemplates[i] });      
+                        }
+                        else{
+                            this.filtered.push({ PENDING: true, Template: this.lstRecords.listOfTemplates[i] });      
+                        }    
+                        this.showPopup = false;                            
+                    }                         
+                } else{
+                    this.filtered = [];
+                }
+            } else {
                 this.filtered = [];
             }                                               
         })
@@ -91,14 +94,12 @@ export default class WhatsAppTemplateHome extends LightningElement {
 
     handlePreview(event){
         let templateId = event.target.value;
-        console.log('templateId ---- '+templateId);
         if(templateId){
             this.isLoading = true;
             getExistingTemplate({templateId : templateId})
             .then(result => {
                 if(result){
                     this.objTemplate = JSON.parse(result);
-                    console.log('objTemplate---  '+ JSON.stringify(this.objTemplate));
                     this.isQuickReplyList = this.objTemplate.isQuickReplyList;
                     this.isActionList = this.objTemplate.isActionList;
                     this.templateViewBody = this.objTemplate.templateBody;
@@ -134,8 +135,6 @@ export default class WhatsAppTemplateHome extends LightningElement {
             })
             .catch(error => {
                 this.isLoading = false;
-                
-                console.log('Error: '+JSON.stringify(error));
             });
         }
         
@@ -162,22 +161,22 @@ export default class WhatsAppTemplateHome extends LightningElement {
             this.isLoading=true;
             deleteWhatsAppTemplates({RecordId:this.deletingRecordId})
             .then(result => {
-    if (JSON.parse(result).success) {
-        this.RecordDeleted();
-        this.init(); 
-    } else {
-        this.dispatchEvent(new ShowToastEvent({
-            title: 'Error',
-            message: 'Failed to delete the template.',
-            variant: 'error'
-        }));
-    }
-    this.isLoading = false;
-    this.showPopup = false;
-})
-
+                if (result && JSON.parse(result).success) {
+                    this.RecordDeleted();
+                    this.init(); 
+                } else {
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error',
+                        message: 'Failed to delete the template.',
+                        variant: 'error'
+                    }));
+                }
+                this.isLoading = false;
+                this.showPopup = false;
+            })
             .catch(error => {
-                console.log(error)
+                this.isLoading = false;
+                this.showPopup = false;
             });
         }
     }
@@ -195,7 +194,6 @@ export default class WhatsAppTemplateHome extends LightningElement {
 
     buildPreview(){
         try{
-            console.log('this.objTemplate-- '+ JSON.stringify(this.objTemplate));
             let header = '';
             if(this.objTemplate.isHeaderText){
                 header = '<div style="text-align:center"><b>'+ this.objTemplate.headerText + '</b></div><div style"style=" padding-left: 3px">' + this.objTemplate.templateBody+ '</div>';
@@ -209,7 +207,6 @@ export default class WhatsAppTemplateHome extends LightningElement {
             header = header + footer;
             }
 
-            console.log('header---- '+ header);
             this.templateViewBody = header;
             let body = this.templateViewBody;
 
@@ -220,10 +217,8 @@ export default class WhatsAppTemplateHome extends LightningElement {
                     // var expression = "^[" + this.lstMapping[i].placeHolder + "].*$";
                     // const regex = new RegExp(expression, 'i'); ;
                 }
-                console.log('list -- '+list);
                 body = this.replacePlaceholders(body, list);
                 this.templateViewBody = body;
-                console.log('this.templateViewBody -- '+this.templateViewBody);
             }
 
             if(this.isQuickReplyList){
@@ -234,7 +229,7 @@ export default class WhatsAppTemplateHome extends LightningElement {
             }
             
         }catch(error){
-            console.log('error---'+error);
+            // Preview build error
         }
         
     }

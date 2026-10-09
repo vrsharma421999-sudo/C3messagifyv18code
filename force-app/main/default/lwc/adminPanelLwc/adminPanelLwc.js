@@ -37,7 +37,6 @@ export default class AdminPanelLwc extends LightningElement {
     
 
     maskValue(value) {
-        console.log('=-=-=-=-=-42-=-=-=-=-'+value);
         if (value && value.length > 2) {
             const firstChar = value.charAt(0);  // First character
             const lastChar = value.charAt(value.length - 1);  // Last character
@@ -68,7 +67,6 @@ export default class AdminPanelLwc extends LightningElement {
                 this.isDisabled = false;
                 this.isSave = true;
             }
-            console.log(this.isDisabled)
         }).catch(error => {
             this.handleError(error);
         });
@@ -109,7 +107,6 @@ export default class AdminPanelLwc extends LightningElement {
                 this.isLoading = false;
 
                 if (result) {
-                                        console.log(JSON.stringify(result));
                     this.toastEvent('success', 'Success!', 'Config setting saved successfully!',)
                 }
             })
@@ -149,7 +146,6 @@ export default class AdminPanelLwc extends LightningElement {
                 tempErrorList = [error.body.message];
             } 
             else if (error.body && error.body.fieldErrors && error.body.fieldErrors.message) {
-                console.log('fielderror');
                 tempErrorList = Object.values(error.body.fieldErrors)
                     .flat() 
                     .map((fieldError) => fieldError.message);

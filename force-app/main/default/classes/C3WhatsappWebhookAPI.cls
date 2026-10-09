@@ -28,7 +28,13 @@ global without sharing class C3WhatsappWebhookAPI {
     global static void doGet(){
         RestRequest request = RestContext.request;
         RestResponse response = RestContext.response;
-        if(request.params.get('hub.verify_token')=='YOUR_WEBHOOK_VERIFY_TOKEN'){
+        // Retrieve verify token dynamically from WhatsApp_Admin__c Custom Setting
+        String expectedVerifyToken = '';
+        List<CCCWA__WhatsApp_Admin__c> listAdminConfig = CCCWA__WhatsApp_Admin__c.getAll().values();
+        if (!listAdminConfig.isEmpty() && String.isNotBlank(listAdminConfig[0].CCCWA__Webhook_Verify_Token__c)) {
+            expectedVerifyToken = listAdminConfig[0].CCCWA__Webhook_Verify_Token__c;
+        }
+        if(String.isNotBlank(expectedVerifyToken) && request.params.get('hub.verify_token') == expectedVerifyToken){
             if(!test.isrunningtest()){
                 response.responseBody=Blob.valueOf(request.params.get('hub.challenge'));
             }
@@ -272,32 +278,39 @@ global without sharing class C3WhatsappWebhookAPI {
             ? null
             : request.requestBody.toString();
 
-        try{
-            // TEST ONLY - hardcode Meta App Secret
-            String appSecret = 'c02a44143f272da9a1a171b3158ffbd0';
-
-            // Get Meta signature
-            String sigHeader = request.headers.get('X-Hub-Signature-256');
-
-            // Reject if body or signature is missing
-            if (String.isBlank(strRequestBody) || String.isBlank(sigHeader)) {
+        try {
+            // Reject if body is blank
+            if (String.isBlank(strRequestBody)) {
                 response.statusCode = 401;
                 return;
             }
 
-            // Generate expected HMAC SHA-256 signature
-            Blob mac = Crypto.generateMac(
-                'HmacSHA256',
-                Blob.valueOf(strRequestBody),
-                Blob.valueOf(appSecret)
-            );
+            // Retrieve App Secret from WhatsApp_Admin__c Custom Setting
+            String appSecret = '';
+            List<CCCWA__WhatsApp_Admin__c> listAdminConfig = CCCWA__WhatsApp_Admin__c.getAll().values();
+            if (!listAdminConfig.isEmpty() && String.isNotBlank(listAdminConfig[0].CCCWA__App_Secret__c)) {
+                appSecret = listAdminConfig[0].CCCWA__App_Secret__c;
+            }
 
-            String expectedSignature = 'sha256=' + EncodingUtil.convertToHex(mac);
+            // Get Meta signature
+            String sigHeader = request.headers.get('X-Hub-Signature-256');
 
-            // Validate Meta signature
-            if (sigHeader.toLowerCase() != expectedSignature.toLowerCase()) {
-                response.statusCode = 401;
-                return;
+            // If App Secret is configured in org, validate Meta HMAC SHA-256 signature
+            if (String.isNotBlank(appSecret)) {
+                if (String.isBlank(sigHeader)) {
+                    response.statusCode = 401;
+                    return;
+                }
+                Blob mac = Crypto.generateMac(
+                    'HmacSHA256',
+                    Blob.valueOf(strRequestBody),
+                    Blob.valueOf(appSecret)
+                );
+                String expectedSignature = 'sha256=' + EncodingUtil.convertToHex(mac);
+                if (sigHeader.toLowerCase() != expectedSignature.toLowerCase()) {
+                    response.statusCode = 401;
+                    return;
+                }
             }
             
             System.debug('=== META WEBHOOK DEBUG START ===');
