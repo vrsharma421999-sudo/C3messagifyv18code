@@ -28,7 +28,7 @@ global without sharing class C3WhatsappWebhookAPI {
     global static void doGet(){
         RestRequest request = RestContext.request;
         RestResponse response = RestContext.response;
-        if(request.params.get('hub.verify_token')=='CloudCentric@2025'){
+        if(request.params.get('hub.verify_token')=='YOUR_WEBHOOK_VERIFY_TOKEN'){
             if(!test.isrunningtest()){
                 response.responseBody=Blob.valueOf(request.params.get('hub.challenge'));
             }
@@ -265,9 +265,49 @@ global without sharing class C3WhatsappWebhookAPI {
 */
     @HttpPost
     global static void doPost(){
-        String strRequestBody = RestContext.request.requestBody.tostring();
-        
-        try{     
+        RestRequest request = RestContext.request;
+        RestResponse response = RestContext.response;
+
+        String strRequestBody = request.requestBody == null
+            ? null
+            : request.requestBody.toString();
+
+        try{
+            // TEST ONLY - hardcode Meta App Secret
+            String appSecret = 'c02a44143f272da9a1a171b3158ffbd0';
+
+            // Get Meta signature
+            String sigHeader = request.headers.get('X-Hub-Signature-256');
+
+            // Reject if body or signature is missing
+            if (String.isBlank(strRequestBody) || String.isBlank(sigHeader)) {
+                response.statusCode = 401;
+                return;
+            }
+
+            // Generate expected HMAC SHA-256 signature
+            Blob mac = Crypto.generateMac(
+                'HmacSHA256',
+                Blob.valueOf(strRequestBody),
+                Blob.valueOf(appSecret)
+            );
+
+            String expectedSignature = 'sha256=' + EncodingUtil.convertToHex(mac);
+
+            // Validate Meta signature
+            if (sigHeader.toLowerCase() != expectedSignature.toLowerCase()) {
+                response.statusCode = 401;
+                return;
+            }
+            
+            System.debug('=== META WEBHOOK DEBUG START ===');
+            System.debug('Webhook URL: ' + request.requestURI);
+            System.debug('HTTP Method: ' + request.httpMethod);
+            System.debug('Content-Type: ' + request.headers.get('Content-Type'));
+            System.debug('X-Hub-Signature-256: ' + sigHeader);
+            System.debug('Request Body: ' + strRequestBody);
+            System.debug('=== META WEBHOOK DEBUG END ===');
+
             if(strRequestBody.contains('"from"')){
                 strRequestBody = strRequestBody.replace('"from"','"fromNumber"');
             }        
@@ -392,6 +432,27 @@ global without sharing class C3WhatsappWebhookAPI {
                         }else{
                             Database.insertImmediate(objfilteredMessage1, AccessLevel.SYSTEM_MODE); 
                         }
+                        
+                        // Update Bulk_Message_Tracking__c if applicable
+                        String messageId = objWrap1.entry[0].changes[0].value.statuses[0].id;
+                        String newStatus = objWrap1.entry[0].changes[0].value.statuses[0].status;
+                        if (String.isNotBlank(messageId) && String.isNotBlank(newStatus)) {
+                            List<Bulk_Message_Tracking__c> bmtList = [SELECT Id, Status__c FROM Bulk_Message_Tracking__c WHERE Message_ID__c = :messageId WITH SYSTEM_MODE LIMIT 1];
+                            if (!bmtList.isEmpty()) {
+                                bmtList[0].Status__c = newStatus;
+                                String[] bmtFields = new String[]{'Status__c'};
+                                if (
+                                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isAccessible', null, true)) &&
+                                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isUpdateable', null, true)) &&
+                                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isUpdateable', bmtFields, false))
+                                ){
+                                    throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
+                                } else {
+                                    Database.update(bmtList, AccessLevel.SYSTEM_MODE);
+                                }
+                            }
+                        }
+
                         if (objWrap1.entry[0].changes[0].value.statuses[0]?.errors != null ) {
                             //C3Utility.logError(objWrap1.entry[0].changes[0].value.statuses[0].errors[0].errordata.details,'', 178, strRequestBody,'C3WhatsappWebhookAPI','status update', '');
                         }

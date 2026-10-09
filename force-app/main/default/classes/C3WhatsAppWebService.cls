@@ -99,6 +99,7 @@ public without sharing class C3WhatsAppWebService {
     public static string webServiceCallOut(List<C3WhatsAppWebServiceWrapper> listOfC3WhatsAppWebServiceWrapper, List<SObject> listSObject, CCCWA__Template_Object__c objtemplate, String phoneField){
         C3Utility.getWhatsAppDetails();
         list<CCCWA__WhatsApp_Conversation__b> listConvoRecords=new list<CCCWA__WhatsApp_Conversation__b>();
+        List<Bulk_Message_Tracking__c> listTrackingRecords = new List<Bulk_Message_Tracking__c>();
         integer i = 0;
         string resbody='';
         for(C3WhatsAppWebServiceWrapper objWrapper : listOfC3WhatsAppWebServiceWrapper){
@@ -136,10 +137,32 @@ public without sharing class C3WhatsAppWebService {
                     input.wamId = wamId;
                     
                     listConvoRecords.add(C3Utility.buildConvoRecord(input));
+
+                    Bulk_Message_Tracking__c trackingLog = new Bulk_Message_Tracking__c();
+                    trackingLog.Message_ID__c = wamId;
+                    trackingLog.Recipient_Record_ID__c = sObjectId;
+                    trackingLog.Phone_Number__c = phoneNumber;
+                    trackingLog.Template_Object__c = objtemplate.Id;
+                    trackingLog.Status__c = 'Sent';
+                    listTrackingRecords.add(trackingLog);
                 }
                 
             }else{
                 C3Utility.logError('API Error','', 131, resbody,'C3WhatsAppWebService','webServiceCallOut',Json.serialize(objWrapper, true));
+                if (listSObject != null && listSObject.size() > i && listSObject[i] != null) {
+                    String sObjectId = (String) listSObject[i].get('Id');
+                    String phoneNumber = '';
+                    if (String.isNotBlank(phoneField)) {
+                        phoneNumber = (String) listSObject[i].get(phoneField);
+                    }
+                    
+                    Bulk_Message_Tracking__c trackingLog = new Bulk_Message_Tracking__c();
+                    trackingLog.Recipient_Record_ID__c = sObjectId;
+                    trackingLog.Phone_Number__c = phoneNumber;
+                    trackingLog.Template_Object__c = objtemplate.Id;
+                    trackingLog.Status__c = 'Failed';
+                    listTrackingRecords.add(trackingLog);
+                }
             }
             i++;
         } 
@@ -155,6 +178,21 @@ public without sharing class C3WhatsAppWebService {
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }else{
                     Database.insertImmediate(listConvoRecords, AccessLevel.USER_MODE); 
+                }
+        }
+
+        if((!listTrackingRecords.isEmpty()) && (!Test.isRunningTest()))  
+        { 
+            String[] listFields = new String[]{'Message_ID__c', 'Recipient_Record_ID__c', 'Phone_Number__c', 'Template_Object__c', 'Status__c'};
+                if (
+                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isAccessible', null, true)) &&
+                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isAccessible', listFields, false)) &&
+                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isCreateable', null, true)) &&
+                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isCreateable', listFields, false))
+                ){
+                    throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
+                }else{
+                    Database.insert(listTrackingRecords, AccessLevel.USER_MODE); 
                 }
         }
         return resbody;

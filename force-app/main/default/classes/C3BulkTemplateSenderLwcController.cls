@@ -27,19 +27,25 @@ public with sharing class C3BulkTemplateSenderLwcController {
  */
     @AuraEnabled
     public static String getObjectsfromNumberConfig(){
-        List<CCCWA__WhatsApp_Number_Configuration__c> listNumberConfig = new List<CCCWA__WhatsApp_Number_Configuration__c>();
-        if(!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Number_Configuration__c','isAccessible',null,True)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Number_Configuration__c','isAccessible',new List<String>{'Field_Name__c', 'Object_Label__c', 'Object_Name__c'},false))){
+        List<WhatsApp_Number_Configuration__c> listNumberConfig = new List<WhatsApp_Number_Configuration__c>();
+        String objName = Schema.SObjectType.WhatsApp_Number_Configuration__c.getName();
+        List<String> listFields = new List<String>{
+            Schema.SObjectType.WhatsApp_Number_Configuration__c.fields.Field_Name__c.getName(),
+            Schema.SObjectType.WhatsApp_Number_Configuration__c.fields.Object_Label__c.getName(),
+            Schema.SObjectType.WhatsApp_Number_Configuration__c.fields.Object_Name__c.getName()
+        };
+        if(!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName,'isAccessible',null,True)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName,'isAccessible',listFields,false))){
             throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
         }else{
-            listNumberConfig = CCCWA__WhatsApp_Number_Configuration__c.getall().values();
+            listNumberConfig = WhatsApp_Number_Configuration__c.getall().values();
         }
         
         if(!listNumberConfig.isEmpty()){
             List<C3Utility.ObjectPicklist> objectPicklistList = new List<C3Utility.ObjectPicklist>();
-            for (CCCWA__WhatsApp_Number_Configuration__c objNC : listNumberConfig) {
+            for (WhatsApp_Number_Configuration__c objNC : listNumberConfig) {
                 C3Utility.ObjectPicklist picklistItem = new C3Utility.ObjectPicklist();
-                picklistItem.label = objNC.CCCWA__Object_Label__c;
-                picklistItem.value = objNC.CCCWA__Object_Name__c;
+                picklistItem.label = objNC.Object_Label__c;
+                picklistItem.value = objNC.Object_Name__c;
                 objectPicklistList.add(picklistItem);
             }
             return JSON.serialize(objectPicklistList);
@@ -70,11 +76,17 @@ public with sharing class C3BulkTemplateSenderLwcController {
      */
     @AuraEnabled
     public static String validateObject(String objectName){
-        Map<String, CCCWA__WhatsApp_Number_Configuration__c> mapNumberConfig = new Map<String, CCCWA__WhatsApp_Number_Configuration__c>();
-        if(!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Number_Configuration__c','isAccessible',null,True)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Number_Configuration__c','isAccessible',new List<String>{'CCCWA__Field_Name__c', 'CCCWA__Object_Label__c', 'CCCWA__Object_Name__c'},false))){
+        Map<String, WhatsApp_Number_Configuration__c> mapNumberConfig = new Map<String, WhatsApp_Number_Configuration__c>();
+        String objName = Schema.SObjectType.WhatsApp_Number_Configuration__c.getName();
+        List<String> listFields = new List<String>{
+            Schema.SObjectType.WhatsApp_Number_Configuration__c.fields.Field_Name__c.getName(),
+            Schema.SObjectType.WhatsApp_Number_Configuration__c.fields.Object_Label__c.getName(),
+            Schema.SObjectType.WhatsApp_Number_Configuration__c.fields.Object_Name__c.getName()
+        };
+        if(!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName,'isAccessible',null,True)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName,'isAccessible',listFields,false))){
             throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
         }else{
-            mapNumberConfig = CCCWA__WhatsApp_Number_Configuration__c.getAll();
+            mapNumberConfig = WhatsApp_Number_Configuration__c.getAll();
         }
         if (!mapNumberConfig.containsKey(objectName)) { 
             throw new AuraHandledException('Error: WhatsApp Number configuration is missing for ' + objectName);
@@ -171,10 +183,20 @@ public with sharing class C3BulkTemplateSenderLwcController {
      */
  
     @AuraEnabled
-    public static List<Map<String, Object>> fetchObjectRecords(String objectName) {
+    public static List<Map<String, Object>> fetchObjectRecords(String objectName, String whereClause, String orderBy) {
         List<SObject> records = new List<SObject>();
         List<String> fieldApiNames = getFieldsFromFieldSet(objectName);
-        String query = 'SELECT Id, ' + String.join(fieldApiNames, ', ') + ' FROM ' + objectName + ' WITH SECURITY_ENFORCED LIMIT 45000';
+        
+        String query = 'SELECT Id, ' + String.join(fieldApiNames, ', ') + ' FROM ' + objectName;
+        
+        if (String.isNotBlank(whereClause)) {
+            query += ' WHERE ' + whereClause;
+        }
+        if (String.isNotBlank(orderBy)) {
+            query += ' ORDER BY ' + orderBy;
+        }
+        
+        query += ' WITH SECURITY_ENFORCED LIMIT 45000';
         
         System.debug('FieldApiName--->'+fieldApiNames);
         System.debug('query --->'+query );
@@ -184,7 +206,7 @@ public with sharing class C3BulkTemplateSenderLwcController {
         if(b1 && b2){
             throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
         }else{
-            records = database.query(String.escapeSingleQuotes(query));
+            records = database.query(query);
         }
         System.debug(JSON.serialize('records---'+records));
         // Convert records to a list of maps
@@ -201,6 +223,34 @@ public with sharing class C3BulkTemplateSenderLwcController {
         return resultList;
     }
 
+    /**
+     * @name getFilterableFields
+     * @description Retrieves the label, API name, and type of fields in the C3WAFieldSet for the UI to construct filters.
+     * 
+     * @param objectName String - API name of the object.
+     * @return String - JSON serialized list of field maps.
+     */
+    @AuraEnabled
+    public static String getFilterableFields(String objectName) {
+        List<String> fieldApiNames = getFieldsFromFieldSet(objectName);
+        Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
+        Schema.SObjectType objType = globalDescribe.get(objectName);
+        Map<String, Schema.SObjectField> fieldMap = objType.getDescribe().fields.getMap();
+        
+        List<Map<String, String>> resultList = new List<Map<String, String>>();
+        for (String fieldName : fieldApiNames) {
+            Schema.SObjectField sObjField = fieldMap.get(fieldName.toLowerCase());
+            if (sObjField != null) {
+                Schema.DescribeFieldResult fieldDesc = sObjField.getDescribe();
+                Map<String, String> fieldInfo = new Map<String, String>();
+                fieldInfo.put('label', fieldDesc.getLabel());
+                fieldInfo.put('value', fieldDesc.getName());
+                fieldInfo.put('type', String.valueOf(fieldDesc.getType()));
+                resultList.add(fieldInfo);
+            }
+        }
+        return JSON.serialize(resultList);
+    }
 
 /*
     @AuraEnabled

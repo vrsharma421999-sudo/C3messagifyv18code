@@ -5,20 +5,20 @@
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>Access Token</shortDescription>
-        <value>EAASLhZAv3PgkBPEiKux8Gdx5AjZAI2BxcccF0cD0j4ehX1XNIZBuFZA0fgOHL77yJ6wL05e8AXkZCqGiIktX9zGrMvMdw1wDCRpRpqPLLjx0LSr5hhGKYl5gBNtDHsFDj5eBzKZCfTPh8iZBbKgmJTD9xv6Nq0TG5EZC9HLmcN46NvdwVN4VEe7klUExGuH5GwZDZD</value>
+        <value>YOUR_WHATSAPP_ACCESS_TOKEN</value>
     </labels>
     <labels>
         <fullName>Phone_Number_ID</fullName>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>Phone Number ID</shortDescription>
-        <value>739159002605278</value>
+        <value>YOUR_PHONE_NUMBER_ID</value>
     </labels>
     <labels>
         <fullName>WABA_ID</fullName>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>WABA ID</shortDescription>
-        <value>1274103690816918</value>
+        <value>YOUR_WABA_ID</value>
     </labels>
 </CustomLabels>

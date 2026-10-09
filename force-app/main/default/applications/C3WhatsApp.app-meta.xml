@@ -20,6 +20,7 @@
     <tabs>Send_Bulk_Templates</tabs>
     <tabs>Error_Log__c</tabs>
     <tabs>Template_Object__c</tabs>
+    <tabs>Bulk_Message_Tracking__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>C3WhatsApp_UtilityBar</utilityBar>
 </CustomApplication>

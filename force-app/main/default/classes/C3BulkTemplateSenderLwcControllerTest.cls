@@ -69,7 +69,8 @@ public class C3BulkTemplateSenderLwcControllerTest {
             Test.startTest();
                 C3BulkTemplateSenderLwcController.getObjectsfromNumberConfig();
                 C3BulkTemplateSenderLwcController.validateObject('Contact');
-                List<Map<String, Object>> jsonMap =  C3BulkTemplateSenderLwcController.fetchObjectRecords('Contact');
+                C3BulkTemplateSenderLwcController.getFilterableFields('Contact');
+                List<Map<String, Object>> jsonMap =  C3BulkTemplateSenderLwcController.fetchObjectRecords('Contact', '', '');
                 System.assertNotEquals(null, jsonMap, 'jsonMap should not be null');
             Test.stopTest();
         }

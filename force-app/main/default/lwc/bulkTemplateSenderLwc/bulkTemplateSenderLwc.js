@@ -2,9 +2,13 @@ import { LightningElement, track } from 'lwc';
 import getObjectsfromNumberConfig from '@salesforce/apex/C3BulkTemplateSenderLwcController.getObjectsfromNumberConfig';
 import validateObject from '@salesforce/apex/C3BulkTemplateSenderLwcController.validateObject';
 import fetchObjectRecords from '@salesforce/apex/C3BulkTemplateSenderLwcController.fetchObjectRecords';
+import getFilterableFields from '@salesforce/apex/C3BulkTemplateSenderLwcController.getFilterableFields';
 import getExistingTemplate from '@salesforce/apex/C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate';
 import sendWhatsAppMessageBulk from '@salesforce/apex/C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessageBulk';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import TEMPLATE_OBJECT from '@salesforce/schema/Template_Object__c';
+import OBJECT_FIELD from '@salesforce/schema/Template_Object__c.Object__c';
+import STATUS_FIELD from '@salesforce/schema/Template_Object__c.Status__c';
 
 // Main class for the Bulk Template Sender component
 export default class BulkTemplateSenderLwc extends LightningElement {
@@ -15,6 +19,18 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     @track objTemplate = {};
     @track templateViewBody = '';
     @track previewActionButtons = [];
+    @track filterRows = [];
+    @track filterableFields = [];
+    @track sortDirection = 'asc';
+    @track sortedBy = '';
+
+    operatorOptions = [
+        { label: 'Equals', value: '=' },
+        { label: 'Not Equals', value: '!=' },
+        { label: 'Greater Than', value: '>' },
+        { label: 'Less Than', value: '<' },
+        { label: 'Contains', value: 'LIKE' }
+    ];
 
     // Other properties
     objectOptions = [];
@@ -25,6 +41,7 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     showTemplateSelector = false;
     filter = {};
     templateRecordId = '';
+    templateObjectApiName = TEMPLATE_OBJECT.objectApiName;
     isModalOpen = false;
     isQuickReplyList = false;
     isActionList = false;
@@ -33,6 +50,24 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     isMediaVideo = false;
 
     // Lifecycle hook: Called when the component is inserted into the DOM
+
+    stripNamespace(obj) {
+        if (!obj || typeof obj !== 'object') return obj;
+        if (Array.isArray(obj)) return obj.map(item => this.stripNamespace(item));
+        
+        let newObj = {};
+        for (let key in obj) {
+            let newKey = key;
+            if (key.endsWith('__c') && key.split('__').length === 3) {
+                newKey = key.split('__')[1] + '__c';
+            } else if (key.endsWith('__r') && key.split('__').length === 3) {
+                newKey = key.split('__')[1] + '__r';
+            }
+            newObj[newKey] = this.stripNamespace(obj[key]);
+        }
+        return newObj;
+    }
+
     connectedCallback() {
         this.isLoading = true; // Start loading
         this.fetchObjectOptions(); // Fetch object options
@@ -42,10 +77,12 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     fetchObjectOptions() {
         getObjectsfromNumberConfig()
             .then(result => {
-                this.objectOptions = JSON.parse(result).sort((a, b) =>
-                    a.label.toLowerCase().localeCompare(b.label.toLowerCase())
-                );
-                this.isLoading = false; // Stop loading
+                if (result) {
+                    this.objectOptions = this.stripNamespace(JSON.parse(result)).sort((a, b) =>
+                        a.label.localeCompare(b.label)
+                    );
+                    this.isLoading = false; // Stop loading
+                }
             })
             .catch(error => {
                 this.isLoading = false; // Stop loading
@@ -61,7 +98,8 @@ export default class BulkTemplateSenderLwc extends LightningElement {
         if (fieldName === 'templateObject') {
             this.selectedObject = value; // Set selected object
             this.resetTableData(); // Reset table data
-            this.validateObject(value); // Validate selected object
+            this.filterRows = [];
+            this.fetchFieldsAndValidate(value); 
         }
     }
 
@@ -69,55 +107,150 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     resetTableData() {
         this.tableData = [];
         this.columns = [];
+        this.showTemplateSelector = false;
+        this.showRecordTable = false;
     }
 
-    // Validate the selected object
-    validateObject(objectName) {
-        this.isLoading = true; // Start loading
-        this.objectValidate = false; // Reset validation flag
-
-        console.log('Object Name--->' +this.objectValidate);
-        console.log('Object Name--->' +objectName);
-
+    fetchFieldsAndValidate(objectName) {
+        this.isLoading = true;
+        this.objectValidate = false;
+        
         validateObject({ objectName: objectName })
             .then(result => {
                 if (result) {
-                    return fetchObjectRecords({ objectName: objectName }); // Fetch records if valid
+                    return getFilterableFields({ objectName: objectName });
                 } else {
                     throw new Error('Validation failed for object: ' + objectName);
                 }
             })
-            .then(data => {
-                if (data.length > 0) {
-                    this.populateTableData(data); // Populate table data
-                } else {
-                    this.resetTableData(); // Reset if no data
+            .then(fieldsJson => {
+                if (fieldsJson) {
+                    this.filterableFields = JSON.parse(fieldsJson);
+                    // Initialize with one empty filter row
+                    this.filterRows = [{ id: Date.now(), field: '', operator: '=', value: '' }];
                 }
             })
             .catch(error => {
-                this.objectValidate = false; // Reset validation flag
-                this.handleError(error); // Handle error
+                this.objectValidate = false;
+                this.handleError(error);
             })
             .finally(() => {
-                this.isLoading = false; // Ensure loading is stopped
+                this.isLoading = false;
             });
     }
 
-    // Populate table data and columns
+    get hasFilterableFields() {
+        return this.filterableFields.length > 0;
+    }
 
+    handleAddFilter() {
+        this.filterRows.push({ id: Date.now(), field: '', operator: '=', value: '' });
+    }
+
+    handleRemoveFilter(event) {
+        const idToRemove = event.target.dataset.id;
+        this.filterRows = this.filterRows.filter(row => row.id.toString() !== idToRemove.toString());
+    }
+
+    handleFilterChange(event) {
+        const rowId = event.target.dataset.id;
+        const fieldName = event.target.name;
+        const value = event.target.value;
+        
+        const rowIndex = this.filterRows.findIndex(row => row.id.toString() === rowId.toString());
+        if (rowIndex !== -1) {
+            this.filterRows[rowIndex][fieldName] = value;
+        }
+    }
+
+    buildWhereClause() {
+        let conditions = [];
+        this.filterRows.forEach(row => {
+            if (row.field && row.value) {
+                let condition = '';
+                const fieldType = this.filterableFields.find(f => f.value === row.field)?.type;
+                let val = String(row.value).trim();
+                
+                // Escape single quotes for SOQL
+                val = val.replace(/'/g, "\\'");
+                
+                let isString = (fieldType === 'STRING' || fieldType === 'PICKLIST' || fieldType === 'TEXTAREA' || fieldType === 'PHONE' || fieldType === 'EMAIL' || fieldType === 'URL');
+                
+                if (row.operator === 'LIKE') {
+                    condition = `${row.field} LIKE '%${val}%'`;
+                } else if (isString && (row.operator === '=' || row.operator === '!=') ) {
+                    condition = `${row.field} ${row.operator} '${val}'`;
+                } else {
+                    condition = `${row.field} ${row.operator} ${val}`;
+                }
+                conditions.push(condition);
+            }
+        });
+        
+        return conditions.join(' AND ');
+    }
+
+    handleApplyFilters() {
+        this.isLoading = true;
+        const whereClause = this.buildWhereClause();
+        
+        let orderBy = '';
+        if (this.sortedBy) {
+            orderBy = `${this.sortedBy} ${this.sortDirection}`;
+        }
+        
+        fetchObjectRecords({ objectName: this.selectedObject, whereClause: whereClause, orderBy: orderBy })
+            .then(data => {
+                if (data && data.length > 0) {
+                    this.populateTableData(data);
+                } else {
+                    this.resetTableData();
+                    this.showToast('Info', 'No records found matching the criteria.', 'info');
+                }
+            })
+            .catch(error => {
+                this.handleError(error);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
 
     populateTableData(data) {
         this.tableData = data;
-        console.log('Data--->' + JSON.stringify(data[0]));
         this.columns = Object.keys(data[0])
             .filter(field => field !== 'Id' && typeof data[0][field] !== 'object')
             .map(field => ({
                 label: field.replace(/_/g, ' '),
                 fieldName: field,
-                type: 'text'
+                type: 'text',
+                sortable: true
             }));
-        this.showRecordTable = true; // Show record table
-        console.log('Show Record Table--->' +this.showRecordTable);
+        this.showRecordTable = true; 
+    }
+
+    handleSort(event) {
+        const { fieldName: sortedBy, sortDirection } = event.detail;
+        const cloneData = [...this.tableData];
+
+        cloneData.sort(this.sortBy(sortedBy, sortDirection === 'asc' ? 1 : -1));
+        this.tableData = cloneData;
+        this.sortDirection = sortDirection;
+        this.sortedBy = sortedBy;
+    }
+
+    sortBy(field, reverse, primer) {
+        const key = primer
+            ? function (x) { return primer(x[field]); }
+            : function (x) { return x[field]; };
+
+        return function (a, b) {
+            a = key(a);
+            b = key(b);
+            if (a === undefined) a = '';
+            if (b === undefined) b = '';
+            return reverse * ((a > b) - (b > a));
+        };
     }
 
     
@@ -141,12 +274,12 @@ export default class BulkTemplateSenderLwc extends LightningElement {
         this.filter = {
             criteria: [
                 {
-                    fieldPath: 'CCCWA__Object__c',
+                    fieldPath: OBJECT_FIELD.fieldApiName,
                     operator: 'eq',
                     value: this.selectedObject,
                 },
                 {
-                    fieldPath: 'CCCWA__Status__c',
+                    fieldPath: STATUS_FIELD.fieldApiName,
                     operator: 'eq',
                     value: 'APPROVED',
                 }
@@ -169,8 +302,7 @@ export default class BulkTemplateSenderLwc extends LightningElement {
         getExistingTemplate({ templateId: this.templateRecordId })
             .then(result => {
                 if (result) {
-                    console.log('result  -- ' + result);
-                    this.objTemplate = JSON.parse(result); // Parse template data
+                    this.objTemplate = this.stripNamespace(JSON.parse(result)); // Parse template data
                     this.setupTemplatePreview(); // Setup preview
                     this.isLoading = false; // Stop loading
                 }

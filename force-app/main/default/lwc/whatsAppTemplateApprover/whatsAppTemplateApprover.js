@@ -1758,9 +1758,7 @@ get ProjectOptions() {
     }
 
     testclick(){
-        
-        this.templateViewBody = '<p><img src="https://cloudcentric--ss.sandbox.file.force.com/sfc/dist/version/download/?oid=00DP00000044pg0&ids=068P0000001s3UR&d=%2Fa%2FP0000000949U%2F8hdQajddOAwwVMM78MT5Bgaxz3TRqk8RV16AUBB7yq8&asPdf=false"  width="1000" height="500"></p><p>Hello</p><p>I ma  ajsdjas</p><p class="slds-text-color_inverse-weak" style="font-size : 12px; padding-bottom: 10px"> Powered By CCC</p>';
-        console.log(this.templateViewBody);
+        this.buildPreview();
         this.currentStep = "6";
         this.isPath1 = false;
         this.isPath2 = false;

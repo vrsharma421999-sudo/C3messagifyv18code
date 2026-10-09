@@ -25,6 +25,32 @@
         <enabled>true</enabled>
         <externalCredentialPrincipal>CCCWA__GetMediaUrl-Auth</externalCredentialPrincipal>
     </externalCredentialPrincipalAccesses>
+    <!-- Field permissions for Bulk_Message_Tracking__c introduced in version upgrade -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Bulk_Message_Tracking__c.Message_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Bulk_Message_Tracking__c.Phone_Number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Bulk_Message_Tracking__c.Recipient_Record_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Bulk_Message_Tracking__c.Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Bulk_Message_Tracking__c.Template_Object__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Template_Button__c.Button_Type__c</field>
@@ -257,6 +283,17 @@
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>WhatsApp Access</label>
+    <!-- Object permissions for Bulk_Message_Tracking__c -->
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Bulk_Message_Tracking__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -299,6 +336,11 @@
     </objectPermissions>
     <tabSettings>
         <tab>Admin</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <!-- Tab settings for Bulk_Message_Tracking__c -->
+    <tabSettings>
+        <tab>Bulk_Message_Tracking__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
