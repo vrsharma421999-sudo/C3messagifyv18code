@@ -42,6 +42,7 @@ public with sharing class C3Utility {
             
             for (String fieldName : request.fieldNames) {
                 String lowerFieldName = fieldName.toLowerCase();
+                // Prepend package namespace only if custom field is not already namespaced to avoid double-prefixing
                 if (lowerFieldName.endsWith('__c') && !lowerFieldName.startsWith(apiNamePrefix.toLowerCase())) {
                     lowerFieldName = apiNamePrefix + lowerFieldName;
                 }

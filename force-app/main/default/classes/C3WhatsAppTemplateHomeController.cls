@@ -29,6 +29,7 @@ public with sharing class C3WhatsAppTemplateHomeController {
             TemplateWrapper objwrap = new TemplateWrapper();
             List<CCCWA__Template_Object__c > listOfTemplates = new List<CCCWA__Template_Object__c >();
             
+            // Pass standard un-prefixed field names; C3Utility handles namespace resolution safely
             if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(
                 'Template_Object__c',
                 'isAccessible',
