@@ -21,10 +21,10 @@
 * @date June 2025
 */
 
-@isTest
+@IsTest
 public class C3HttpCalloutMockBundleClass implements HttpCalloutMock {
     private String mockType;
-    
+
     /**
 * @description Constructor that initializes the mock class with a specific mock type.
 * This mock type determines the behavior of the HTTP callout mock responses.
@@ -33,10 +33,10 @@ public class C3HttpCalloutMockBundleClass implements HttpCalloutMock {
     public C3HttpCalloutMockBundleClass(String mockType) {
         this.mockType = mockType;
     }
-    
+
     /**
 * @description Returns a mocked HTTP response based on the specified mock type.
-* This method simulates different responses from the WhatsApp Business API 
+* This method simulates different responses from the WhatsApp Business API
 * depending on the provided mock type and the request's endpoint.
 *
 * @param req The incoming HttpRequest object used to determine the response context.
@@ -45,7 +45,7 @@ public class C3HttpCalloutMockBundleClass implements HttpCalloutMock {
     public HttpResponse respond(HTTPRequest req) {
         HttpResponse res = new HttpResponse();
         res.setHeader('Content-Type', 'application/json');
-        
+
         switch on mockType {
             when 'WhatsAppMessageText' {
                 res.setBody('{"messaging_product":"whatsapp","contacts":[{"input":"919911410564","wa_id":"919911410564"}],"messages":[{"id":"asdasdasd"}]}');
@@ -58,8 +58,8 @@ public class C3HttpCalloutMockBundleClass implements HttpCalloutMock {
             }
             when 'WhatsAppUploadAPI' {
                 res.setBody(
-                    req.getEndpoint().contains('app/uploads') 
-                    ? '{"id": "asdasdasdasdasd"}' 
+                    req.getEndpoint().contains('app/uploads')
+                    ? '{"id": "asdasdasdasdasd"}'
                     : '{"h": "asdasdasdasdasd"}'
                 );
             }
@@ -86,7 +86,7 @@ public class C3HttpCalloutMockBundleClass implements HttpCalloutMock {
                 res.setBody('{"messaging_product":"whatsapp","contacts":[{"input":"919911410564","wa_id":"919911410564"}],"messages":[{"id":"asdasdasd"}]}');
             }
         }
-        
+
         res.setStatusCode(200);
         return res;
     }

@@ -147,6 +147,14 @@
         <relatedList>Template_Button__c.Template__c</relatedList>
     </relatedLists>
     <relatedLists>
+        <fields>NAME</fields>
+        <fields>Recipient_Record_ID__c</fields>
+        <fields>Phone_Number__c</fields>
+        <fields>Status__c</fields>
+        <fields>Message_ID__c</fields>
+        <relatedList>Bulk_Message_Tracking__c.Template_Object__c</relatedList>
+    </relatedLists>
+    <relatedLists>
         <relatedList>RelatedFileList</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>

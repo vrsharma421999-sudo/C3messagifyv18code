@@ -2,14 +2,14 @@
  * @name C3BulkTemplateSenderLwcControllerTest
  * @description Test class for validating the C3BulkTemplateSenderLwcController Apex methods.
  *              This includes testing template fetching, WhatsApp configuration, and record retrieval logic.
- * 
+ *
  * @author Asjad Ahmed
  * @version 1.0
  * @company CloudCentric
  * @license Salesforce Public License (https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_license.htm)
  * @date June 2025
  */
-@isTest
+@IsTest
 public class C3BulkTemplateSenderLwcControllerTest {
     @TestSetup
        /**
@@ -47,7 +47,7 @@ public class C3BulkTemplateSenderLwcControllerTest {
             }
         }
         insert psAssignments;
-    
+
         System.runAs(testUser) {
             C3TestDataFactory.createTemplate();
             C3TestDataFactory.createWhatsAppConfigRecord('Contact', 'Phone');
@@ -62,7 +62,7 @@ public class C3BulkTemplateSenderLwcControllerTest {
      *              and record retrieval for the 'Contact' object.
      */
 
-    @isTest
+    @IsTest
     public static void testMethod1(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -76,5 +76,73 @@ public class C3BulkTemplateSenderLwcControllerTest {
         }
     }
 
-    
+    /**
+     * @description Validates record retrieval when a where clause filter and order by are provided.
+     */
+    @IsTest
+    public static void testFetchObjectRecordsWithFilter() {
+        User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
+        System.runAs(testUser) {
+            Test.startTest();
+                List<Map<String, Object>> records = C3BulkTemplateSenderLwcController.fetchObjectRecords('Contact', 'LastName != null', 'LastName ASC');
+                System.assertNotEquals(null, records, 'Records should not be null');
+                System.assert(records.size() > 0, 'Should return contacts');
+            Test.stopTest();
+        }
+    }
+
+    /**
+     * @description Validates that when a filter matches zero records, an AuraHandledException
+     *              with a clean custom error message is thrown instead of a null exception.
+     */
+    @IsTest
+    public static void testFetchObjectRecordsNoRecordsFoundException() {
+        User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
+        System.runAs(testUser) {
+            Test.startTest();
+                try {
+                    C3BulkTemplateSenderLwcController.fetchObjectRecords('Contact', 'LastName = \'NonExistentSurnameXYZ\'', '');
+                    System.assert(false, 'Expected AuraHandledException was not thrown');
+                } catch (AuraHandledException e) {
+                    System.assert(e.getMessage().contains('No records found matching the filter criteria'), 'Expected custom error message, got: ' + e.getMessage());
+                }
+            Test.stopTest();
+        }
+    }
+
+    /**
+     * @description Validates that passing an invalid object name throws an AuraHandledException.
+     */
+    @IsTest
+    public static void testFetchObjectRecordsInvalidObject() {
+        User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
+        System.runAs(testUser) {
+            Test.startTest();
+                try {
+                    C3BulkTemplateSenderLwcController.fetchObjectRecords('NonExistentObjectXYZ__c', '', '');
+                    System.assert(false, 'Expected AuraHandledException was not thrown');
+                } catch (AuraHandledException e) {
+                    System.assert(e.getMessage().contains('Invalid object name'), 'Expected invalid object error message, got: ' + e.getMessage());
+                }
+            Test.stopTest();
+        }
+    }
+
+    /**
+     * @description Validates that an unconfigured object throws an AuraHandledException.
+     */
+    @IsTest
+    public static void testValidateObjectMissingConfig() {
+        User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
+        System.runAs(testUser) {
+            Test.startTest();
+                try {
+                    C3BulkTemplateSenderLwcController.validateObject('Lead');
+                    System.assert(false, 'Expected AuraHandledException was not thrown');
+                } catch (AuraHandledException e) {
+                    System.assert(e.getMessage().contains('WhatsApp Number configuration is missing'), 'Expected missing config message, got: ' + e.getMessage());
+                }
+            Test.stopTest();
+        }
+    }
 }

@@ -1,13 +1,13 @@
 /**
 * @description Test class for C3WhatsAppTemplateScreenLWCCtrl Apex controller.
 */
-@isTest
+@IsTest
 public class C3WhatsAppTemplateScreenLWCCtrlTest {
     /**
 * @description Sets up test data for the test class.
 * Creates a test user and assigns necessary permission sets.
 */
-    @testSetup
+    @TestSetup
     public static void makeData(){
         // Create a test user with permission to read the field
         /*Profile sysAdminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
@@ -40,9 +40,9 @@ public class C3WhatsAppTemplateScreenLWCCtrlTest {
             }
         }
         insert psAssignments;
-        
+
         System.runAs(testUser) {
-            
+
             // Run the test code as the test user
             C3TestDataFactory.insertWhatsAppAdmin();
             ContentVersion objCV = C3TestDataFactory.testInsertContentVersion(Blob.valueOf('Test Content1'), 'Phone1', 'file1/png');
@@ -66,17 +66,17 @@ public class C3WhatsAppTemplateScreenLWCCtrlTest {
             List<Template_Parameter__c> lstTemplateParameter = C3TestDataFactory.createTemplateMappings(5, objTemplate.Id);
             insert lstTemplateParameter;
           C3TestDataFactory.createTemplateButtons( objTemplate.Id);
-            
-            
+
+
             C3TestDataFactory.createWhatsAppConfigRecord('Contact', 'Phone');
-            
+
             Contact con = C3TestDataFactory.createContacts();
             System.assertNotEquals(null, objCDL.Id, 'ContentDocumentLink was not created');
 System.assertNotEquals(null, con.Id, 'Contact record was not created');
 
         }
     }
-  @isTest
+  @IsTest
 public static void testCoreCoverage() {
     User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
 
@@ -110,7 +110,7 @@ public static void testCoreCoverage() {
     }
 }
 
-    @isTest 
+    @IsTest
     public static void method2(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
@@ -123,14 +123,14 @@ public static void testCoreCoverage() {
             C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(new List<string>{conId}, dataTemplate.Id  );
             // System.assertEquals( (conId != null) ,true);
             System.assertNotEquals(null, conId, 'Expected conId to not be null');
-            
+
             Test.stopTest();
         }
     }
     /**
 * @description Tests the functionality of method3 in the C3WhatsAppTemplateScreenLWCCtrl.
 */
-    @isTest 
+    @IsTest
     public static void method3(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
@@ -144,17 +144,17 @@ public static void testCoreCoverage() {
             //  System.assertEquals( (dataTemplate.Id != null) ,true);
             System.assert(dataTemplate.Id != null, 'Expected dataTemplate.Id to not be null');
             System.assertNotEquals(null, dataTemplate.Id, 'Expected dataTemplate.Id to not be null');
-            
-            
-            
-            
+
+
+
+
             Test.stopTest();
         }
     }
     /**
 * @description Tests the functionality of method4 in the C3WhatsAppTemplateScreenLWCCtrl.
 */
-    @isTest 
+    @IsTest
     public static void method4(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
@@ -165,63 +165,59 @@ public static void testCoreCoverage() {
             C3WhatsAppTemplateScreenLWCCtrl.runMediaAPIs(cv.Id, 'image/png' );
             // System.assertEquals( (cv.Id != null) ,true);
             System.assertNotEquals(null, cv.Id, 'Expected cv.Id to not be null');
-            
+
             Test.stopTest();
         }
     }
     /**
 * @description Tests the creation of WhatsApp templates.
 */
-    @isTest
+    @IsTest
     static void testWhatsAppTemplates() {
         User testUser = C3TestDataFactory.getRunAsUser();
         System.runAs(testUser) {
             Test.startTest();
             CCCWA__Template_Object__c template = new CCCWA__Template_Object__c(Name = 'Test Template', CCCWA__status__c = 'Active', CCCWA__Language_Code__c = 'EN', CCCWA__Template_Message__c = 'Test Message', CCCWA__Object__c = 'Test Object', CCCWA__Category__c = 'Test Category');
             insert template;
-            // Call the WhatsAppTemplates method
-            String result = C3WhatsAppTemplateHomeController.WhatsAppTemplates();
-            // Verify result
-            // System.assertNotEquals(null, result);
-           // System.assertNotEquals(null, result, 'Expected result to not be null');
-            
+            // Call the WhatsAppTemplates method (invoked for coverage)
+            C3WhatsAppTemplateHomeController.WhatsAppTemplates();
+
             Test.stopTest();
         }
     }
     /**
 * @description Tests the deletion of WhatsApp templates.
 */
-    @isTest
+    @IsTest
     static void testDeleteWhatsAppTemplates() {
         User testUser = C3TestDataFactory.getRunAsUser();
         System.runAs(testUser) {
             Test.startTest();
 CCCWA__Template_Object__c template = new CCCWA__Template_Object__c(Name = 'Test Template', CCCWA__status__c = 'Active', CCCWA__Language_Code__c = 'EN', CCCWA__Template_Message__c = 'Test Message', CCCWA__Object__c = 'Test Object', CCCWA__Category__c = 'Test Category');
             insert template;
-            
+
             // Call the DeleteWhatsAppTemplates method
             Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageMedia'));
-            String result = C3WhatsAppTemplateHomeController.deleteWhatsAppTemplates(template.Id);
-            // Verify result
-            //System.assertNotEquals(null, result);
-            //System.assertNotEquals(null, result, 'Expected result to not be null');
-            
+            C3WhatsAppTemplateHomeController.deleteWhatsAppTemplates(template.Id);
+
             Test.stopTest();
         }
     }
-    @isTest
-static void testNullInputCoverage() {
-    Test.startTest();
-    C3WhatsAppTemplateScreenLWCCtrl.searchTemplates(null);
-    C3WhatsAppTemplateScreenLWCCtrl.searchTemplates('');
-    C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(null, null);
-    C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(new List<String>(), '');
-    C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessageBulk(null, null);
-    C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(null);
-    C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate('');
-    Test.stopTest();
-}
-    @isTest
+    @IsTest
+    static void testNullInputCoverage() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            Test.startTest();
+            C3WhatsAppTemplateScreenLWCCtrl.searchTemplates(null);
+            C3WhatsAppTemplateScreenLWCCtrl.searchTemplates('');
+            C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(null, null);
+            C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(new List<String>(), '');
+            C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessageBulk(null, null);
+            C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(null);
+            C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate('');
+            Test.stopTest();
+        }
+    }
+    @IsTest
 static void testSendMessageWithNoMappings() {
     User u = C3TestDataFactory.getRunAsUser();
     System.runAs(u) {
@@ -239,26 +235,27 @@ static void testSendMessageWithNoMappings() {
         Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageSendTemplate'));
 
         Test.startTest();
-        String body = C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(
+        C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(
             new List<String>{c.Id},
             t.Id
         );
         Test.stopTest();
-      //  System.assertNotEquals(null, body);
     }
 }
-    @isTest
-static void testVerifyUploadDeletesDocument() {
-    ContentVersion cv = C3TestDataFactory.testInsertContentVersion(Blob.valueOf('X'), 'Test', 'image/png');
+    @IsTest
+    static void testVerifyUploadDeletesDocument() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            ContentVersion cv = C3TestDataFactory.testInsertContentVersion(Blob.valueOf('X'), 'Test', 'image/png');
 
-    Test.startTest();
-    Boolean result = C3WhatsAppTemplateScreenLWCCtrl.verifyUpload(cv.Id);
-    Test.stopTest();
+            Test.startTest();
+            Boolean result = C3WhatsAppTemplateScreenLWCCtrl.verifyUpload(cv.Id);
+            Test.stopTest();
 
-    System.assertEquals(false, result);
-}
+            System.assertEquals(false, result);
+        }
+    }
 
-    @isTest
+    @IsTest
 static void testGetExistingTemplate_QuickReplyButtonBranch() {
 
     User u = C3TestDataFactory.getRunAsUser();
@@ -282,12 +279,12 @@ static void testGetExistingTemplate_QuickReplyButtonBranch() {
         insert qr;
 
         Test.startTest();
-        String responseJson = C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate(t.Id);
+        C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate(t.Id);
         Test.stopTest();
 
     }
 }
-@isTest
+@IsTest
 static void testGetExistingTemplate_CallToActionPhoneBranch() {
 
     User u = C3TestDataFactory.getRunAsUser();
@@ -313,15 +310,15 @@ static void testGetExistingTemplate_CallToActionPhoneBranch() {
         insert callBtn;
 
         Test.startTest();
-        String responseJson = C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate(t.Id);
+        C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate(t.Id);
         Test.stopTest();
 
-       
-      
+
+
     }
 }
-    
-    @isTest
+
+    @IsTest
 static void testSaveTemplateData_DeletesOldMappings() {
     User u = C3TestDataFactory.getRunAsUser();
     System.runAs(u) {
@@ -364,12 +361,10 @@ static void testSaveTemplateData_DeletesOldMappings() {
         C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
         Test.stopTest();
 
-        Integer countOld = [SELECT COUNT() FROM CCCWA__Template_Parameter__c WHERE Id=:toDelete.Id];
-      //  System.assertEquals(0, countOld, 'Old mapping should be deleted');
     }
 }
-    
-    @isTest
+
+    @IsTest
 static void testSaveTemplateData_DeletesOldButtons() {
     User u = C3TestDataFactory.getRunAsUser();
     System.runAs(u) {
@@ -414,46 +409,47 @@ static void testSaveTemplateData_DeletesOldButtons() {
       //  System.assertEquals(0, c, 'Old button must be deleted');
     }
 }
-    
-  
-    @isTest
-static void test_ExceptionHandling_Coverage_AllInOne() {
 
-    Test.startTest();
 
-    // 1) getExistingTemplate() -> force exception (record not found / query issue)
-    Id fakeTemplateId = 'a0B000000000001EAA';
-    String res1 = C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate(fakeTemplateId);
-    System.assertEquals(null, res1);
+    @IsTest
+    static void test_ExceptionHandling_Coverage_AllInOne() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            Test.startTest();
 
-    // 2) getRecordData() -> force exception
-    CCCWA__Template_Object__c res2 = C3WhatsAppTemplateScreenLWCCtrl.getRecordData(fakeTemplateId, 'Contact');
-    System.assertEquals(null, res2);
+            // 1) getExistingTemplate() -> force exception (record not found / query issue)
+            Id fakeTemplateId = 'a0B000000000001EAA';
+            String res1 = C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate(fakeTemplateId);
+            System.assertEquals(null, res1);
 
-    // 3) sendWhatsAppMessage() -> invalid Id format throws exception -> catch executes
-    String res3 = C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(
-        new List<String>{'INVALID_ID'},
-        fakeTemplateId
-    );
-    System.assertEquals(null, res3);
+            // 2) getRecordData() -> force exception
+            CCCWA__Template_Object__c res2 = C3WhatsAppTemplateScreenLWCCtrl.getRecordData(fakeTemplateId, 'Contact');
+            System.assertEquals(null, res2);
 
-    // 4) sendWhatsAppMessageBulk() -> invalid Id format throws exception -> catch executes
-    C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessageBulk(
-        new List<String>{'INVALID_ID'},
-        fakeTemplateId
-    );
+            // 3) sendWhatsAppMessage() -> invalid Id format throws exception -> catch executes
+            String res3 = C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(
+                new List<String>{'INVALID_ID'},
+                fakeTemplateId
+            );
+            System.assertEquals(null, res3);
 
-    // 5) getRecordsToSelect() -> wrong object name triggers exception (no try/catch in method)
-    try {
-        C3WhatsAppTemplateScreenLWCCtrl.getRecordsToSelect('Wrong_Object__c');
-        System.assert(false, 'Expected exception for invalid object name');
-    } catch (Exception e) {
-        System.assert(true);
+            // 4) sendWhatsAppMessageBulk() -> invalid Id format throws exception -> catch executes
+            C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessageBulk(
+                new List<String>{'INVALID_ID'},
+                fakeTemplateId
+            );
+
+            // 5) getRecordsToSelect() -> wrong object name triggers exception (no try/catch in method)
+            try {
+                C3WhatsAppTemplateScreenLWCCtrl.getRecordsToSelect('Wrong_Object__c');
+                System.assert(false, 'Expected exception for invalid object name');
+            } catch (Exception e) {
+                System.assert(true);
+            }
+
+            Test.stopTest();
+        }
     }
-
-    Test.stopTest();
-}
-    @isTest
+    @IsTest
 static void testSaveTemplateData_QuickReply_BothButtonIdBranches() {
 
     User u = C3TestDataFactory.getRunAsUser();
@@ -512,21 +508,14 @@ static void testSaveTemplateData_QuickReply_BothButtonIdBranches() {
             '}';
 
         Test.startTest();
-        String res = C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
+        C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
         Test.stopTest();
 
       //  System.assertNotEquals(null, res, 'Response JSON should not be null');
 
-        // Ensure at least 2 buttons exist now
-        Integer btnCount = [
-            SELECT COUNT()
-            FROM CCCWA__Template_Button__c
-            WHERE CCCWA__Template__c = :t.Id
-        ];
-       // System.assert(btnCount >= 2, 'Buttons should be created/updated properly');
     }
 }
-    @isTest
+    @IsTest
 static void testSaveTemplateData_HeaderMedia_StrDocUrlBranch() {
 
     User u = C3TestDataFactory.getRunAsUser();
@@ -575,18 +564,11 @@ static void testSaveTemplateData_HeaderMedia_StrDocUrlBranch() {
             '}';
 
         Test.startTest();
-        String result = C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
+        C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
         Test.stopTest();
 
        // System.assertNotEquals(null, result, 'saveTemplateData should return wrapper JSON');
 
-        // Assert template updated with url + filename
-        CCCWA__Template_Object__c updated = [
-            SELECT Id, CCCWA__Document_Url__c, CCCWA__File_Name__c
-            FROM CCCWA__Template_Object__c
-            WHERE Id = :t.Id
-            LIMIT 1
-        ];
 
         // This is key coverage indicator:
         // If these got filled => strDocUrl branch executed
@@ -595,7 +577,7 @@ static void testSaveTemplateData_HeaderMedia_StrDocUrlBranch() {
     }
 }
 
-    @isTest
+    @IsTest
 static void testSaveTemplateData_FieldAssignmentsCoverage() {
 
     User u = C3TestDataFactory.getRunAsUser();
@@ -623,7 +605,7 @@ static void testSaveTemplateData_FieldAssignmentsCoverage() {
         '}';
 
         Test.startTest();
-        String result = C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
+        C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
         Test.stopTest();
 
      //   System.assertNotEquals(null, result);
@@ -639,11 +621,11 @@ static void testSaveTemplateData_FieldAssignmentsCoverage() {
             WHERE Name = 'Field_Assignment_Test'
             LIMIT 1
         ];*/
-        CCCWA__Template_Object__c saved =C3TestDataFactory.createTemplate();
+        C3TestDataFactory.createTemplate();
 
     }
 }
-    @isTest
+    @IsTest
 static void testSaveTemplateData_CoverMappingIdAndButtonIdBranches() {
 
     User u = C3TestDataFactory.getRunAsUser();
@@ -744,14 +726,14 @@ static void testSaveTemplateData_CoverMappingIdAndButtonIdBranches() {
             '}';
 
         Test.startTest();
-        String result = C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
+        C3WhatsAppTemplateScreenLWCCtrl.saveTemplateData(jsonBody);
         Test.stopTest();
 
        // System.assertNotEquals(null, result);
     }
 }
 
-    @isTest
+    @IsTest
 static void test_getExistingTemplate_FullFieldCoverage_WithURLCTA() {
 
     User u = C3TestDataFactory.getRunAsUser();
@@ -795,7 +777,7 @@ static void test_getExistingTemplate_FullFieldCoverage_WithURLCTA() {
             CCCWA__phone_Number__c = '9999999999'
         );
 
-       
+
         insert new CCCWA__Template_Button__c(
             CCCWA__Template__c = t.Id,
             CCCWA__Button_Type__c = 'call to action',
@@ -817,7 +799,7 @@ static void test_getExistingTemplate_FullFieldCoverage_WithURLCTA() {
         String resultJson =
             C3WhatsAppTemplateScreenLWCCtrl.getExistingTemplate(t.Id);
         Test.stopTest();
-       
+
         System.assertNotEquals(null, resultJson);
         /*System.assert(
            resultJson.contains('window'),

@@ -20,7 +20,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
     @AuraEnabled
     public static string initWhatsAppChatPanelController(string recordId, string objName){
         WrapperChat wrapMain = new WrapperChat();
-        
+
         wrapMain.lstTxtMsg = new List<TextMessagWrapper>();
         wrapMain.strMsg = '';
         wrapMain.strSuccessMsg = '';
@@ -45,11 +45,11 @@ public with sharing class C3WhatsAppChatPanelCtrl {
         wrapMain.isUSAPhoneNumber = false;
         wrapMain.currentUserName='';
         wrapMain.isAllowedToChat=true;   //User can only send messages if he receives messages in last 24 hours
-        
-        
+
+
         String phoneNumber = C3Utility.fetchPhoneNumber(recordId);
         if (phoneNumber != null) {
-            wrapMain.toNumber = phoneNumber; 
+            wrapMain.toNumber = phoneNumber;
         }
         List<WhatsApp_Conversation__b> allTXTMessages = new List<WhatsApp_Conversation__b>();
         String [] listFields = new String [] {'Direction__c', 'Status__c', 'Message_formatted__c', 'From_Phone__c', 'Message__c', 'Read__c', 'To_Phone__c', 'Record_ID__c', 'CreatedDate', 'created_date__c'};
@@ -58,23 +58,23 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                 C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('WhatsApp_Conversation__b', 'isAccessible', listFields, false))
             ) {
                 allTXTMessages = [
-                    SELECT Direction__c, Status__c, Message_formatted__c, From_Phone__c, Message__c, 
+                    SELECT Direction__c, Status__c, Message_formatted__c, From_Phone__c, Message__c,
                     Read__c, To_Phone__c, Record_ID__c, CreatedDate, created_date__c
-                    FROM WhatsApp_Conversation__b 
-                    WHERE Record_ID__c = :recordId 
+                    FROM WhatsApp_Conversation__b
+                    WHERE Record_ID__c = :recordId
                     WITH SECURITY_ENFORCED
                 ];
             }else {
                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
             }
-        
+
         if (Test.isRunningTest()) {
             C3TestDataFactory.WhatsAppInputWrapper input = new C3TestDataFactory.WhatsAppInputWrapper();
             input.objTemplate = null;
             input.toNumber = '919911410564';
             input.recordId = recordId;
             input.wamId = 'asdasdasd';
-            
+
             allTXTMessages.addAll(new List<WhatsApp_Conversation__b>{
                 C3TestDataFactory.buildConvoRecord(input),
                     C3TestDataFactory.buildConvoRecord(input)
@@ -97,8 +97,8 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                 wrapMain.isAllowedToChat=false;
             }
             else{
-                wrapMain.isAllowedToChat=true; 
-            } 
+                wrapMain.isAllowedToChat=true;
+            }
         }
         if(String.isNotBlank(objName))
         {
@@ -132,23 +132,23 @@ public with sharing class C3WhatsAppChatPanelCtrl {
             }*/
             if (String.isNotBlank(recordNameField)) {
                 List<String> nameFields = recordNameField.split(',');
-            
+
                 // Check field-level security
                 Boolean isObjectAccessible = C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName, 'isAccessible', null, true));
                 Boolean areFieldsAccessible = C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName, 'isAccessible', nameFields, false));
-            
+
                 if (!isObjectAccessible || !areFieldsAccessible) {
                     throw new AuraHandledException('User: Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }
-            
+
                 // Build and execute SOQL dynamically
                 String query = 'SELECT Id, ' + recordNameField + ' FROM ' + objName + ' WHERE Id = :recordId LIMIT 1';
                 List<sObject> results = Database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
-            
+
                 if (!results.isEmpty()) {
                     sObject resultRecord = results[0];
                     String fullName = String.valueOf(resultRecord.get(recordNameField));
-            
+
                     if (String.isNotBlank(fullName)) {
                         Map<String, String> nameDetails = C3Utility.getNameDetails(fullName);
                         wrapMain.nameIntial = nameDetails.get('senderNameSmall');
@@ -170,7 +170,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                 wrapMain.currentUserIntial = strUserLastName.left(1).capitalize();
             }
         }
-        
+
         TextMessagWrapper textMsgWrapper = new TextMessagWrapper();
         // Add the mediaWrapper to the textMsgWrapper's listMedia
         textMsgWrapper.listMedia = new List<TextMessageMediaWrapper>();
@@ -188,25 +188,25 @@ public with sharing class C3WhatsAppChatPanelCtrl {
     public static List<PicklistWrapper > c3WhatsppFetchTemplate(string objName){
         List<Template_Object__c> listName = new List<Template_Object__c>();
         List<PicklistWrapper > result = new List<PicklistWrapper >();
-        
+
         String [] fieldsToQuery = new String [] {'Id', 'Name', 'Language_Code__c', 'Status__c', 'Template_Message__c', 'Header_Type__c', 'File_Name__c', 'Media_Type__c', 'Media_Handler__c', 'Footer__c', 'Header__c', 'Document_Url__c'  };
             String [] fieldsToQuery2 = new String [] {'Id', 'Field_Name__c', 'Object_name__c', 'Parameter_Name__c'  };
                 String [] fieldsToQuery3 = new String [] {'Id', 'Button_text__c', 'Button_Type__c', 'Country_Code__c', 'Phone_Number__c', 'Type__c', 'Type_of_Action__c', 'URL_Type__c', 'Website_URL__c'  };
                     Boolean b1  = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Template_Object__c', 'isAccessible', fieldsToQuery, false));
         Boolean b12 = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Template_Object__c', 'isAccessible', null, true));
-        
+
         Boolean b2  = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Template_Mapping__c', 'isAccessible', fieldsToQuery2, false));
         Boolean b22 = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Template_Mapping__c', 'isAccessible', null, true));
-        
+
         Boolean b3  = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Template_Button__c', 'isAccessible', fieldsToQuery3, false));
         Boolean b32 = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Template_Button__c', 'isAccessible', null, true));
-        
+
         if(b1 && b2 && b3 && b12 && b22 && b32){
             throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
         }else{
             listName = [SELECT Name, Template_Message__c, Header__c, Footer__c, Document_Url__c, Media_Type__c, Whatsapp_Template__c, Status__c,Object__c, Template_Label__c, (SELECT Id, Button_text__c, Button_Type__c, Country_Code__c, Phone_Number__c, Type__c, Type_of_Action__c, URL_Type__c, Website_URL__c FROM Template_Buttons__r) FROM Template_Object__c WITH SECURITY_ENFORCED LIMIT 49000];
         }
-        
+
         for (Template_Object__c template : listName) {
             PicklistWrapper  wrapper = new PicklistWrapper ();
             if(template.Status__c == 'APPROVED' && template.Object__c == objName)
@@ -237,7 +237,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                 result.add(wrapper);
             }
         }
-        
+
         return result;
     }
     /**
@@ -253,7 +253,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
         // Get the first name and last name of the current user
         String currentUserFirstName = UserInfo.getFirstName();
         String currentUserLastName = UserInfo.getLastName();
-        
+
         String [] fieldsToQuery = new String [] {'Direction__c', 'Status__c', 'Read__c',  'Message_formatted__c', 'File_Name__c',  'sid__c', 'From_Phone__c', 'Media_Type__c', 'Message__c', 'Read__c', 'To_Phone__c', 'Record_ID__c', 'CreatedDate', 'created_date__c'};
             if (
                 !C3Utility.checkFieldPermission(
@@ -275,13 +275,13 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                 input.toNumber = '919911410564';
                 input.recordId = recordId;
                 input.wamId = 'asdasdasd';
-                
+
                 allTXTMessages.addAll(new List<WhatsApp_Conversation__b>{
                     C3TestDataFactory.buildConvoRecord(input),
                         C3TestDataFactory.buildConvoRecord(input)
                         });
             }
-            
+
             list<WhatsApp_Conversation__b> lstUpdateTextMsgs = new  list<WhatsApp_Conversation__b>();
             for (WhatsApp_Conversation__b objTXT : allTXTMessages) {
                 C3WhatsAppChatPanelCtrl.TextMessagWrapper objTextMessagWrapper = new C3WhatsAppChatPanelCtrl.TextMessagWrapper();
@@ -294,31 +294,28 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                 objTextMessagWrapper.listMedia = new list<C3WhatsAppChatPanelCtrl.TextMessageMediaWrapper>();
                 objTextMessagWrapper.isMMS = false;
                 objTextMessagWrapper.isVoice = false;
-                
-                
+
+
                 if(objTXT.Status__c == 'sent'){
                     objTextMessagWrapper.isSent = true;
                 }
                 else if(objTXT.Status__c == 'delivered'){
-                    System.debug('Message delivered 001');
                     objTextMessagWrapper.isDelivered = true;
-                    
                 }
                 else if(objTXT.Status__c == 'failed' || objTXT.Status__c == 'undelivered'){
                     objTextMessagWrapper.isFailed = true;
                 }
                 else if(objTXT.Status__c == 'read'){
-                     System.debug('Message Read 002');
                     objTextMessagWrapper.isRead = true;
                 }else{
                     objTextMessagWrapper.isPending = true;
                 }
-                
-                objTextMessagWrapper.isShow = true; 
+
+                objTextMessagWrapper.isShow = true;
                 objTextMessagWrapper.objTXT = objTXT;
                 if(String.isNotBlank(objTXT.Media_URL__c)){
                     objTextMessagWrapper.isMMS = true;
-                    
+
                     C3WhatsAppChatPanelCtrl.TextMessageMediaWrapper objMMSWrap = new C3WhatsAppChatPanelCtrl.TextMessageMediaWrapper();
                     objMMSWrap.isImage = false;
                     objMMSWrap.isVideo = false;
@@ -346,7 +343,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                     }
                     objTextMessagWrapper.listMedia.add(objMMSWrap);
                 }
-                
+
                 if(!test.isrunningTest()){
                     objTextMessagWrapper.smallDetails = objTXT.CreatedDate.format();
                 }
@@ -355,7 +352,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                     WhatsApp_Conversation__b wb =  new WhatsApp_Conversation__b(read__c='true',created_date__c=objTXT.created_date__c,record_id__c=objTXT.record_id__c);
                     lstUpdateTextMsgs.add(wb);
                 }
-                
+
             }
             if(!test.isrunningTest()){
                 String[] listFields = new String[]{'read__c', 'created_date__c', 'record_id__c'};
@@ -368,7 +365,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                         throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                     }
                 else{
-                    Database.insertImmediate(lstUpdateTextMsgs, AccessLevel.USER_MODE); 
+                    Database.insertImmediate(lstUpdateTextMsgs, AccessLevel.USER_MODE);
                 }
             }
         }
@@ -382,11 +379,11 @@ public with sharing class C3WhatsAppChatPanelCtrl {
 */
     public static string getNameInitials(string strFirstName, string strLastName){
         string strInitials = '';
-        
+
         if(string.isNotBlank(strFirstName)){
             strInitials = strInitials+''+strFirstName.left(1).capitalize();
         }
-        
+
         if(string.isNotBlank(strLastName)){
             strInitials = strInitials+''+strLastName.left(1).capitalize();
         }
@@ -406,37 +403,23 @@ public with sharing class C3WhatsAppChatPanelCtrl {
 * @return The WhatsApp message ID if the message was sent successfully; otherwise, null.
 * @throws Exception if an error occurs while saving the message.
 */
-    
-    /**
- * @description Sends a WhatsApp message using either a custom message or a template, and returns the WhatsApp Message ID (`wamId`) from the response.
- *              Uses `C3WhatsAppWebService` for direct messages and `C3WhatsAppTemplateScreenLWCCtrl` for template-based messages.
- *              Handles response parsing and logs errors using `C3Utility.logError()` if an exception occurs.
- *
- * @param request A `MessageRequest` object containing:
- *        - `toNumber` (recipient's WhatsApp number),
- *        - `msg` (custom message to send),
- *        - `recordId` (target record ID),
- *        - `templateName` (optional; if provided, sends a template message),
- *        - `strtempid` (template identifier for sending through controller).
- *
- * @return String The WhatsApp message ID (`wamId`) from the response, or `null` if sending fails.
- *
- * @throws AuraHandledException Errors are caught and logged; method returns null on failure.
- *
- * @example
- * MessageRequest req = new MessageRequest();
- * req.toNumber = '919XXXXXXXXX';
- * req.msg = 'Hello!';
- * req.recordId = '001XXXXXXXXXXXX';
- * String messageId = saveMessage(req);
- * System.debug('Sent Message ID: ' + messageId);
- */
 
-    
-    
+    /**
+     * @description Sends a WhatsApp message using either a custom message or a template, and returns the WhatsApp Message ID (wamId).
+     * @param recordId Target record ID.
+     * @param toNumber Recipient WhatsApp number.
+     * @param msg Custom message content.
+     * @param objectName Target object API name.
+     * @param mediaUrl Optional media URL.
+     * @param strBase64Data Optional base64 media data.
+     * @param strFileName Optional file name.
+     * @param templateName Optional template name.
+     * @param strtempid Optional template identifier.
+     * @return String The WhatsApp message ID from response, or null on failure.
+     */
     @AuraEnabled
     public static String saveMessage(string recordId, string toNumber, string msg, String objectName, string mediaUrl, String strBase64Data, String strFileName, string templateName, string strtempid){
-        
+
         try{
             ClsValue clsResponse = new ClsValue();
             string reqBody='';
@@ -446,15 +429,14 @@ public with sharing class C3WhatsAppChatPanelCtrl {
             //boolean isTemplate = true;
             if(string.isblank(templateName)){
                 reqBody = C3WhatsAppWebService.sendWhatsAppMessage(toNumber,msg);
-                
-                 		
+
             }
             if(string.isNotBlank(reqBody)){
                 clsResponse = (ClsValue)json.deserialize(reqBody,ClsValue.class);
             }
-            
+
             if(string.isNotBlank(templateName)){
-                
+
                 result = C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(new List<string>{recordId}, strtempid);
                 if (String.isNotBlank(result)) {
                     clsResponse = (ClsValue)json.deserialize(result,ClsValue.class);
@@ -492,34 +474,34 @@ public with sharing class C3WhatsAppChatPanelCtrl {
     @AuraEnabled
     public static String loadTextMessages(string recordId, string toNumber, string msg, String objectName, string mediaUrl, String mediaType, String strFileName, string templateName, string strtempid, String vamId){
         datetime currentdate = datetime.now();
-        WrapperChat wrapMain = new WrapperChat(); 
+        WrapperChat wrapMain = new WrapperChat();
         try{
             if(string.isNotBlank(objectName) && string.isNotBlank(recordId)  || string.isNotBlank(strFileName))
             {
                 String wrapMainJSON = initWhatsAppChatPanelController(recordId, objectName);
                 wrapMain=(WrapperChat)json.deserialize(wrapMainJSON, WrapperChat.class);
-                
+
                 if(string.isNotBlank(wrapMain.strMsg)){
                     throw new ChatPanelException(wrapMain.strMsg);
                 }
                 if(String.isNotBlank(templateName)){
                     wrapMain.strSelectedMessagingTemplate = templateName;
                 }
-                
-                
-                if (Test.isRunningTest()) { 
+
+
+                if (Test.isRunningTest()) {
                     wrapMain.strMsg = '';
                 }
                 if(test.isRunningTest()){
                     wrapMain.fromNumber='919464700700';
                     wrapMain.toNumber=toNumber;
                 }
-                
+
                 //Send Message part start here
                 if( String.isNotBlank(wrapMain.fromNumber) && String.isNotBlank(wrapMain.toNumber) && String.isBlank(templateName))
                 {
                     wrapMain.strSuccessMsg = '';
-                    
+
                     WhatsApp_Conversation__b objTxtMsg = new WhatsApp_Conversation__b();
                     objTxtMsg.Direction__c = 'Outbound';
                     objTxtMsg.Status__c = 'Pending';
@@ -532,15 +514,15 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                     if(String.isNotBlank(mediaUrl)){
                         objTxtMsg.Media_URL__c = mediaUrl;
                     }
-                        
+
                     if(String.isNotBlank(mediaType)){
                          objTxtMsg.Media_Type__c = mediaType;
                     }
-                       
+
                     if(String.isNotBlank(strFileName)){
                         objTxtMsg.File_Name__c = strFileName;
                     }
-                        
+
                     objTxtMsg.From_Phone__c = wrapMain.fromNumber;
                     objTxtMsg.To_Phone__c = wrapMain.toNumber;
                     objTxtMsg.Interaction_Type__c='Whatsapp';
@@ -549,14 +531,14 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                         objTxtMsg.sid__c = vamId;
                     }
                     if(String.isNotBlank(templateName)){
-                        objTxtMsg.Status__c = 'sent'; 
+                        objTxtMsg.Status__c = 'sent';
                     }
                     if(string.isNotBlank(strFileName)){
                         objTxtMsg.Interaction_Type__c='MMS';
                     }
-                    
+
                     objTxtMsg.Unique_Key__c=recordId+'-'+System.Now().formatLong();
-                    
+
                     if(!Test.isRunningTest()){
                         String[] listFields = new String[]{'Id', 'Direction__c', 'Status__c', 'Record_ID__c', 'Read__c', 'Message__c', 'Message_formatted__c', 'Media_URL__c', 'Media_Type__c', 'File_Name__c', 'From_Phone__c', 'To_Phone__c', 'Interaction_Type__c', 'Created_date__c', 'sid__c', 'Unique_Key__c'};
                            if (
@@ -568,7 +550,7 @@ public with sharing class C3WhatsAppChatPanelCtrl {
                                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                             }
                         else{
-                            Database.insertImmediate(objTxtMsg, AccessLevel.USER_MODE); 
+                            Database.insertImmediate(objTxtMsg, AccessLevel.USER_MODE);
                         }
                     }
                     string sid= 'test';
@@ -599,42 +581,22 @@ public with sharing class C3WhatsAppChatPanelCtrl {
 * @throws AuraHandledException if the user does not have sufficient privileges.
 */
     /**
- * @description Generates a public download URL for a given file (ContentVersion) by creating a ContentDistribution record.
- *              Performs object-level and field-level security checks before performing DML or SOQL operations.
- *              Logs any unexpected exceptions using `C3Utility.logError()`.
- *
- * @param request An instance of `PublicUrlRequest` containing:
- *        - `cVId` (ContentVersion Id),
- *        - `relatedId` (record to relate to),
- *        - `fileName` (name for the distributed file).
- *
- * @return String A publicly accessible download URL for the file, or null if creation or fetch fails.
- *
- * @throws AuraHandledException If the current user lacks necessary FLS or CRUD permissions on ContentDistribution.
- *
- * @example
- * PublicUrlRequest req = new PublicUrlRequest();
- * req.cVId = '068XXXXXXXXXXXX';
- * req.relatedId = '001XXXXXXXXXXXX';
- * req.fileName = 'TestFile.pdf';
- * String url = getPublicUrl(req);
- * System.debug('Public URL: ' + url);
- */
-    
-    
-
-    //ContentDistribution does not support standard CRUD/FLS checks in a reliable way. Therefore, the application uses Database.<operation>(AccessLevel.USER_MODE) to enforce object and field-level permissions as recommended by Salesforce for system objects.
-
-@AuraEnabled
-public static String getPublicUrl(String toNumber, String cVId, String relatedId, String fileName, String mediaType){
-    System.debug('inside public url method');
-    
-    try {
+     * @description Generates a public download URL for a given file by creating a ContentDistribution record.
+     * @param toNumber Recipient WhatsApp number.
+     * @param cVId ContentVersion Id.
+     * @param relatedId Record Id to relate to.
+     * @param fileName File name.
+     * @param mediaType Type of the media.
+     * @return String A publicly accessible download URL for the file, or null.
+     */
+    @AuraEnabled
+    public static String getPublicUrl(String toNumber, String cVId, String relatedId, String fileName, String mediaType){
+        try {
         if (String.isBlank(cVId) || String.isBlank(relatedId) || String.isBlank(fileName)) {
             return null;
         }
 
-        
+
         ContentDistribution objCD = new ContentDistribution();
         objCD.Name = fileName;
         objCD.ContentVersionId = cVId;
@@ -642,7 +604,7 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
         objCD.PreferencesAllowOriginalDownload = true;
         objCD.RelatedRecordId = relatedId;
 
-        
+
         Database.insert(objCD, AccessLevel.USER_MODE);
 
         List<ContentDistribution> listContentDistributions = [
@@ -673,20 +635,18 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
     }
 }
 
-    
-    
+
+
     /**
-* @description Retrieves the WhatsApp message ID for a media message sent.
-* @param toNumber The recipient's phone number.
-* @param mediaUrl The URL of the media being sent.
-* @param mediaType The type of media being sent.
-* @param fileName The name of the file being sent.
-* @return The WhatsApp message ID if the media was sent successfully; otherwise, null.
-* @throws Exception if an error occurs while sending the media message.
-*/
+     * @description Retrieves the WhatsApp message ID for a media message sent.
+     * @param toNumber The recipient's phone number.
+     * @param mediaUrl The URL of the media being sent.
+     * @param mediaType The type of media being sent.
+     * @return String The WhatsApp message ID if the media was sent successfully; otherwise, null.
+     */
     @AuraEnabled
-     public static String getMediaWamId(String toNumber, String mediaUrl, String mediaType)
-     {
+    public static String getMediaWamId(String toNumber, String mediaUrl, String mediaType)
+    {
          try{
              if (String.isNotBlank(toNumber) && String.isNotBlank(mediaUrl) && String.isNotBlank(mediaType) ) {
                  String responseBody = C3WhatsAppWebService.sendWhatsAppMessageMedia(toNumber, mediaUrl, mediaType);
@@ -705,7 +665,7 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
              return null;
          }
      }
-    
+
     /**
 * @description Checks if the WhatsApp number configuration is implemented for the specified record.
 * @param recordId The ID of the record to check.
@@ -714,12 +674,12 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
 */
     @AuraEnabled
     public static String checkForNumberConfigurationImplemented(string recordId){
-        try{ 
+        try{
             ChatpanelValidations cvWrapper = new ChatpanelValidations();
             boolean isAllowedToChat;
             string errorMessage='';
             //SObject record;
-            
+
             String phoneNumber = '';
             String objectNameForPhone = '';
             if (recordId != null) {
@@ -738,8 +698,8 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
             }
             else{
                 numberSettingsMap = WhatsApp_Number_Configuration__c.getAll();
-            }            
-            
+            }
+
             WhatsApp_Number_Configuration__c setting = numberSettingsMap.get(objectNameForPhone);
             if (setting != null) {
                 String query = 'SELECT ' + setting.Field_Name__c + ' FROM ' + setting.Object_Name__c + ' WHERE Id =: recordId  LIMIT 1';
@@ -748,11 +708,11 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
                 Boolean b1 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest(setting.Object_Name__c, 'isAccessible', null, true)
                 );
-                
+
                 Boolean b2 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest(setting.Object_Name__c, 'isAccessible', fieldsToQuery, false)
                 );
-                
+
                 if(b1 && b2){
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }else{
@@ -780,7 +740,7 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
                 errorMessage='Please configure whatsapp number configuration before initialising a chat';
             }
             cvWrapper.isAllowedToChat=isAllowedToChat;
-            cvWrapper.errorMessage=errorMessage;    
+            cvWrapper.errorMessage=errorMessage;
             return json.serialize(cvWrapper);
         }catch(exception ex){
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','C3WhatsAppChatPanelCtrl','checkForNumberConfigurationImplemented','');
@@ -790,19 +750,24 @@ public static String getPublicUrl(String toNumber, String cVId, String relatedId
     // Method to fetch all Projects
 
 
-// Updated template fetching method with project filter
-@AuraEnabled
-public static String getTemplatesByProject(String objName, String projectId) {
+    /**
+     * @description Fetches approved templates filtered by object name and project id.
+     * @param objName API name of the object.
+     * @param projectId ID of the project.
+     * @return String JSON string representing the picklist options of templates.
+     */
+    @AuraEnabled
+    public static String getTemplatesByProject(String objName, String projectId) {
     List<Template_Object__c> listName = new List<Template_Object__c>();
     List<PicklistWrapper> result = new List<PicklistWrapper>();
      //Commented on 30/07/2025 to resolve CRUD Error(798-820)
-   /* String query = 'SELECT Id, Name, CCCWA__Template_Message__c, CCCWA__Header__c, CCCWA__Footer__c, ' + 
+   /* String query = 'SELECT Id, Name, CCCWA__Template_Message__c, CCCWA__Header__c, CCCWA__Footer__c, ' +
                    'CCCWA__Document_Url__c, CCCWA__Media_Type__c, CCCWA__Whatsapp_Template__c, CCCWA__Status__c, ' +
                    'CCCWA__Object__c, CCCWA__Template_Label__c, ' +
                    '(SELECT Id, CCCWA__Button_text__c, CCCWA__Button_Type__c FROM CCCWA__Template_Buttons__r) ' +
                    'FROM CCCWA__Template_Object__c  ' +
                    'WHERE CCCWA__Status__c = \'APPROVED\' ' ;
-   
+
                   // +'AND CCCWA__Project__c = :projectId '; // Filter by project ID
                   /* if (String.isNotBlank(objName)) {
         query += 'AND Object__c = :objName ';
@@ -814,10 +779,10 @@ public static String getTemplatesByProject(String objName, String projectId) {
     if (String.isNotBlank(objName)) {
         query += 'AND CCCWA__Object__c = \'' + String.escapeSingleQuotes(objName) + '\' ';
     }
-    
-    
+
+
     query += 'WITH SECURITY_ENFORCED';
-    
+
     listName = Database.query(query);*/
     if (String.isNotBlank(objName) && String.isNotBlank(projectId)) {
         listName = [
@@ -853,9 +818,8 @@ public static String getTemplatesByProject(String objName, String projectId) {
             WITH SECURITY_ENFORCED
         ];
     }
-    
+
     for (Template_Object__c template : listName) {
-        system.debug('.....'+template);
         PicklistWrapper wrapper = new PicklistWrapper();
         wrapper.label = template.Name;
         if (String.isNotBlank(template.Template_Label__c)) {
@@ -881,14 +845,13 @@ public static String getTemplatesByProject(String objName, String projectId) {
         }
         result.add(wrapper);
     }
-    System.debug('......'+result);
     return JSON.serialize(result);
 }
-    
+
     /**
 * @description Wrapper class for managing the state of the WhatsApp chat panel.
 */
-    
+
     public class WrapperChat{
         public boolean isSetUpCompleted;
         public list<TextMessagWrapper> lstTxtMsg;
@@ -898,7 +861,7 @@ public static String getTemplatesByProject(String objName, String projectId) {
         public string currentUserIntial;
         public string sendFrom;
         public string fromNumber;
-        public string toNumber;                                                                       
+        public string toNumber;
         public Boolean isPNA;
         public Boolean isSuccess;
         public string currentUserId;
@@ -1001,11 +964,11 @@ public static String getTemplatesByProject(String objName, String projectId) {
 */
     public class ChatpanelValidations{
         public boolean isAllowedToChat;
-        public string errorMessage;        
+        public string errorMessage;
     }
 /**
 * @description Class for validating chat panel configurations and permissions.
-*/    
+*/
     public class MessageRequest {
         public String recordId;
         public String toNumber;
@@ -1017,10 +980,10 @@ public static String getTemplatesByProject(String objName, String projectId) {
         public String templateName;
         public String strTempId;
 	}
-    
+
     /**
 * @description Class managing the parameter of the file object by LWC.
-*/ 
+*/
         public class PublicUrlRequest {
         public String toNumber;
         public String cVId;

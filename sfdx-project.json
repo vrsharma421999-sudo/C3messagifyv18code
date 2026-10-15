@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Messagify",
-      "versionName": "ver 1.16",
-      "versionNumber": "1.16.0.NEXT",
-      "ancestorVersion": "1.15.0"
+      "versionName": "ver 1.17",
+      "versionNumber": "1.17.0.NEXT",
+      "ancestorVersion": "1.16.0"
     }
   ],
   "name": "Messagify",
@@ -21,6 +21,8 @@
     "Messagify@1.14.0-1": "04tgL000000HUOHQA4",
     "Messagify@1.15.0-1": "04tgL000000HdwDQAS",
     "Messagify@1.16.0-1": "04tgL000000HiSrQAK",
-    "Messagify@1.16.0-2": "04tgL000000HiUTQA0"
+    "Messagify@1.16.0-2": "04tgL000000HiUTQA0",
+    "Messagify@1.17.0-1": "04tgL000000Ys2nQAC",
+    "Messagify@1.17.0-2": "04tgL000000ZN3NQAW"
   }
 }

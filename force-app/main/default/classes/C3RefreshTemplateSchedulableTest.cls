@@ -10,16 +10,16 @@
  * @company CloudCentric
  * @version 1.0
  */
-@isTest
+@IsTest
 private class C3RefreshTemplateSchedulableTest {
     /**
-     * @testsetup makeData
+     * @TestSetup makeData
      * @description
      *  Creates test user with necessary permission sets and inserts
      *  test Template_Object__c records under that user context.
      */
 
-    @testSetup
+    @TestSetup
     public static void makeData() {
         Profile sysAdminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
         User testUser = new User(
@@ -50,7 +50,7 @@ private class C3RefreshTemplateSchedulableTest {
             }
         }
         insert psAssignments;
-    
+
         System.runAs(testUser) {
             List<CCCWA__Template_Object__c> listTemplates = new List<CCCWA__Template_Object__c>();
             for (Integer i = 0; i < 10; i++) {
@@ -71,7 +71,7 @@ private class C3RefreshTemplateSchedulableTest {
      *  and updates existing Template_Object__c records as expected.
      */
 
-    @isTest
+    @IsTest
     static void testExecuteWithCurrentUserPermissions() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -83,5 +83,5 @@ private class C3RefreshTemplateSchedulableTest {
             List<CCCWA__Template_Object__c> updatedTemplates = [SELECT Id, Name, CCCWA__TemplateID__c, CCCWA__Status__c FROM CCCWA__Template_Object__c];
             System.assertEquals(10, updatedTemplates.size(), 'Expected 10 templates, but found: ' + updatedTemplates.size());
         }
-    } 
+    }
 }

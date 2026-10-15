@@ -1,5 +1,5 @@
 /**
-* @class C3WhatsAppSendTemplateBulkBatch 
+* @class C3WhatsAppSendTemplateBulkBatch
 * @description
 *  This Apex batch class is used to send WhatsApp template messages in bulk by querying
 *  a specific set of sObject records and using the `C3WhatsAppWebService` utility to send messages.
@@ -20,13 +20,13 @@
 * @date June 2025
 */
 public with sharing class C3WhatsAppSendTemplateBulkBatch implements Database.Batchable<sObject>, Database.AllowsCallouts {
-    
+
     public Set<String> setRecordIds;
     public String phoneField;
     public String query;
     Map<String, String> mapParamNumWithFieldName;
     Template_Object__c objTemplate;
-    
+
     /**
 * @constructor C3WhatsAppSendTemplateBulkBatch
 * @description
@@ -54,7 +54,7 @@ public with sharing class C3WhatsAppSendTemplateBulkBatch implements Database.Ba
         this.query = query;
         this.phoneField = phoneField;
     }
-    
+
     /**
 * @method start
 * @description
@@ -66,7 +66,7 @@ public with sharing class C3WhatsAppSendTemplateBulkBatch implements Database.Ba
    /*  public Database.QueryLocator start(Database.BatchableContext bc) {
         return Database.getQueryLocator(this.query);
     }*/
-    
+
    public Iterable<SObject> start(Database.BatchableContext bc) {
   // Run  dynamic SOQL in USER MODE
     List<SObject> records = Database.query(
@@ -76,7 +76,7 @@ public with sharing class C3WhatsAppSendTemplateBulkBatch implements Database.Ba
     return records;
 }
 
-    
+
     /**
 * @method execute
 * @description
@@ -91,11 +91,12 @@ public with sharing class C3WhatsAppSendTemplateBulkBatch implements Database.Ba
                 lstSObject,
                 this.mapParamNumWithFieldName,
                 this.objTemplate,
-                this.phoneField
+                this.phoneField,
+                true
             );
         }
     }
-    
+
     /**
 * @method finish
 * @description
@@ -104,8 +105,5 @@ public with sharing class C3WhatsAppSendTemplateBulkBatch implements Database.Ba
 * @param bc Database.BatchableContext - Context of the batch job.
 */
     public void finish(Database.BatchableContext bc) {
-        if (Test.isRunningTest() || System.isBatch()) {
-            System.debug(LoggingLevel.INFO, 'Batch job finished.');
-        }
     }
 }

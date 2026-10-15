@@ -27,7 +27,7 @@ public with sharing class C3WhatsappNumberConfiguration {
             }else{
                 objMain.lstToNumberConfiguration = WhatsApp_Number_Configuration__c.getAll().values();
             }
-            
+
             for(WhatsApp_Number_Configuration__c objCustToNumber : objMain.lstToNumberConfiguration){
                 if(objCustToNumber.Object_Name__c != null){
                     setOfObjectSaved.add(objCustToNumber.Object_Name__c.toLowerCase());
@@ -85,7 +85,7 @@ public with sharing class C3WhatsappNumberConfiguration {
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','WhatsappNumberConfiguration','getObjectLabel','');
             return null;
         }
-    } 
+    }
     /**
  *  @description Checks if the given SObject contains at least one accessible phone field.
  *
@@ -99,7 +99,12 @@ public with sharing class C3WhatsappNumberConfiguration {
         Schema.DescribeSObjectResult objectDescribe = gd.get(sObjectName).getDescribe();
         return hasPhoneField(objectDescribe);
     }
-    
+
+    /**
+     * @description Checks if the described SObject contains at least one accessible phone field.
+     * @param objectDescribe The DescribeSObjectResult of the object.
+     * @return Boolean True if an accessible phone field exists, false otherwise.
+     */
     public static Boolean hasPhoneField(Schema.DescribeSObjectResult objectDescribe){
         Map<String, Schema.SObjectField> objectFieldsMap = objectDescribe.fields.getMap();
         for (Schema.SObjectField field : objectFieldsMap.values()) {
@@ -129,10 +134,10 @@ public with sharing class C3WhatsappNumberConfiguration {
                 String fieldName = field.getDescribe().getLabel();
                 String fieldAPIName = field.getDescribe().getName();
                 String strType = String.valueOf(field.getDescribe().getType());
-                
+
                 if(field.getDescribe().isAccessible() && !(field.getDescribe().getName() == 'Id'))
                 {
-                    switch on strType 
+                    switch on strType
                     {
                         when 'PHONE' {
                             PickList objPickList = new PickList();
@@ -161,7 +166,7 @@ public with sharing class C3WhatsappNumberConfiguration {
 
     @AuraEnabled
     public static string saveWhatsAppNumberConfig(String jsonNumberConfig){
-        
+
         try{
             if(String.isnotblank(jsonNumberConfig)){
                 WhatsApp_Number_Configuration__c objWhatsAppNumConfig = (WhatsApp_Number_Configuration__c)JSON.deserialize(jsonNumberConfig, WhatsApp_Number_Configuration__c.class);
@@ -171,7 +176,7 @@ public with sharing class C3WhatsappNumberConfiguration {
                 } else {
                     objWhatsAppNumConfig.Object_Label__c = '';
                 }
-                
+
                 List<String> listFields = new List<String>{'Field_Name__c', 'Object_Name__c'};
                 if(C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('WhatsApp_Number_Configuration__c', 'isAccessible', null, true))
                 && C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('WhatsApp_Number_Configuration__c', 'isAccessible', listFields, false))
@@ -216,7 +221,7 @@ public with sharing class C3WhatsappNumberConfiguration {
  *  @description Wrapper class to hold information about WhatsApp Number Configurations and picklist metadata.
  */
     public class MainWrapper{
-        public boolean hasRecords;        
+        public boolean hasRecords;
         public list<WhatsApp_Number_Configuration__c> lstToNumberConfiguration;
         public list<PickList> objectPickList;
     }
@@ -237,7 +242,7 @@ public with sharing class C3WhatsappNumberConfiguration {
     public class LWCWrapper{
         public string strMessage;
         public Boolean isSetUpCompleted;
-        public boolean isSuccess;        
+        public boolean isSuccess;
         public list<WhatsApp_Number_Configuration__c> lstToNumberConfiguration;
         public list<ObjectDetailWrapper> lstObjectDetailWrapper;
         public list<ObjectDetailWrapper> lstObjectCreatedMapping;

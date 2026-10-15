@@ -8,7 +8,7 @@
 */
 
 public with sharing class C3Utility {
-    
+
     /**
 * @description This variable holds the formatted template message for WhatsApp communications.
 */
@@ -23,14 +23,14 @@ public with sharing class C3Utility {
         String apiNamePrefix = getNameSpace();
         Map<String, Schema.SObjectType> describeObject = Schema.getGlobalDescribe();
         String objName = request.objName.toLowerCase();
-        
+
         if (objName.endsWith('__c')) {
             objName = apiNamePrefix + objName;
         }
-        
+
         if (describeObject.containsKey(objName) && request.isObjectCheck) {
             Schema.DescribeSObjectResult objDescribe = describeObject.get(objName).getDescribe();
-            
+
             if ((request.accessType == 'isCreateable' && !objDescribe.isCreateable()) ||
                 (request.accessType == 'isUpdateable' && !objDescribe.isUpdateable()) ||
                 (request.accessType == 'isAccessible' && !objDescribe.isAccessible()) ||
@@ -39,14 +39,14 @@ public with sharing class C3Utility {
                 }
         } else if (describeObject.containsKey(objName) && !request.isObjectCheck && request.fieldNames != null && !request.fieldNames.isEmpty()) {
             Map<String, Schema.SObjectField> fieldMap = describeObject.get(objName).getDescribe().fields.getMap();
-            
+
             for (String fieldName : request.fieldNames) {
                 String lowerFieldName = fieldName.toLowerCase();
                 // Prepend package namespace only if custom field is not already namespaced to avoid double-prefixing
                 if (lowerFieldName.endsWith('__c') && !lowerFieldName.startsWith(apiNamePrefix.toLowerCase())) {
                     lowerFieldName = apiNamePrefix + lowerFieldName;
                 }
-                
+
                 if (!fieldMap.containsKey(lowerFieldName)) {
                     return false;
                 }
@@ -59,17 +59,17 @@ public with sharing class C3Utility {
                 } else if (request.accessType == 'isAccessible') {
                     hasPermission = fieldDescribe.isAccessible();
                 }
-                
+
                 if (!hasPermission) {
                     isPermitted = false;
                     break;
                 }
             }
         }
-        
+
         return isPermitted;
     }
-    
+
     /**
 * @description A utility class to represent a request for checking field- or object-level permissions in Salesforce.
 *              Supports fluent-style setters for easy chaining when building requests.
@@ -91,8 +91,8 @@ public with sharing class C3Utility {
 * @description A flag indicating whether to check object-level permissions instead of field-level.
 */
         public Boolean isObjectCheck;
-        
-        
+
+
         /**
 * @description Constructor to initialize the permission request with the given parameters.
 * @param objName The API name of the object.
@@ -106,7 +106,7 @@ public with sharing class C3Utility {
             this.fieldNames = fieldNames;
             this.isObjectCheck = isObjectCheck;
         }
-        
+
         // Fluent-style setters for chaining
         /**
 * @description Sets the object name.
@@ -126,8 +126,8 @@ public with sharing class C3Utility {
             this.accessType = accessType;
             return this;
         }
-        
-        
+
+
         /**
 * @description Sets the list of field names to check.
 * @param fieldNames A list of field API names.
@@ -137,7 +137,7 @@ public with sharing class C3Utility {
             this.fieldNames = fieldNames;
             return this;
         }
-        
+
         /**
 * @description Sets whether to check object-level permissions.
 * @param isObjectCheck True if object-level permissions should be checked.
@@ -148,7 +148,7 @@ public with sharing class C3Utility {
             return this;
         }
     }
-    
+
     /**
 * @description Retrieves the field name without the namespace prefix.
 * @param fieldName The full field name including the namespace.
@@ -165,7 +165,7 @@ public with sharing class C3Utility {
 * @description Retrieves the namespace prefix for the current class.
 * @return The namespace prefix as a string.
 */
-    public static String getNameSpace(){ 
+    public static String getNameSpace(){
         String apiNamePrefix='';
         String[] classNameParts = String.valueOf(C3Utility.class).split('\\.', 2);
         if(classNameParts.size() > 1) {
@@ -181,7 +181,7 @@ public with sharing class C3Utility {
 * @param recordId The ID of the record to fetch the phone number for.
 * @return The phone number as a string.
 */
-    
+
     public static string fetchPhoneNumber(String recordId) {
         String phoneNumber = '';
         String objectNameForPhone = '';
@@ -190,19 +190,19 @@ public with sharing class C3Utility {
         }
         Map<String, CCCWA__WhatsApp_Number_Configuration__c> numberSettingsMap = new Map<String, CCCWA__WhatsApp_Number_Configuration__c>();
         FieldPermissionRequest req = new FieldPermissionRequest(
-            'CCCWA__WhatsApp_Number_Configuration__c', 
-            'isAccessible', 
-            new List<String>{'CCCWA__Field_Name__c', 'CCCWA__Object_Name__c'}, 
+            'CCCWA__WhatsApp_Number_Configuration__c',
+            'isAccessible',
+            new List<String>{'CCCWA__Field_Name__c', 'CCCWA__Object_Name__c'},
             false
         );
-        
+
         if (!checkFieldPermission(req)) {
             throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
         }else{
             numberSettingsMap = CCCWA__WhatsApp_Number_Configuration__c.getAll();
         }
         CCCWA__WhatsApp_Number_Configuration__c setting = numberSettingsMap.get(objectNameForPhone);
-        
+
         if (setting != null) {
             String query = 'SELECT ' + setting.CCCWA__Field_Name__c + ' FROM ' + setting.CCCWA__Object_Name__c + ' WHERE Id =: recordId LIMIT 1';
             SObject record;
@@ -215,7 +215,7 @@ public with sharing class C3Utility {
                     true
                 )
             );
-            
+
             Boolean b2 = !checkFieldPermission(
                 new FieldPermissionRequest(
                     setting.CCCWA__Object_Name__c,
@@ -224,11 +224,11 @@ public with sharing class C3Utility {
                     false
                 )
             );
-            
+
             if(b1 && b2){
                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
             }else{
-                record = Database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE); 
+                record = Database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
             }
             if (record != null) {
                 phoneNumber = String.valueOf(record.get(setting.CCCWA__Field_Name__c));
@@ -244,7 +244,7 @@ public with sharing class C3Utility {
 */
     public static String getFormattedBodyutility(String strText){
         String input = '';
-        
+
         if(!String.isBlank(strText)){
             input = strText.replaceAll('<b>', '*');
             input = input.replaceAll('</b>', '*');
@@ -263,7 +263,7 @@ public with sharing class C3Utility {
         }
         return input;
     }
-    
+
     /**
 * @description Validates the parameters of a template based on the record ID and template ID.
 * @param recordId The ID of the record to validate.
@@ -281,11 +281,11 @@ public with sharing class C3Utility {
                 for(CCCWA__Template_Parameter__c objTempMapping : objTemplate.CCCWA__Template_Mappings__r ){
                     mapParamNumWithFieldName.put(objTempMapping.CCCWA__Parameter_Name__c, objTempMapping.CCCWA__Field_Name__c );
                 }
-                
-                
+
+
                 Set<String> fieldSet = new Set<String>(mapParamNumWithFieldName.values());
                 String query = 'SELECT Id, '+ String.join(fieldSet, ',') + ' FROM '+objectName+' WHERE Id =: recId WITH SECURITY_ENFORCED LIMIT 1';
-                SObject objSObject ;         
+                SObject objSObject ;
                 List<String> fieldsToQuery = new List<String>(fieldSet);
                 Boolean b1 = !C3Utility.checkFieldPermission(
                     new FieldPermissionRequest(
@@ -295,7 +295,7 @@ public with sharing class C3Utility {
                         true
                     )
                 );
-                
+
                 Boolean b2 = !C3Utility.checkFieldPermission(
                     new FieldPermissionRequest(
                         objectName,
@@ -309,7 +309,7 @@ public with sharing class C3Utility {
                 }else{
                     objSObject = database.query(String.escapeSingleQuotes(query));
                 }
-                
+
                 if(mapParamNumWithFieldName != null && (!mapParamNumWithFieldName.isEmpty())){
                     integer numOfParam = mapParamNumWithFieldName.size();
                     List<String> listField = new List<String>();
@@ -337,7 +337,7 @@ public with sharing class C3Utility {
 */
     //getting all the Fields of the SObject
     @AuraEnabled
-    public static string getObjectFields(String sObjectName) 
+    public static string getObjectFields(String sObjectName)
     {
         try {
             UtilityMainWrapper objMain = new UtilityMainWrapper();
@@ -347,18 +347,18 @@ public with sharing class C3Utility {
                 return null;
             }
             Map<String, Schema.SObjectField> objectFieldsMap = objectDescribe.fields.getMap();
-            
+
             for (Schema.SObjectField field : objectFieldsMap.values()) {
-                
+
                 //Schema.DescribeFieldResult desribeResult = field.getDescribe();
                 String fieldName = field.getDescribe().getLabel() + ' ('+ field.getDescribe().getName() + ' )';
                 String fieldAPIName = field.getDescribe().getName();
                 String strType = String.valueOf(field.getDescribe().getType());
-                
+
                 if(field.getDescribe().isAccessible() && !(field.getDescribe().getName() == 'Id'))
                 {
-                    
-                    switch on strType 
+
+                    switch on strType
                     {
                         when 'EMAIL' {
                             ObjectPicklist objPickList = new ObjectPicklist();
@@ -424,38 +424,38 @@ when 'CURRENCY' {
 //@SuppressWarnings('PMD.ApexFlsViolation')
     /*
 * Suppression Reason:
-* This method explicitly performs comprehensive Field-Level Security (FLS) 
-* and CRUD checks before any DML operations on ContentVersion, 
+* This method explicitly performs comprehensive Field-Level Security (FLS)
+* and CRUD checks before any DML operations on ContentVersion,
 * ContentDocumentLink, and ContentDistribution objects.
-* 
-* The PMD rule "ApexFlsViolation" is triggered because the fields 
-* (e.g., PathOnClient, VersionData, Title, etc.) are being set directly 
-* and inserted using Database.insert(). 
-* 
-* However, the implementation ensures security by calling 
-* checkFieldPermission() for all relevant fields and operations 
-* (isAccessible, isCreateable) prior to DML. 
-* 
-* Therefore, the warning is a false positive, and suppression is safe 
+*
+* The PMD rule "ApexFlsViolation" is triggered because the fields
+* (e.g., PathOnClient, VersionData, Title, etc.) are being set directly
+* and inserted using Database.insert().
+*
+* However, the implementation ensures security by calling
+* checkFieldPermission() for all relevant fields and operations
+* (isAccessible, isCreateable) prior to DML.
+*
+* Therefore, the warning is a false positive, and suppression is safe
 * in this context.
 */
     /*
 * Suppression Reason:
-* The PMD rule "ApexFlsViolation" is triggered because the field 
-* `ShareType` on the ContentDocumentLink object is being set 
+* The PMD rule "ApexFlsViolation" is triggered because the field
+* `ShareType` on the ContentDocumentLink object is being set
 * and inserted directly using Database.insert().
 *
-* However, this implementation already performs explicit 
+* However, this implementation already performs explicit
 * object-level and field-level security checks before the DML:
 *   - isAccessible() for the object and specified fields
 *   - isCreateable() for the object and specified fields
 *
-* Only when all checks (b5, b6, b7, b8) return true does the code 
-* proceed with Database.insert(). Otherwise, a controlled 
+* Only when all checks (b5, b6, b7, b8) return true does the code
+* proceed with Database.insert(). Otherwise, a controlled
 * exception is thrown.
 *
-* Since field-level security is being enforced programmatically, 
-* this is a false positive from the static analysis tool, and 
+* Since field-level security is being enforced programmatically,
+* this is a false positive from the static analysis tool, and
 * suppressing the warning is safe in this context.
 */
     /*
@@ -464,18 +464,18 @@ when 'CURRENCY' {
 * - False positive because FLS is already enforced via checkFieldPermission before DML.
 * - Safe to suppress since access control is handled programmatically.
 */
-    
+
     public static String uploadFile(Blob fileContent, String fileName, String fileType, String recordId) {
         try{
             ContentVersion objCV = new ContentVersion();
             // Assigning file content to VersionData after verifying field-level security.
             // NOPMD(ApexFlsViolation) - Safe: VersionData field checked for accessibility and createability before assignment
-            
+
             objCV.VersionData = fileContent;
-            
+
             // Assigning file name to Title after verifying FLS.
             // NOPMD(ApexFlsViolation) - Safe: Title field checked for accessibility and createability before assignment
-            
+
             objCV.Title = fileName;
             // Assigning file name to PathOnClient after verifying FLS.
             // NOPMD(ApexFlsViolation) - Safe: PathOnClient field checked for accessibility and createability before assignment
@@ -497,7 +497,7 @@ when 'CURRENCY' {
             }else {
                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
             }
-            
+
             ContentDocumentLink objCDL = new ContentDocumentLink();
             String[] listFields = new String[]{'ContentDocumentId', 'Id'};
                 if (
@@ -505,8 +505,8 @@ when 'CURRENCY' {
                     checkFieldPermission(new FieldPermissionRequest('ContentVersion', 'isAccessible', listFields, false))
                 ) {
                     objCDL.ContentDocumentId = [
-                        SELECT Id, ContentDocumentId 
-                        FROM ContentVersion 
+                        SELECT Id, ContentDocumentId
+                        FROM ContentVersion
                         WHERE Id = :objCV.Id
                     ].ContentDocumentId;
                 }else {
@@ -521,13 +521,13 @@ when 'CURRENCY' {
             boolean b8 = checkFieldPermission(new FieldPermissionRequest('ContentDocumentLink', 'isCreateable', listFields2, false));
             if (b5 && b6 && b7 && b8) {
                 Database.insert(objCDL, AccessLevel.USER_MODE);
-                // NOPMD(ApexFlsViolation) - Safe: Explicit FLS checks performed for ContentDocumentLink fields 
-                // (LinkedEntityId, ShareType, ContentDocumentId) before insert. 
+                // NOPMD(ApexFlsViolation) - Safe: Explicit FLS checks performed for ContentDocumentLink fields
+                // (LinkedEntityId, ShareType, ContentDocumentId) before insert.
                 // Insert is executed in USER_MODE only after validation.
             }else {
                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
             }
-            
+
             ContentDistribution objCD = new ContentDistribution();
             // NOPMD(ApexFlsViolation) – PMD flags Name field assignment.
             // Justification:
@@ -540,26 +540,26 @@ when 'CURRENCY' {
             // 2. Explicit FLS checks (isAccessible + isCreateable) are performed via checkFieldPermission()
             //    before any DML operation.
             // 3. Insert occurs only if all FLS checks pass.
-            
+
             objCD.ContentVersionId = objCV.Id;
-            // NOPMD(ApexFlsViolation) – Safe because PreferencesAllowViewInBrowser is a standard field 
+            // NOPMD(ApexFlsViolation) – Safe because PreferencesAllowViewInBrowser is a standard field
             // and explicit FLS checks are performed before insert.
             // // 1. PreferencesAllowOriginalDownload is a standard ContentDistribution field.
             // 2. Field-level security is validated using checkFieldPermission() for both isAccessible and isCreateable.
             // 3. Assignment is flagged by PMD, but actual execution is guarded by FLS checks.
             objCD.PreferencesAllowViewInBrowser= true;
-            
-            // NOPMD(ApexFlsViolation) – Safe because PreferencesAllowOriginalDownload is a standard field 
+
+            // NOPMD(ApexFlsViolation) – Safe because PreferencesAllowOriginalDownload is a standard field
             // and verified with isAccessible + isCreateable checks.
             objCD.PreferencesAllowOriginalDownload=true;
             // NOPMD(ApexFlsViolation) – Field assignment flagged by PMD, but safe because:
-            // 1. Explicit FLS checks (isAccessible + isCreateable) are performed 
+            // 1. Explicit FLS checks (isAccessible + isCreateable) are performed
             //    using checkFieldPermission() before DML.
-            // 2. Fields (PreferencesAllowViewInBrowser, PreferencesAllowOriginalDownload, RelatedRecordId) 
+            // 2. Fields (PreferencesAllowViewInBrowser, PreferencesAllowOriginalDownload, RelatedRecordId)
             //    are standard ContentDistribution fields and verified for accessibility and create permissions.
             // 3. Database.insert() is executed only if all field-level security checks pass.
-            // 
-            // NOPMD(ApexFlsViolation) – Safe because RelatedRecordId is explicitly validated 
+            //
+            // NOPMD(ApexFlsViolation) – Safe because RelatedRecordId is explicitly validated
             // with checkFieldPermission() before insert.
             objCD.RelatedRecordId = recordId;// NOPMD(ApexFlsViolation) – already secured with FLS checks
             String[] listFields3 = new String[]{'Name', 'ContentVersionId', 'PreferencesAllowViewInBrowser', 'PreferencesAllowOriginalDownload', 'RelatedRecordId'};
@@ -570,7 +570,7 @@ when 'CURRENCY' {
             // NOPMD(ApexFlsViolation) – Database.insert flagged by PMD, but this is safe because:
             // - Prior to DML, accessibility and create permissions are explicitly validated for all fields.
             // - Insert runs in USER_MODE only after passing the above FLS checks.
-            if (b9 && b10 && b11 && b12) {  
+            if (b9 && b10 && b11 && b12) {
                 // NOPMD(ApexFlsViolation) – Safe because:
                 // - All required fields are checked for accessibility and create permissions before insert.
                 // - Insert runs in USER_MODE only after passing all FLS checks.
@@ -578,8 +578,8 @@ when 'CURRENCY' {
                 Database.insert(objCD, AccessLevel.USER_MODE); // NOPMD(ApexFlsViolation) – explicit create checks done
             }else {  throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                   }
-            
-            
+
+
             String[] listFields4 = new String[]{'ContentDownloadUrl', 'Id'};
                 if (
                     checkFieldPermission(new FieldPermissionRequest('ContentDistribution', 'isAccessible', null, true)) && checkFieldPermission(new FieldPermissionRequest('ContentDistribution', 'isAccessible', listFields4, false))){list<ContentDistribution> listContentDistributions = [SELECT Id, ContentDownloadUrl FROM ContentDistribution WHERE Id =: objCD.Id WITH SECURITY_ENFORCED];
@@ -587,7 +587,7 @@ when 'CURRENCY' {
                                                                                                                                                                                                                                        }else {
                                                                                                                                                                                                                                            throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                                                                                                                                                                                                                                        }
-            
+
         }catch(exception ex){
             logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','Utility','uploadFile','');
             return null;
@@ -601,10 +601,8 @@ when 'CURRENCY' {
     // Used in Chat Panel
     public static Map<String, String> getStandardNameField(Set<String> listOfSObjectApiNames){
         Map<String, String> result=new Map<String, String>();
-        
-        String [] listFields = new String [] {'QualifiedApiName', 'EntityDefinitionId','IsNameField'};
-            if (checkFieldPermission(new FieldPermissionRequest('FieldDefinition', 'isAccessible', null, true)) /*&&
-checkFieldPermission(new FieldPermissionRequest('ContentDistribution', 'isAccessible', listFields, false))*/) {
+
+            if (checkFieldPermission(new FieldPermissionRequest('FieldDefinition', 'isAccessible', null, true))) {
     List<FieldDefinition> listFieldDefinition = new List<FieldDefinition>([SELECT QualifiedApiName,EntityDefinition.QualifiedApiName FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName IN :listOfSObjectApiNames AND IsNameField = TRUE WITH USER_MODE]);
     for(FieldDefinition fieldDef : listFieldDefinition){
         result.put(fieldDef.EntityDefinition.QualifiedApiName, fieldDef.QualifiedApiName);
@@ -651,8 +649,8 @@ checkFieldPermission(new FieldPermissionRequest('ContentDistribution', 'isAccess
         Map<String,ValidRecordWrapper> validRecordIds=new Map<String,ValidRecordWrapper>();
         Map<String,String> objectPrefixAndNameMap = new Map<String,String>();
         Set<String> listOfSObjectApiNames=new Set<String>();
-        
-        Map<String, Schema.SObjectType> gd =  Schema.getGlobalDescribe(); 
+
+        Map<String, Schema.SObjectType> gd =  Schema.getGlobalDescribe();
         for(String myIdPrefix : prefixAndRecordIds.keySet())
         {
             for(Schema.SObjectType stype : gd.values())
@@ -676,11 +674,11 @@ checkFieldPermission(new FieldPermissionRequest('ContentDistribution', 'isAccess
             {
                 List<String> recordIdsCheck=new List<String>();
                 recordIdsCheck=prefixAndRecordIds.get(myIdPrefix);
-                
+
                 String objectNameAndLabel=objectPrefixAndNameMap.get(myIdPrefix);
                 String objectName=objectNameAndLabel.split('-')[0];
                 String objectLabel=objectNameAndLabel.split('-')[1];
-                
+
                 String soql = 'SELECT Id ';
                 if(objectAndNameFieldsMap.containsKey(objectName) && String.isNotBlank(objectAndNameFieldsMap.get(objectName)))
                 {
@@ -720,7 +718,7 @@ checkFieldPermission(new FieldPermissionRequest('ContentDistribution', 'isAccess
 * @description Retrieves WhatsApp configuration details.
 */
     public static void getWhatsAppDetails(){
-        
+
         List<CCCWA__WhatsApp_Admin__c> listWAA = new List<CCCWA__WhatsApp_Admin__c>();
         listWAA = CCCWA__WhatsApp_Admin__c.getall().values();
         if(listWAA != null && listWAA.size()>0){
@@ -766,47 +764,36 @@ checkFieldPermission(new FieldPermissionRequest('ContentDistribution', 'isAccess
         //String ids = '(' + String.join(recordIds, ',') + ')';
         C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessageBulk(new List<String>(recordIds), templateRecordId);
     }
+
+    @TestVisible
+    private static Boolean skipErrorLogInsert = false;
+
     /**
-* @description Logs an error message with details for debugging.
-* @param ErrorMessage The error message to log.
-* @param StackTrace The stack trace of the error.
-* @param LineNumber The line number where the error occurred.
-* @param response The response associated with the error.
-* @param className The name of the class where the error occurred.
-* @param methodName The name of the method where the error occurred.
-* @param request The request details associated with the error.
-*/
-    
-    /**
-* @description Logs an error to the custom Error_Log__c object if the user has appropriate field-level and object-level permissions.
-*              It performs permission checks before inserting the error log to ensure security compliance.
-*
-* @param errorMessage The error message to log.
-* @param stackTrace The stack trace associated with the error.
-* @param lineNumber The line number in the code where the error occurred.
-* @param response The response or output at the time of the error (if applicable).
-* @param className The name of the Apex class where the error occurred.
-* @param methodName The name of the method where the error occurred.
-* @param request The original request or input that caused the error.
-*
-* @throws AuraHandledException If the current user does not have sufficient access to create or view the Error_Log__c fields.
-*/
-     @TestVisible
-private static Boolean skipErrorLogInsert = false;
-    
-   
-public static void logError(
-    String errorMessage,
-    String stackTrace,
-    Integer lineNumber,
-    String response,
-    String className,
-    String methodName,
-    String request
-) {
+     * @description Logs an error to the custom Error_Log__c object if the user has appropriate field-level and object-level permissions.
+     *              It performs permission checks before inserting the error log to ensure security compliance.
+     *
+     * @param errorMessage The error message to log.
+     * @param stackTrace The stack trace associated with the error.
+     * @param lineNumber The line number in the code where the error occurred.
+     * @param response The response or output at the time of the error (if applicable).
+     * @param className The name of the Apex class where the error occurred.
+     * @param methodName The name of the method where the error occurred.
+     * @param request The original request or input that caused the error.
+     *
+     * @throws AuraHandledException If the current user does not have sufficient access to create or view the Error_Log__c fields.
+     */
+    public static void logError(
+        String errorMessage,
+        String stackTrace,
+        Integer lineNumber,
+        String response,
+        String className,
+        String methodName,
+        String request
+    ) {
     Boolean skipInsert = Test.isRunningTest() || skipErrorLogInsert;
 
-    
+
     Boolean hasAccess =
         checkFieldPermission(
             new FieldPermissionRequest('CCCWA__Error_Log__c', 'isAccessible', null, true)
@@ -833,39 +820,8 @@ public static void logError(
         Database.insert(objError, AccessLevel.USER_MODE);
     }
 }
-
-    
-   /* public static void logError( String errorMessage, String stackTrace, Integer lineNumber, String response, String className, String methodName, String request){
-         if (Test.isRunningTest()) { //cmbd 10012026
-          return; 
-         }
-       
-// Allow tests to execute logic but skip DML
-    Boolean skipInsert = Test.isRunningTest() || skipErrorLogInsert;
-        {
-        String[] listFields = new String[]{ 'CCCWA__Line_Number__c', 'CCCWA__Error_Message__c', 'CCCWA__Stack_Trace__c', 'CCCWA__Response__c', 'CCCWA__Class_Name__c', 'CCCWA__Method_Name__c', 'CCCWA__Request__c'};
-            if (
-                checkFieldPermission(new FieldPermissionRequest('CCCWA__Error_Log__c', 'isAccessible', null, true)) && //cmbd 10012026
-                //checkFieldPermission(new FieldPermissionRequest('ContentVersion', 'isAccessible', listFields, false)) &&
-                checkFieldPermission(new FieldPermissionRequest('CCCWA__Error_Log__c', 'isCreateable', null, true)) &&  //cmbd 10012026
-//checkFieldPermission(new FieldPermissionRequest('ContentVersion', 'isCreateable', listFields, false))
-            ){
-                CCCWA__Error_Log__c objError = new CCCWA__Error_Log__c( 
-                    CCCWA__Line_Number__c = String.valueOf(lineNumber),
-                    CCCWA__Method_Name__c = methodName,
-                    CCCWA__Error_Message__c = errorMessage,
-                    CCCWA__Stack_Trace__c = stackTrace,
-                    CCCWA__Response__c = response,
-                    CCCWA__Class_Name__c = className, 
-                    CCCWA__Request__c = request
-                );
-                Database.INSERT(objError, AccessLevel.USER_MODE);
-            }else {
-                throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
-            }
-        } } *
     /**
-  
+
 * @description
 *  Builds and returns a WhatsApp_Conversation__b record based on the provided input object.
 *  This method prepares the conversation with metadata such as phone numbers, template message,
@@ -876,7 +832,7 @@ public static void logError(
 * @return A fully constructed WhatsApp_Conversation__b record ready to be inserted.
 */
     public static CCCWA__WhatsApp_Conversation__b buildConvoRecord(WhatsAppConvoInput input){
-        
+
         CCCWA__WhatsApp_Conversation__b objTxtMsg = new CCCWA__WhatsApp_Conversation__b();
         objTxtMsg.CCCWA__Direction__c = 'Outbound';
         objTxtMsg.CCCWA__Status__c = 'Pending';
@@ -888,13 +844,13 @@ public static void logError(
         // }else{
         objTxtMsg.CCCWA__Message__c = buildMessage(input.objTemplate);
         // }
-        
-        
+
+
         if(String.isNotBlank(input.objTemplate.CCCWA__Template_Message__c)){
             objTxtMsg.CCCWA__Message_formatted__c = input.objTemplate.CCCWA__Template_Message__c;
             objTxtMsg.CCCWA__Template_Name__c = input.objTemplate.Name;
         }
-        
+
     //    objTxtMsg.CCCWA__From_Phone__c = input.fromNumber ;
       objTxtMsg.CCCWA__From_Phone__c = '919557718888';
         objTxtMsg.CCCWA__Read__c = 'true';
@@ -904,8 +860,8 @@ public static void logError(
         if(string.isNotBlank(input.wamId)){
             objTxtMsg.CCCWA__sid__c = input.wamId;
         }
-        objTxtMsg.CCCWA__Status__c = 'sent'; 
-        
+        objTxtMsg.CCCWA__Status__c = 'sent';
+
         if(string.isNotBlank(input.objTemplate.File_Name__c)){
             objTxtMsg.CCCWA__Interaction_Type__c='MMS';
         }
@@ -943,13 +899,13 @@ public static void logError(
         * @description
 *  The phone number from which the WhatsApp message will be sent.
 */
-        
+
          public String fromNumber;
     }
-    
-    
-    
-    
+
+
+
+
     /**
 * @description Constructs a message based on the provided template object.
 * @param objTemplate The template object containing message details.
@@ -971,7 +927,7 @@ public static void logError(
         if (String.isNotBlank(objTemplate.CCCWA__Footer__c)) {
             txtMsg =  txtMsg  + '</br><p style="font-size : 12px" class="slds-text-color_inverse-weak">'+ objTemplate.CCCWA__Footer__c +'<p>';
         }
-        
+
         if(objTemplate.CCCWA__Template_Buttons__r != null && objTemplate.CCCWA__Template_Buttons__r.size() > 0){
             for(CCCWA__Template_Button__c button : objTemplate.CCCWA__Template_Buttons__r){
                 if( button.CCCWA__Button_Type__c == 'QUICK_REPLY'){
@@ -993,8 +949,9 @@ public static void logError(
         return txtMsg;
     }
     /**
-* @description A custom setting for the Attachment enable check.
-*/
+     * @description A custom setting for the Attachment enable check.
+     * @return Boolean True if attachment is enabled.
+     */
     @AuraEnabled
     public static Boolean isAttachmentEnabled() {
         CCCWA__Whatsapp_Attachment__c settings = CCCWA__Whatsapp_Attachment__c.getInstance(UserInfo.getUserId());
@@ -1003,10 +960,11 @@ public static void logError(
         }
         return settings != null && settings.CCCWA__Attachment__c;
     }
-    
+
     /**
-* @description A custom setting for the Campaign/Project enable check.
-*/
+     * @description A custom setting for the Campaign/Project enable check.
+     * @return Boolean True if campaign is enabled.
+     */
     @AuraEnabled
     public static Boolean isCampaignEnabled() {
         CCCWA__Whatsapp_Attachment__c settings = CCCWA__Whatsapp_Attachment__c.getInstance(UserInfo.getUserId());
@@ -1015,10 +973,11 @@ public static void logError(
         }
         return settings != null && settings.CCCWA__Campaign__c;
     }
-    
+
     /**
-* @description A custom setting for the Task Creation enable check.
-*/
+     * @description A custom setting for the Task Creation enable check.
+     * @return Boolean True if task creation is enabled.
+     */
     @AuraEnabled
     public static Boolean isTaskCreationEnabled() {
         CCCWA__Whatsapp_Attachment__c settings = CCCWA__Whatsapp_Attachment__c.getInstance(UserInfo.getUserId());
@@ -1028,24 +987,24 @@ public static void logError(
         return settings != null && settings.CCCWA__Task_Creation__c;
     }
     /**
-* @description
-* This method retrieves the list of project names from the custom metadata type `CCCWA__Project__mdt`.
-* Custom metadata types are configuration-level records intended for use in code and are globally readable.
-* As such, they do not require CRUD/FLS checks like standard or custom objects do.
-*
-* @returns List<String> - A list of project name strings retrieved from CMDT records.
-*
-* @note
-* The ApexCRUDViolation warning from PMD is suppressed because CRUD checks are not applicable to Custom Metadata Types (CMDT).
-* These types are not subject to user-based security enforcement and are safe to query without permission checks.
-*/
-    
+     * @description
+     * This method retrieves the list of project names from the custom metadata type `CCCWA__Project__mdt`.
+     * Custom metadata types are configuration-level records intended for use in code and are globally readable.
+     * As such, they do not require CRUD/FLS checks like standard or custom objects do.
+     *
+     * @return List<String> - A list of project name strings retrieved from CMDT records.
+     *
+     * @note
+     * The ApexCRUDViolation warning from PMD is suppressed because CRUD checks are not applicable to Custom Metadata Types (CMDT).
+     * These types are not subject to user-based security enforcement and are safe to query without permission checks.
+     */
+
     // CMDT query does not require CRUD checks – safe to suppress this rule
    // @SuppressWarnings('ApexCRUDViolation')
     @AuraEnabled(cacheable=true)
     public static List<String> getProjectNames() {
         List<String> projectNames = new List<String>();
-        
+
         for (CCCWA__Project__mdt proj : [
             SELECT CCCWA__Project_Name__c
             FROM CCCWA__Project__mdt

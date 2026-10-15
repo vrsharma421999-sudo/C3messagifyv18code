@@ -25,7 +25,7 @@ public  with sharing class C3RefreshTemplateSchedulable implements Schedulable, 
     public void execute(SchedulableContext context) {
         scheduleRefreshTemplate();
     }
-    
+
     /**
 * @method scheduleRefreshTemplate
 * @description
@@ -33,7 +33,7 @@ public  with sharing class C3RefreshTemplateSchedulable implements Schedulable, 
 *  Applies field-level security checks before performing DML.
 * @throws AuraHandledException if user lacks necessary FLS.
 */
-    // Suppressing PMD warnings because explicit CRUD/FLS validations 
+    // Suppressing PMD warnings because explicit CRUD/FLS validations
     // are already implemented in this class (see b1–b8 checks).
     // Safe to suppress for SOQL and DML operations on CCCWA__Template_Object__c
     @SuppressWarnings('PMD.ApexCRUDViolation, PMD.ApexFlsViolation')
@@ -42,12 +42,12 @@ public  with sharing class C3RefreshTemplateSchedulable implements Schedulable, 
             Map<String, CCCWA__Template_Object__c> mapWhatsAppTemplateId = new Map<String, CCCWA__Template_Object__c>();
             List<CCCWA__Template_Object__c> listTemplate = new List<CCCWA__Template_Object__c>();
             String responseBody = C3WhatsAppWebService.fetchTemplate();
-            
-            
-            if (String.isNotBlank(responseBody)) { 
+
+
+            if (String.isNotBlank(responseBody)) {
                 boolean b7 = !C3Utility.CheckFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c','isAccessible', null, false));
                 boolean b8 = !C3Utility.CheckFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', new List<String>{'Id', 'CCCWA__TemplateID__c', 'CCCWA__Status__c' }, false));
-                
+
                 if(b7 && b8){
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }else {
@@ -58,32 +58,32 @@ public  with sharing class C3RefreshTemplateSchedulable implements Schedulable, 
                         }
                     }
                 }
-                
+
                 Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
                 List<Object> templateJsonList = (List<Object>) responseMap.get('data');
-                
+
                 for (Object templateJson : templateJsonList) {
                     Map<String, Object> templateMap = (Map<String, Object>) templateJson;
                     String whatsAppId = (String) templateMap.get('id');
                     if (mapWhatsAppTemplateId.containsKey(whatsAppId)) {
                         CCCWA__Template_Object__c objTemplate = mapWhatsAppTemplateId.get(whatsAppId);
                         // - Object: CCCWA__Template_Object__c.CCCWA__Status__c
-                        //   Reason: Access checked via CheckFieldPermission. This field is updated only 
+                        //   Reason: Access checked via CheckFieldPermission. This field is updated only
                         //           with status values from WhatsApp API and is not user-controlled.
                         objTemplate.CCCWA__Status__c = (String) templateMap.get('status');
                         // - Object: CCCWA__Template_Object__c.Name
-                        //   Reason: Standard Name field is validated with CheckFieldPermission before update. 
+                        //   Reason: Standard Name field is validated with CheckFieldPermission before update.
                         //           Used only to sync template name from WhatsApp API response.
-                        
+
                         objTemplate.Name = (String) templateMap.get('name');
                         // - Object: CCCWA__Template_Object__c.CCCWA__TemplateID__c
-                        //   Reason: Access to Template ID is validated using CheckFieldPermission before 
+                        //   Reason: Access to Template ID is validated using CheckFieldPermission before
                         //           query/update. This field is only used for mapping WhatsApp templates.
                         objTemplate.CCCWA__TemplateID__c = whatsAppId;
                         listTemplate.add(objTemplate);
                     }
                 }
-                
+
                 if (!listTemplate.isEmpty()) {
                     boolean b1 = !C3Utility.CheckFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', null, false));
                     boolean b2 = !C3Utility.CheckFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', new List<String>{'Id', 'Name', 'CCCWA__TemplateID__c', 'CCCWA__Status__c' }, false));
@@ -91,16 +91,16 @@ public  with sharing class C3RefreshTemplateSchedulable implements Schedulable, 
                     boolean b4 = !C3Utility.CheckFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isCreateable', new List<String>{'Id', 'Name', 'CCCWA__TemplateID__c', 'CCCWA__Status__c' }, false));
                     boolean b5 = !C3Utility.CheckFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isUpdateable', null, false));
                     boolean b6 = !C3Utility.CheckFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isUpdateable', new List<String>{'Id', 'Name', 'CCCWA__TemplateID__c', 'CCCWA__Status__c' }, false));
-                    
-                    
-                    /*if((!C3Utility.CheckFieldPermission('Template_Object__c', 'isAccessible', null, false) 
-&&!C3Utility.CheckFieldPermission('Template_Object__c', 'isAccessible', new List<String>{'Id', 'Name', 'TemplateID__c', 'Status__c' }, false)) 
-&& (!C3Utility.CheckFieldPermission('Template_Object__c', 'isCreateable', null, false)  
-&& !C3Utility.CheckFieldPermission('Template_Object__c', 'isCreateable', new List<String>{'Id', 'Name', 'TemplateID__c', 'Status__c' }, false)) 
-&& (!C3Utility.CheckFieldPermission('Template_Object__c', 'isUpdateable', null, false)  
+
+
+                    /*if((!C3Utility.CheckFieldPermission('Template_Object__c', 'isAccessible', null, false)
+&&!C3Utility.CheckFieldPermission('Template_Object__c', 'isAccessible', new List<String>{'Id', 'Name', 'TemplateID__c', 'Status__c' }, false))
+&& (!C3Utility.CheckFieldPermission('Template_Object__c', 'isCreateable', null, false)
+&& !C3Utility.CheckFieldPermission('Template_Object__c', 'isCreateable', new List<String>{'Id', 'Name', 'TemplateID__c', 'Status__c' }, false))
+&& (!C3Utility.CheckFieldPermission('Template_Object__c', 'isUpdateable', null, false)
 && !C3Utility.CheckFieldPermission('Template_Object__c', 'isUpdateable', new List<String>{'Id', 'Name', 'TemplateID__c', 'Status__c' }, false))){*/
                     if(b1 && b2 && b3 && b4 && b5 && b6){
-                        throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');    
+                        throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                     }else{
                         Database.UPDATE(listTemplate,AccessLevel.User_mode);
                     }
@@ -108,7 +108,7 @@ public  with sharing class C3RefreshTemplateSchedulable implements Schedulable, 
             }
         }catch(exception ex){
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','RefreshTemplateSchedulable','execute','');
-            
+
         }
     }
 }

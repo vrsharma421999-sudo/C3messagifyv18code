@@ -2,7 +2,7 @@
  * @description Comprehensive test class for C3WhatsAppChatPanelCtrl
  * Achieves high coverage even in User Mode by running as a fully-permissioned test user
  */
-@isTest
+@IsTest
 private class C3WhatsAppChatPanelCtrlTest {
 
     @TestSetup
@@ -27,7 +27,7 @@ private class C3WhatsAppChatPanelCtrlTest {
         // Assign required Permission Sets (if they exist)
         List<PermissionSetAssignment> psaList = new List<PermissionSetAssignment>();
         for (PermissionSet ps : [
-            SELECT Id FROM PermissionSet 
+            SELECT Id FROM PermissionSet
             WHERE Name IN ('Admin_Panel', 'WhatsApp_Access')
         ]) {
             psaList.add(new PermissionSetAssignment(
@@ -81,7 +81,7 @@ insert template;
         }
     }
 
-    @isTest
+    @IsTest
     static void testInitAndFetchTemplates() {
         User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
         Contact testContact = [SELECT Id, Phone FROM Contact LIMIT 1];
@@ -93,7 +93,7 @@ insert template;
             System.assertNotEquals(null, initResult, 'initWhatsAppChatPanelController should return JSON');
 
             // Test template fetching
-            List<C3WhatsAppChatPanelCtrl.PicklistWrapper> templates = 
+            List<C3WhatsAppChatPanelCtrl.PicklistWrapper> templates =
                 C3WhatsAppChatPanelCtrl.c3WhatsppFetchTemplate('Contact');
             System.assert(templates.size() > 0, 'At least one approved template should be returned');
 
@@ -107,7 +107,7 @@ insert template;
         Test.stopTest();
     }
 
-    @isTest
+    @IsTest
     static void testSaveMessage_TextMessage() {
         User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
         Contact testContact = [SELECT Id, Phone FROM Contact LIMIT 1];
@@ -133,13 +133,13 @@ insert template;
         Test.stopTest();
     }
 
-    @isTest
+    @IsTest
 static void testLoadTextMessages_AndMedia() {
 
     User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
     Contact testContact = [
-    SELECT Id, Phone 
-    FROM Contact 
+    SELECT Id, Phone
+    FROM Contact
     WHERE Phone = '919999999999'
     LIMIT 1
 ];
@@ -148,7 +148,7 @@ System.assertNotEquals(null, testContact, 'Contact not found in test setup.');
 
     Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageMedia'));
 
-    
+
    Test.startTest();
   System.runAs(testUser) {
 
@@ -172,7 +172,7 @@ Test.stopTest();
 
 }
 /*
-    @isTest
+    @IsTest
     static void testLoadTextMessages_AndMedia() {
         User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
         Contact testContact = [SELECT Id, Phone FROM Contact LIMIT 1];
@@ -208,7 +208,7 @@ Test.stopTest();
         Test.stopTest();
     }*/
 /*
-    @isTest
+    @IsTest
     static void testGetPublicUrl() {
         User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
         Contact testContact = [SELECT Id FROM Contact LIMIT 1];
@@ -230,13 +230,13 @@ Test.stopTest();
         Test.stopTest();
     }
 */
-    @isTest
+    @IsTest
 static void testGetPublicUrl() {
 
     User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
     Contact testContact = [
-    SELECT Id, Phone 
-    FROM Contact 
+    SELECT Id, Phone
+    FROM Contact
     WHERE Phone = '919999999999'
     LIMIT 1
 ];
@@ -283,8 +283,8 @@ System.assertNotEquals(null, testContact, 'Contact not found in test setup.');
         System.assertNotEquals(null, publicUrl);
     }
 }
-    
-    @isTest
+
+    @IsTest
 static void testGetTemplatesByProject_NoFilters() {
     User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
 
@@ -299,22 +299,21 @@ static void testGetTemplatesByProject_NoFilters() {
 }
 
 
-    
-    
- @isTest
+
+
+ @IsTest
  static void testGetTemplatesByProject_ProjectOnly() {
     User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
 
     System.runAs(testUser) {
         List<CCCWA__Project__mdt> projects =
             [SELECT DeveloperName FROM CCCWA__Project__mdt LIMIT 1];
-        
+
          if (projects.isEmpty()) {
-            System.debug('No CCCWA__Project__mdt found, skipping test.');
             return;
         }
 
-        
+
 
         Test.startTest();
         String result =
@@ -328,12 +327,12 @@ static void testGetTemplatesByProject_NoFilters() {
     }
 }
 
-    @isTest
+    @IsTest
     static void testCheckNumberConfigAndUtility() {
         User testUser = [SELECT Id FROM User WHERE Username LIKE 'whatsapp.test.user.%' LIMIT 1];
         Contact testContact = [
-    SELECT Id, Phone 
-    FROM Contact 
+    SELECT Id, Phone
+    FROM Contact
     WHERE Phone = '919999999999'
     LIMIT 1
 ];
@@ -345,7 +344,7 @@ System.assertNotEquals(null, testContact, 'Contact not found in test setup.');
             String configResult = C3WhatsAppChatPanelCtrl.checkForNumberConfigurationImplemented(testContact.Id);
             System.assertNotEquals(null, configResult);
 
-            C3WhatsAppChatPanelCtrl.ChatpanelValidations validation = 
+            C3WhatsAppChatPanelCtrl.ChatpanelValidations validation =
                 (C3WhatsAppChatPanelCtrl.ChatpanelValidations) JSON.deserialize(configResult, C3WhatsAppChatPanelCtrl.ChatpanelValidations.class);
             System.assert(validation.isAllowedToChat, 'Chat should be allowed with proper config');
 
@@ -355,5 +354,5 @@ System.assertNotEquals(null, testContact, 'Contact not found in test setup.');
         }
         Test.stopTest();
     }
-    
+
 }

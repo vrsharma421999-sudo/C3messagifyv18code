@@ -22,7 +22,7 @@
         @api duration = '';
         @track showToastBar = false;
         autoCloseTime = 3000;
-    
+
         /**
          * This function takes in a title, message, variant, and mode. If the mode is false, the toast will
          * close after the duration
@@ -47,11 +47,11 @@
                         this.close();
                     }, this.autoCloseTime);
                 }
-            } catch (error) {
+            } catch {
                 // Toast presentation error handling
-            }  
+            }
         }
-    
+
         /**
          * The close() function sets the showToastBar property to false, which hides the toast bar
          */
@@ -62,7 +62,7 @@
             this.messageType = '';
             this.variant = '';
         }
-    
+
         /**
          * It returns the icon name based on the variant.
          * @returns The icon name for the variant.
@@ -87,7 +87,7 @@
             }
             return icon;
         }
-    
+
         /**
          * If the variant is 'success', then return 'slds-icon_container slds-m-right_small slds-no-flex
          * slds-align-top  slds-icon-utility-success'
@@ -96,7 +96,7 @@
         get iconClass() {
             return 'slds-icon_container slds-m-right_small slds-no-flex slds-align-top  slds-icon-utility-' + this.variant;
         }
-    
+
         get themeClass() {
             return 'slds-notify slds-notify_toast slds-theme_' + this.variant;
         }

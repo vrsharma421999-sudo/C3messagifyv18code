@@ -2,14 +2,16 @@
 * @description This class handles WhatsApp web service interactions.
 */
 public without sharing class C3WhatsAppWebService {
-    
-    
-    public static  String phoneNumberId ; 
-    public static  String wabAid ; 
+
+
+    public static  String phoneNumberId ;
+    public static  String wabAid ;
     public static String endPointURL;
-    
+
+    @TestVisible private static List<Bulk_Message_Tracking__c> lastTrackingRecords = new List<Bulk_Message_Tracking__c>();
+
     /**
-* @description Creates the web service body for sending messages.
+* @description Creates the web service body for sending messages (non-bulk default).
 * @param listSObject List of SObjects to process.
 * @param mapParamNumWithFieldName Mapping of parameter numbers to field names.
 * @param objtemplate template object to use.
@@ -17,6 +19,19 @@ public without sharing class C3WhatsAppWebService {
 * @return String response from the web service.
 */
     public static string createWebserviceBody(List<SObject> listSObject, Map<String, String> mapParamNumWithFieldName, CCCWA__Template_Object__c objtemplate, String phoneFieldName){
+        return createWebserviceBody(listSObject, mapParamNumWithFieldName, objtemplate, phoneFieldName, false);
+    }
+
+    /**
+* @description Creates the web service body for sending messages with bulk tracking flag.
+* @param listSObject List of SObjects to process.
+* @param mapParamNumWithFieldName Mapping of parameter numbers to field names.
+* @param objtemplate template object to use.
+* @param phoneFieldName Name of the phone field.
+* @param isBulk Boolean flag indicating whether bulk message tracking records should be created.
+* @return String response from the web service.
+*/
+    public static string createWebserviceBody(List<SObject> listSObject, Map<String, String> mapParamNumWithFieldName, CCCWA__Template_Object__c objtemplate, String phoneFieldName, Boolean isBulk){
         try {
             C3Utility.getWhatsAppDetails();
             //  List<String> listOfJsonBody = new List<String>();
@@ -34,7 +49,7 @@ public without sharing class C3WhatsAppWebService {
                 objMain.template.language = new language();
                 objMain.template.language.code = objtemplate.language_Code__c;
                 objMain.template.components = new List<components>();
-                
+
                 if (objtemplate.CCCWA__Header_Type__c != 'TEXT' && String.isNotBlank(objtemplate.CCCWA__Header_Type__c)) {
                     components objHeaderComp = new components();
                     objHeaderComp.type = 'header';
@@ -75,10 +90,10 @@ public without sharing class C3WhatsAppWebService {
                 if (String.isNotBlank(objMain.to)) {
                     listWrapper.add(objMain);
                 }
-                
+
             }
             if(!listWrapper.isEmpty()){
-                string resbody=  webServiceCallOut(listWrapper, listSObject, objtemplate, phoneFieldName);
+                string resbody=  webServiceCallOut(listWrapper, listSObject, objtemplate, phoneFieldName, isBulk);
                 return resbody;
             }
             return null;
@@ -86,17 +101,30 @@ public without sharing class C3WhatsAppWebService {
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','C3WhatsAppWebService','createWebserviceBody','');
             return null;
         }
-    }    
+    }
     /**
-* @description Makes a callout to the web service to send WhatsApp messages.
+* @description Makes a callout to the web service to send WhatsApp messages (non-bulk default).
 * @param listOfC3WhatsAppWebServiceWrapper List of WhatsApp web service wrappers.
 * @param listSObject List of SObjects to process.
 * @param objtemplate template object to use.
 * @param phoneField Name of the phone field.
 * @return String response from the web service.
 */
-    
     public static string webServiceCallOut(List<C3WhatsAppWebServiceWrapper> listOfC3WhatsAppWebServiceWrapper, List<SObject> listSObject, CCCWA__Template_Object__c objtemplate, String phoneField){
+        return webServiceCallOut(listOfC3WhatsAppWebServiceWrapper, listSObject, objtemplate, phoneField, false);
+    }
+
+    /**
+* @description Makes a callout to the web service to send WhatsApp messages with bulk tracking flag.
+* @param listOfC3WhatsAppWebServiceWrapper List of WhatsApp web service wrappers.
+* @param listSObject List of SObjects to process.
+* @param objtemplate template object to use.
+* @param phoneField Name of the phone field.
+* @param isBulk Boolean indicating if bulk message tracking records should be created.
+* @return String response from the web service.
+*/
+    public static string webServiceCallOut(List<C3WhatsAppWebServiceWrapper> listOfC3WhatsAppWebServiceWrapper, List<SObject> listSObject, CCCWA__Template_Object__c objtemplate, String phoneField, Boolean isBulk){
+        Boolean isBulkOperation = (isBulk != null && isBulk);
         C3Utility.getWhatsAppDetails();
         list<CCCWA__WhatsApp_Conversation__b> listConvoRecords=new list<CCCWA__WhatsApp_Conversation__b>();
         List<Bulk_Message_Tracking__c> listTrackingRecords = new List<Bulk_Message_Tracking__c>();
@@ -108,54 +136,55 @@ public without sharing class C3WhatsAppWebService {
             HttpRequest req = new HttpRequest();
             String apiUrl = 'callout:CCCWA__FacebookAPI/' + phoneNumberId + '/messages';
             req.setEndpoint(apiUrl);
-            req.setHeader('Content-Type', 'application/json');        
-            req.setMethod('POST'); 
+            req.setHeader('Content-Type', 'application/json');
+            req.setMethod('POST');
             req.setBody(Json.serialize(objWrapper, true));
             req.setTimeout(120000);
             HttpResponse res  = new HttpResponse();
             res  = new Http().send(req);
             resbody = res.getBody();
-            System.debug('Resquest----'+ objWrapper);
             if(res.getStatusCode()==200 ||  res.getStatusCode()==201){
                 if(listSObject != null && listSObject[i] != null && listSObject[i].get('Id') != null){
                     id recordid = (id)listSObject[i].get('Id');
                     string objectNameForPhone = recordid.getSObjectType().getDescribe().getName();
                     phonefieldName = C3Utility.getFieldName(objectNameForPhone);
                 }
-                C3WhatsAppChatPanelCtrl.ClsValue clsResponse = 
+                C3WhatsAppChatPanelCtrl.ClsValue clsResponse =
                     (C3WhatsAppChatPanelCtrl.ClsValue) JSON.deserialize(resbody, C3WhatsAppChatPanelCtrl.ClsValue.class);
-                
+
                 String sObjectId = (String) listSObject[i].get('Id');
                 String phoneNumber = (String) listSObject[i].get(phoneField);
                 String wamId = clsResponse.messages[0].id;
-                
+
                 if (String.isNotBlank(wamId) && String.isNotBlank(sObjectId)) {
                     C3utility.WhatsAppConvoInput input = new C3utility.WhatsAppConvoInput();
                     input.objTemplate = objtemplate;
                     input.toNumber = phoneNumber;
-                    input.recordId = sObjectId; 
+                    input.recordId = sObjectId;
                     input.wamId = wamId;
-                    
+
                     listConvoRecords.add(C3Utility.buildConvoRecord(input));
 
-                    Bulk_Message_Tracking__c trackingLog = new Bulk_Message_Tracking__c();
-                    trackingLog.Message_ID__c = wamId;
-                    trackingLog.Recipient_Record_ID__c = sObjectId;
-                    trackingLog.Phone_Number__c = phoneNumber;
-                    trackingLog.Template_Object__c = objtemplate.Id;
-                    trackingLog.Status__c = 'Sent';
-                    listTrackingRecords.add(trackingLog);
+                    if (isBulkOperation) {
+                        Bulk_Message_Tracking__c trackingLog = new Bulk_Message_Tracking__c();
+                        trackingLog.Message_ID__c = wamId;
+                        trackingLog.Recipient_Record_ID__c = sObjectId;
+                        trackingLog.Phone_Number__c = phoneNumber;
+                        trackingLog.Template_Object__c = objtemplate.Id;
+                        trackingLog.Status__c = 'Sent';
+                        listTrackingRecords.add(trackingLog);
+                    }
                 }
-                
+
             }else{
                 C3Utility.logError('API Error','', 131, resbody,'C3WhatsAppWebService','webServiceCallOut',Json.serialize(objWrapper, true));
-                if (listSObject != null && listSObject.size() > i && listSObject[i] != null) {
+                if (isBulkOperation && listSObject != null && listSObject.size() > i && listSObject[i] != null) {
                     String sObjectId = (String) listSObject[i].get('Id');
                     String phoneNumber = '';
                     if (String.isNotBlank(phoneField)) {
                         phoneNumber = (String) listSObject[i].get(phoneField);
                     }
-                    
+
                     Bulk_Message_Tracking__c trackingLog = new Bulk_Message_Tracking__c();
                     trackingLog.Recipient_Record_ID__c = sObjectId;
                     trackingLog.Phone_Number__c = phoneNumber;
@@ -165,9 +194,10 @@ public without sharing class C3WhatsAppWebService {
                 }
             }
             i++;
-        } 
-        if((!listConvoRecords.isEmpty()) && (!Test.isRunningTest()))  
-        { 
+        }
+        lastTrackingRecords = listTrackingRecords;
+        if((!listConvoRecords.isEmpty()) && (!Test.isRunningTest()))
+        {
             String[] listFields = new String[]{'Id', 'CCCWA__Direction__c', 'CCCWA__Status__c', 'CCCWA__Record_ID__c', 'CCCWA__Read__c', 'CCCWA__Message__c', 'CCCWA__Message_formatted__c', 'CCCWA__Media_URL__c', 'CCCWA__Media_Type__c', 'CCCWA__File_Name__c', 'CCCWA__From_Phone__c', 'CCCWA__To_Phone__c', 'CCCWA__Interaction_Type__c', 'CCCWA__Created_date__c', 'CCCWA__sid__c', 'CCCWA__Unique_Key__c'};
                 if (
                     !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isAccessible', null, true)) &&
@@ -177,12 +207,12 @@ public without sharing class C3WhatsAppWebService {
                 ){
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }else{
-                    Database.insertImmediate(listConvoRecords, AccessLevel.USER_MODE); 
+                    Database.insertImmediate(listConvoRecords, AccessLevel.USER_MODE);
                 }
         }
 
-        if((!listTrackingRecords.isEmpty()) && (!Test.isRunningTest()))  
-        { 
+        if(isBulkOperation && (!listTrackingRecords.isEmpty()) && (!Test.isRunningTest()))
+        {
             String[] listFields = new String[]{'Message_ID__c', 'Recipient_Record_ID__c', 'Phone_Number__c', 'Template_Object__c', 'Status__c'};
                 if (
                     !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isAccessible', null, true)) &&
@@ -192,7 +222,7 @@ public without sharing class C3WhatsAppWebService {
                 ){
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }else{
-                    Database.insert(listTrackingRecords, AccessLevel.USER_MODE); 
+                    Database.insert(listTrackingRecords, AccessLevel.USER_MODE);
                 }
         }
         return resbody;
@@ -204,17 +234,17 @@ public without sharing class C3WhatsAppWebService {
 * @param fileName Name of the file.
 * @return String upload session ID.
 */
-    
-    
+
+
     public static string getUploadSessionIdFromWebService(String fileType, Integer fileSize, String fileName){
         C3Utility.getWhatsAppDetails();
-        
+
         //  Http http = new Http();
         HttpRequest req = new HttpRequest();
         String endPoint = 'callout:CCCWA__FacebookAPI/' +'app/uploads/?file_length=' + String.valueOf(fileSize)+ '&file_type=' + fileType + '&file_name=' + fileName;
         req.setEndpoint(endPoint);
-        req.setHeader('Content-Type', 'application/json');        
-        req.setMethod('POST'); 
+        req.setHeader('Content-Type', 'application/json');
+        req.setMethod('POST');
         req.setTimeout(120000);
         HttpResponse res  = new HttpResponse();
         res  = new Http().send(req);
@@ -235,17 +265,17 @@ public without sharing class C3WhatsAppWebService {
 * @param contentType Content type of the file.
 * @return String response from the web service.
 */
-    
+
     public static string getFileHandlerFromWebService(blob fileData, String sessionId, String contentType){
         C3Utility.getWhatsAppDetails();
-        
+
         // Http http = new Http();
         HttpRequest req = new HttpRequest();
         String endPoint = 'callout:CCCWA__FacebookFileAuth' + '/' + sessionId;
         req.setEndpoint(endPoint);
         req.setHeader('Content-Type',contentType);
         req.setHeader('file_offset','0');
-        req.setMethod('POST'); 
+        req.setMethod('POST');
         req.setBodyAsBlob(fileData);
         req.setTimeout(120000);
         HttpResponse res  = new HttpResponse();
@@ -258,10 +288,10 @@ public without sharing class C3WhatsAppWebService {
         }else{
             C3Utility.logError('API Error','', 276, res.getBody(),'C3WhatsAppWebService','getFileHandlerFromWebService', fileData.tostring());
         }
-        return null;        
+        return null;
     }
-    
-    
+
+
     /**
 * @description Sends a WhatsApp template message to Meta.
 * @param jsonObject JSON string containing the template data.
@@ -277,8 +307,8 @@ public without sharing class C3WhatsAppWebService {
             if (String.isNotBlank(objtemplateWrapper.contentVersionId) && String.isNotBlank(objtemplateWrapper.mimeType)) {
                 objtemplateWrapper.mediaHandler = C3WhatsApptemplateScreenLWCCtrl.runMediaAPIs(objtemplateWrapper.contentVersionId, objtemplateWrapper.mimeType);
             }
-            objCreatetemplateWrapper.name = objtemplateWrapper.templateName.toLowerCase().replaceAll(' ', '_'); 
-            objCreatetemplateWrapper.language = objtemplateWrapper.language; 
+            objCreatetemplateWrapper.name = objtemplateWrapper.templateName.toLowerCase().replaceAll(' ', '_');
+            objCreatetemplateWrapper.language = objtemplateWrapper.language;
             objCreatetemplateWrapper.category = objtemplateWrapper.category;
             objCreatetemplateWrapper.components = new List<components>();
             if(objtemplateWrapper.isHeaderMedia || objtemplateWrapper.isHeaderText){
@@ -298,7 +328,7 @@ public without sharing class C3WhatsAppWebService {
             if(String.isNotBlank(objtemplateWrapper.templateBody) ){
                 components objComp = new components();
                 objComp.type = 'BODY';
-                objComp.text =C3WhatsApptemplateScreenLWCCtrl.getFormattedBody(objtemplateWrapper.templateBodyText);                
+                objComp.text =C3WhatsApptemplateScreenLWCCtrl.getFormattedBody(objtemplateWrapper.templateBodyText);
                 if(objtemplateWrapper.listMapping != null && (!objtemplateWrapper.listMapping.isEmpty())){
                     objComp.example = new example();
                     objComp.example.body_text = new List<List<String>>();
@@ -307,7 +337,7 @@ public without sharing class C3WhatsAppWebService {
                         lstexampleText.add(objLstMap.exampleText);
                     }
                     objComp.example.body_text.add(new List<String>(lstexampleText));
-                    
+
                 }
                 objCreatetemplateWrapper.components.add(objComp);
             }
@@ -317,7 +347,7 @@ public without sharing class C3WhatsAppWebService {
                 objComp.text = objtemplateWrapper.footer;
                 objCreatetemplateWrapper.components.add(objComp);
             }
-            
+
             if(objtemplateWrapper.isActionList || objtemplateWrapper.isQuickReplyList){
                 components objComp = new components();
                 objComp.buttons = new List<buttons>();
@@ -328,9 +358,7 @@ public without sharing class C3WhatsAppWebService {
                         buttons objButton = new buttons();
                         if(objLstAct.isActionPhoneNumber){
                             objButton.type = 'PHONE_NUMBER';
-                            system.debug('country code- '+objLstAct.countryCode);
                             objButton.phone_number = '+' + objLstAct.countryCode + objLstAct.phoneNumber;
-                            system.debug('country code- '+objButton.phone_number);
                         }else if(objLstAct.isActionUrl){
                             objButton.type = 'URL';
                             objButton.url = objLstAct.websiteUrl;
@@ -339,11 +367,11 @@ public without sharing class C3WhatsAppWebService {
                         objComp.buttons.add(objButton);
                     }
                 }
-                
+
                 if(objtemplateWrapper.listQuickReply != null){
                     for(C3WhatsApptemplateScreenLWCCtrl.ListQuickReply objLstAct : objtemplateWrapper.listQuickReply){
                         buttons objButton = new buttons();
-                        objButton.type = 'QUICK_REPLY'; 
+                        objButton.type = 'QUICK_REPLY';
                         objButton.text = objLstAct.buttonText;
                         objComp.buttons.add(objButton);
                     }
@@ -407,7 +435,7 @@ public without sharing class C3WhatsAppWebService {
             }
             return json.serialize(objResponseWrapper);
         }
-        return null;        
+        return null;
     }
     /**
 * @description Makes a callout to the specified endpoint with the given request body.
@@ -420,7 +448,7 @@ public without sharing class C3WhatsAppWebService {
         Http http = new Http();
         HttpRequest req = new HttpRequest();
         req.setEndpoint('callout:CCCWA__FacebookAPI/'+endpointUrl);
-        req.setMethod('POST');   
+        req.setMethod('POST');
         req.setHeader('Accept' , 'application/json');
         req.setHeader('content-type', 'application/json');
         req.setTimeout(120000);
@@ -432,15 +460,15 @@ public without sharing class C3WhatsAppWebService {
         }
         return response;
     }
-    
-    
+
+
     /**
 * @description Sends a WhatsApp message to an individual.
 * @param ToNumber The recipient's phone number.
 * @param strText The text message to send.
 * @return String response from the API.
 */
-    
+
     /**
 * @description Sends a plain text message to a recipient's WhatsApp number using the WhatsApp Business Cloud API.
 *              The method constructs a JSON payload, makes a POST request to the Facebook API, and returns the raw response.
@@ -476,13 +504,13 @@ public without sharing class C3WhatsAppWebService {
     // - If create permission is not granted, a controlled exception is thrown.
     // - This logic is secure, user-aware, and compliant with CRUD/FLS best practices.
     //  * Suppression applied:
-    /* * - PMD.ApexFlsViolation: Explicit FLS checks are already performed 
+    /* * - PMD.ApexFlsViolation: Explicit FLS checks are already performed
 *   using custom `checkFieldPermission()` logic before DML.
-* 
-* Rationale: PMD flags FLS issues even after explicit validation, 
+*
+* Rationale: PMD flags FLS issues even after explicit validation,
 * which is redundant. Suppression ensures cleaner static analysis results.*/
     @SuppressWarnings('PMD.ApexCRUDViolation, PMD.ApexFlsViolation')
-    
+
     public static string sendWhatsAppMessage(string toNumber, string strText) {
         C3Utility.getWhatsAppDetails();
         String apiUrl = 'callout:CCCWA__FacebookAPI/' + phoneNumberId + '/messages';
@@ -508,21 +536,21 @@ public without sharing class C3WhatsAppWebService {
         Http http = new Http();
         HttpResponse response = new HttpResponse();
         response = http.send(request);
-        
+
         Task t = new Task();
         // NOPMD(ApexFlsViolation) – PMD flags Subject field assignment.
         // Justification:
         // - Subject is a required and universally accessible Task field.
         // - No sensitive data exposure, safe for direct assignment.
         t.Subject = 'Follow up WhatsApp Message';
-        
+
         // NOPMD(ApexFlsViolation) – PMD flags Status field assignment.
         // Justification:
         // - Status is a standard Task field controlled by Task Status values.
         // - Always accessible and required for Task lifecycle.
         // - Safe for assignment without explicit FLS check.
         t.Status = 'Not Started';
-        
+
         // Assigning default priority for Task creation
         // NOPMD(ApexFlsViolation) – PMD flags Priority field assignment.
         // Justification:
@@ -530,7 +558,7 @@ public without sharing class C3WhatsAppWebService {
         // - No sensitive information; only sets Task importance.
         // - Safe to assign directly.
         t.Priority = 'Normal';
-        
+
         // Adding description to Task
         // NOPMD(ApexFlsViolation) – PMD flags Description field assignment.
         // Justification:
@@ -538,15 +566,15 @@ public without sharing class C3WhatsAppWebService {
         // - Holds message context only, not sensitive data.
         // - Safe for direct population.
         t.Description = 'WhatsApp message sent to: ' + toNumber;
-        
+
         // Setting due date for follow-up
         // NOPMD(ApexFlsViolation) – PMD flags ActivityDate field assignment.
         // Justification:
         // - ActivityDate is a standard Task field always accessible.
         // - Represents scheduling metadata, not sensitive business data.
         // - Safe to assign.
-        t.ActivityDate = Date.today().addDays(1); 
-        
+        t.ActivityDate = Date.today().addDays(1);
+
         // Insert Task record after setting mandatory fields
         // NOPMD(ApexFlsViolation) – PMD flags DML insert operation.
         // Justification:
@@ -554,10 +582,10 @@ public without sharing class C3WhatsAppWebService {
         // - All referenced fields are universally accessible without FLS risk.
         // - Safe operation in this context.
         insert t;
-        
+
         // Parse the JSON response)
         if(response.getStatusCode() != 200) {
-            C3Utility.logError('API Error','', 482, response.getBody(),'C3WhatsAppWebService','sendWhatsAppMessage', request.getBody()); 
+            C3Utility.logError('API Error','', 482, response.getBody(),'C3WhatsAppWebService','sendWhatsAppMessage', request.getBody());
         }
         return response.getBody();
     }
@@ -568,7 +596,7 @@ public without sharing class C3WhatsAppWebService {
 * @param mediaType The type of media (e.g., image, video).
 * @return String response from the API.
 */
-    
+
     /**
 * @description Sends a media message (image, video, or document) to a recipient's WhatsApp number using the WhatsApp Business Cloud API.
 *              The method constructs a JSON payload with a media link and sends it via an HTTP POST request to the Facebook Graph API endpoint.
@@ -594,11 +622,11 @@ public without sharing class C3WhatsAppWebService {
 *
 * @see C3Utility.getWhatsAppDetails
 */
-    
-    
+
+
     public static string sendWhatsAppMessageMedia(String toNumber, String url, String mediaType) {
         C3Utility.getWhatsAppDetails();
-        String apiUrl = 'callout:CCCWA__FacebookAPI/' + phoneNumberId + '/messages'; 
+        String apiUrl = 'callout:CCCWA__FacebookAPI/' + phoneNumberId + '/messages';
         Map<String, Object> requestBody = new Map<String, Object> {
             'messaging_product' => 'whatsapp',
                 'recipient_type' => 'individual',
@@ -607,78 +635,75 @@ public without sharing class C3WhatsAppWebService {
                 mediaType => new Map<String, Object> {
                     'link' => url
                         }
-        };        
-            String requestBodyJson = JSON.serialize(requestBody);
-        System.debug('request body ' +requestBodyJson);
-        
+        };
+        String requestBodyJson = JSON.serialize(requestBody);
+
         HttpRequest request = new HttpRequest();
         request.setEndpoint(apiUrl);
         request.setHeader('Accept' , 'application/json');
         request.setHeader('content-type', 'application/json');
-        request.setMethod('POST'); 
+        request.setMethod('POST');
         request.setBody(requestBodyJson);
         Http http = new Http();
         HttpResponse response = new HttpResponse();
         response = http.send(request);
         return response.getBody();
     }
-    
-    
+
+
     /**
-* @description Fetches the media from the API using the media ID.
-* @param mediaId The ID of the media to fetch.
-* @param fileName The name of the file to save.
-* @param fileType The type of the file.
-* @param recordId The record ID associated with the media.
-* @return String response from the upload process.
-*/
+     * @description Fetches the media from the API using the media ID.
+     * @param mediaId The ID of the media to fetch.
+     * @param fileName The name of the file to save.
+     * @param extension The file extension.
+     * @param contactId The contact or record ID associated with the media.
+     * @return String Response from the upload process.
+     */
     public static String getMediaFromAPI(String mediaId, String fileName, String extension, Id contactId) {
         Http http = new Http();
-        
+
         // 1. Get metadata
         HttpRequest metadataRequest = new HttpRequest();
         metadataRequest.setEndpoint('https://graph.facebook.com/v18.0/phone_number_id/media/' + mediaId);
         metadataRequest.setMethod('GET');
         HttpResponse metadataResponse = http.send(metadataRequest);
-        
+
         String contentType = metadataResponse.getHeader('Content-Type');
         if (contentType == null || !contentType.contains('application/json')) {
-            System.debug('❌ Unexpected content type in metadata response: ' + contentType);
             return '';
         }
-        
+
         // 2. Parse metadata JSON
         Map<String, Object> metadata = (Map<String, Object>) JSON.deserializeUntyped(metadataResponse.getBody());
         String mediaUrl = (String) metadata.get('url');
-        
+
         // 3. Download media
         HttpRequest mediaRequest = new HttpRequest();
         mediaRequest.setEndpoint(mediaUrl);
         mediaRequest.setMethod('GET');
         HttpResponse mediaResponse = http.send(mediaRequest);
-        
+
         String mediaContentType = mediaResponse.getHeader('Content-Type');
         if (mediaContentType == null || !mediaContentType.contains('application/octet-stream')) {
-            System.debug('Unexpected content type in media response: ' + mediaContentType);
             return '';
         }
-        
+
         // 4. Get Blob & return base64 or save it
         Blob mediaBlob = mediaResponse.getBodyAsBlob();
         return EncodingUtil.base64Encode(mediaBlob);
     }
-    
+
     /**
 * @description Fetches message templates from the API.
 * @return String response containing the templates.
 */
-    
+
     public static String fetchtemplate() {
         C3Utility.getWhatsAppDetails();
         HttpRequest request = new HttpRequest();
         Http http = new Http();
         request.setEndpoint('callout:CCCWA__FacebookAPI/'+wabAid+'/message_templates?fields=name,status');
-        request.setMethod('GET');        
+        request.setMethod('GET');
         HttpResponse res = http.send(request);
         if (res.getStatusCode() == 200  || res.getStatusCode() == 201) {
             return res.getBody();
@@ -686,25 +711,25 @@ public without sharing class C3WhatsAppWebService {
             C3Utility.logError('API Error','', 590, res.getBody(),'C3WhatsAppWebService','fetchtemplate', request.getBody());
             return null;
         }
-    } 
+    }
     /**
 * @description Deletes a message template by name.
 * @param name The name of the template to delete.
 * @return Boolean indicating success or failure.
 */
-    
+
     public static boolean deletetemplate(String name){
         C3Utility.getWhatsAppDetails();
         Http delhttp = new Http();
         HttpRequest delreq = new HttpRequest();
         HttpResponse delres = new HttpResponse();
-        String apiUrl = 'callout:CCCWA__FacebookAPI/' +wabAid+'/message_templates'; 
+        String apiUrl = 'callout:CCCWA__FacebookAPI/' +wabAid+'/message_templates';
         delreq.setEndpoint(apiUrl);
         delreq.setMethod('DELETE');
         delreq.setHeader('Content-Type', 'application/json');
         String jsonBody = '{"name":"' + name + '"}';
         delreq.setBody(jsonBody);
-        
+
         delres = delhttp.send(delreq);
         if(delres.getStatusCode()==200 || delres.getStatusCode() == 201){
             return true;
@@ -790,11 +815,11 @@ public without sharing class C3WhatsAppWebService {
         public MediaClass document;
         public MediaClass video;
     }
-    
+
     /**
 * @description Wrapper class for the response from the WhatsApp API.
 */
-    
+
     public class ResponseWrapper{
         public Error error;
         public String id;

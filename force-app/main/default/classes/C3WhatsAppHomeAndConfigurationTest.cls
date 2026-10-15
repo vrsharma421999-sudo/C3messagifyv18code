@@ -1,7 +1,7 @@
 /**
  * @description Test class for C3 WhatsApp Home and Configuration functionality.
  */
-@isTest
+@IsTest
 public class C3WhatsAppHomeAndConfigurationTest {
 
     /**
@@ -51,7 +51,7 @@ public class C3WhatsAppHomeAndConfigurationTest {
     /**
      * @description Tests WhatsAppTemplates and DeleteWhatsAppTemplates methods.
      */
-    @isTest
+    @IsTest
     public static void testMethod1() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
 
@@ -70,7 +70,7 @@ public class C3WhatsAppHomeAndConfigurationTest {
     /**
      * @description Tests WhatsApp Number Configuration methods: init, getObjectLabel, getAllPhoneField, save, and delete.
      */
-    @isTest
+    @IsTest
     public static void testMethod2() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
 
@@ -94,7 +94,7 @@ public class C3WhatsAppHomeAndConfigurationTest {
     /**
      * @description Tests initialization of Admin Panel and saving WhatsApp Admin configuration.
      */
-    @isTest
+    @IsTest
     public static void testMethod3() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
 

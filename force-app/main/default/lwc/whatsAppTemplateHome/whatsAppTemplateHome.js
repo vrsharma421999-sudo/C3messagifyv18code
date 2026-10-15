@@ -55,8 +55,8 @@ export default class WhatsAppTemplateHome extends LightningElement {
 
     @track filtered = [];
     @track lstRecords = [];
-    connectedCallback() {  
-        this.isTemplateTab = true; 
+    connectedCallback() {
+        this.isTemplateTab = true;
         this.showMapping=true;
         this.init();
     }
@@ -65,35 +65,35 @@ export default class WhatsAppTemplateHome extends LightningElement {
         whatsAppTemplates({})
         .then(result => {
             if(result){
-                let parsed = JSON.parse(result);
+                const parsed = JSON.parse(result);
                 if(parsed && parsed.success){
                     this.filtered = [];
                     this.lstRecords = parsed;
                     for (let i = 0; i < this.lstRecords.listOfTemplates.length; i++) {
                         if(this.lstRecords.listOfTemplates[i].CCCWA__Status__c=='APPROVED'){
-                            this.filtered.push({ APPROVED: true, Template: this.lstRecords.listOfTemplates[i] });    
+                            this.filtered.push({ APPROVED: true, Template: this.lstRecords.listOfTemplates[i] });
                         }
                         else if(this.lstRecords.listOfTemplates[i].CCCWA__Status__c=='REJECTED'){
-                            this.filtered.push({ REJECTED: true, Template: this.lstRecords.listOfTemplates[i] });      
+                            this.filtered.push({ REJECTED: true, Template: this.lstRecords.listOfTemplates[i] });
                         }
                         else{
-                            this.filtered.push({ PENDING: true, Template: this.lstRecords.listOfTemplates[i] });      
-                        }    
-                        this.showPopup = false;                            
-                    }                         
+                            this.filtered.push({ PENDING: true, Template: this.lstRecords.listOfTemplates[i] });
+                        }
+                        this.showPopup = false;
+                    }
                 } else{
                     this.filtered = [];
                 }
             } else {
                 this.filtered = [];
-            }                                               
+            }
         })
         /*.catch(error => {
         });*/
     }
 
     handlePreview(event){
-        let templateId = event.target.value;
+        const templateId = event.target.value;
         if(templateId){
             this.isLoading = true;
             getExistingTemplate({templateId : templateId})
@@ -104,7 +104,7 @@ export default class WhatsAppTemplateHome extends LightningElement {
                     this.isActionList = this.objTemplate.isActionList;
                     this.templateViewBody = this.objTemplate.templateBody;
                     this.lstActions = this.objTemplate.listActions;
-                    
+
                     if(this.objTemplate.listQuickReply != null && this.objTemplate.listQuickReply != undefined && this.objTemplate.listQuickReply.length > 0){
                         this.listQuickReply = this.objTemplate.listQuickReply;
                     }
@@ -133,11 +133,11 @@ export default class WhatsAppTemplateHome extends LightningElement {
                 }
 
             })
-            .catch(error => {
+            .catch(() => {
                 this.isLoading = false;
             });
         }
-        
+
     }
 
     closeModal() {
@@ -163,7 +163,7 @@ export default class WhatsAppTemplateHome extends LightningElement {
             .then(result => {
                 if (result && JSON.parse(result).success) {
                     this.RecordDeleted();
-                    this.init(); 
+                    this.init();
                 } else {
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'Error',
@@ -174,14 +174,14 @@ export default class WhatsAppTemplateHome extends LightningElement {
                 this.isLoading = false;
                 this.showPopup = false;
             })
-            .catch(error => {
+            .catch(() => {
                 this.isLoading = false;
                 this.showPopup = false;
             });
         }
     }
 
-    
+
     RecordDeleted() {
         // Create and dispatch the toast event
         const event = new ShowToastEvent({
@@ -199,11 +199,11 @@ export default class WhatsAppTemplateHome extends LightningElement {
                 header = '<div style="text-align:center"><b>'+ this.objTemplate.headerText + '</b></div><div style"style=" padding-left: 3px">' + this.objTemplate.templateBody+ '</div>';
             }else{
                 header = this.objTemplate.templateBody;
-            }   
-            
+            }
+
 
             if(this.objTemplate.footer != '' && this.objTemplate.footer != null && this.objTemplate.footer != undefined){
-            let footer = '</br><p style="font-size : 12px" class="slds-text-color_inverse-weak">'+ this.objTemplate.footer +'<p>';
+            const footer = '</br><p style="font-size : 12px" class="slds-text-color_inverse-weak">'+ this.objTemplate.footer +'<p>';
             header = header + footer;
             }
 
@@ -211,7 +211,7 @@ export default class WhatsAppTemplateHome extends LightningElement {
             let body = this.templateViewBody;
 
             if(this.objTemplate.listMapping != null && this.objTemplate.listMapping != undefined && this.objTemplate.listMapping.length > 0){
-                let list = [];
+                const list = [];
                 for(let i=0; i < this.objTemplate.listMapping.length; i++){
                     list.push(this.objTemplate.listMapping[i].exampleText);
                     // var expression = "^[" + this.lstMapping[i].placeHolder + "].*$";
@@ -227,11 +227,11 @@ export default class WhatsAppTemplateHome extends LightningElement {
             if(this.isActionList){
                 this.previewActionButtons = this.lstActions;
             }
-            
-        }catch(error){
+
+        }catch{
             // Preview build error
         }
-        
+
     }
 
     replacePlaceholders(text, replacements) {
@@ -251,6 +251,6 @@ export default class WhatsAppTemplateHome extends LightningElement {
         this.isEditTemplate = true;
         this.isCreateNewTemplate = false;
         this.isTemplateTab = false;
-        
+
     }
 }

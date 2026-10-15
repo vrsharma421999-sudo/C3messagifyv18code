@@ -1,7 +1,7 @@
 ({
-    
+
     handleChatNotification : function(component, event) {
-        var utilityAPI = component.find("utilitybar");
+        const utilityAPI = component.find("utilitybar");
         if(utilityAPI)
         {
             if(event.getParam('unreadMsgCount') && parseInt(event.getParam('unreadMsgCount')) >0 )
@@ -12,9 +12,9 @@
                 utilityAPI.setUtilityHighlighted({highlighted:false});
                 utilityAPI.setUtilityLabel({label: 'WhatsApp Message'});
             }
-              
+
         }
     },
 
-  
+
 })

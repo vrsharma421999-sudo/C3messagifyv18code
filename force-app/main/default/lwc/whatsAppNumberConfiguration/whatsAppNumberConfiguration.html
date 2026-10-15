@@ -46,12 +46,12 @@
 							options={objectPicklist}
 							placeholder="Select Object"
 							class="validate"
-							
+
 						>
 						</lightning-combobox>
 					</div>
 				</div>
-					
+
 				<div class=" slds-size_5-of-12">
 					<div class=" slds-m-bottom_small slds-p-left_medium">
 						<table style="width: auto;">
@@ -98,7 +98,7 @@
 								</b>
 							</div>
 						</header>
-	
+
 						<!-- Modal/Popup Box LWC body starts here -->
 						<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3"
 							style="position: relative;" data-id="TATemplateModalPopupID">
@@ -121,7 +121,7 @@
 											options={objectPicklist}
 											placeholder="Select Object"
 											class="validate"
-											
+
 										>
 										</lightning-combobox>
 									</div>
@@ -152,7 +152,7 @@
 								</lightning-layout-item>
 							</lightning-layout>
 						</div>
-	
+
 						<!-- Modal/Popup Box LWC footer starts here -->
 						<footer class="slds-modal__footer">
 							<lightning-button label="Save" title="Save" onclick={handleSave} variant="brand"
@@ -199,7 +199,7 @@
 											<template if:false={savedItem.isEditMode}>
 												<span key={savedItem.CCCWA__Field_Name__c}>{savedItem.CCCWA__Field_Name__c}</span>
 											</template>
-		
+
 											<template if:true={savedItem.isEditMode}>
 												<div >
 													<lightning-combobox
@@ -221,7 +221,7 @@
 									</th>
 									<th scope="col">
 										<div>
-											
+
 											<template if:false={savedItem.isEditMode}>
 												<lightning-button-icon icon-name="action:edit" variant="brand"
 													value={savedItem.Id} data-index={index}
@@ -247,21 +247,21 @@
 													title="Cancel" class="slds-m-left_x-small sldsButtonIcon">
 												</lightning-button-icon>
 											</template>
-											
+
 										</div>
-									</th>									
-						
+									</th>
+
 								</tr>
 							</template>
 						</tbody>
 					</table>
 				</div>
 			</template>
-			
+
 		</div>
 	</div>
 
-	
+
 	<!-- <lightning-card title="" class="cardBody">
 		<div class="slds-p-horizontal_x-large fontFamilyStyle">
             <template if:true={isDisplayComp}>
@@ -273,7 +273,7 @@
 					can
 					specify one field on every object you wish to text to.
 				</p>
-                <div class="slds-grid slds-wrap slds-p-top_medium ">					
+                <div class="slds-grid slds-wrap slds-p-top_medium ">
 					<div
 						class="slds-col slds-size_4-of-12 slds-small-size_12-of-12 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-top_medium slds-p-right_small">
 						<select class="slds-select" data-id="objOption" name={objectValue} onchange={handleObjectSelect}
@@ -308,7 +308,7 @@
                 </template>
 		</div>
         				<template if:true={isDisplayComp}>
-				
+
 					<div class={cssClass}>
 						<table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top--small ">
 							<thead>
@@ -348,10 +348,10 @@
 													<select class="slds-select"  data-id="objOption" data-name="selectedVal"
 														onchange={handleFieldSelect}>
 
-														
 
 
-													<template if:true={hasDefaultResults}> 
+
+													<template if:true={hasDefaultResults}>
 														<option value={hasDefaultResults.strAPIName}>{hasDefaultResults.strLabel}</option>
 													</template>
 														<template for:each={lstFieldCreatedMapping} for:item="obj">
@@ -391,8 +391,8 @@
 													</template>
 												</template>
 											</div>
-										</th>									
-							
+										</th>
+
 									</tr>
 								</template>
 							</tbody>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="force.apex" timestamp="2026-10-12T09:11:11.000Z" hostname="https://business-velocity-1804-dev-ed.scratch.my.salesforce.com" tests="102" failures="0"  errors="0"  time="51.13">
+        <properties>
+            <property name="outcome" value="Successful"/>
+            <property name="testsRan" value="102"/>
+            <property name="passing" value="102"/>
+            <property name="failing" value="0"/>
+            <property name="skipped" value="0"/>
+            <property name="passRate" value="100%"/>
+            <property name="failRate" value="0%"/>
+            <property name="testStartTime" value="Mon Oct 12 2026 2:41:11 pm"/>
+            <property name="testSetupTimeInMs" value="20620"/>
+            <property name="testExecutionTime" value="51.13 s"/>
+            <property name="testTotalTime" value="71.75 s"/>
+            <property name="commandTime" value="0.35 s"/>
+            <property name="hostname" value="https://business-velocity-1804-dev-ed.scratch.my.salesforce.com"/>
+            <property name="orgId" value="00DAw00000HWsQ5MAL"/>
+            <property name="username" value="test-qy0qm8mgung0@example.com"/>
+            <property name="testRunId" value="707Aw00001VzQQm"/>
+            <property name="userId" value="005Aw00000SVe14IAD"/>
+            <property name="coveredLines" value="2057"/>
+            <property name="testRunCoverage" value="84%"/>
+            <property name="orgWideCoverage" value="84%"/>
+        </properties>
+        <testcase name="testConstructorOnly" classname="CCCWA.C3CreateWhatsAppConversationQueueTest" time="0.04">
+        </testcase>
+        <testcase name="testQueueableExecutionWithTestData" classname="CCCWA.C3CreateWhatsAppConversationQueueTest" time="1.57">
+        </testcase>
+        <testcase name="testQueueableWithBigObject" classname="CCCWA.C3CreateWhatsAppConversationQueueTest" time="0.02">
+        </testcase>
+        <testcase name="testDoGetInvalidToken" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.02">
+        </testcase>
+        <testcase name="testDoGetValidToken" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.01">
+        </testcase>
+        <testcase name="testDoPost" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.24">
+        </testcase>
+        <testcase name="testDoPost1" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.28">
+        </testcase>
+        <testcase name="testDoPost2" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.18">
+        </testcase>
+        <testcase name="testDoPost3" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.20">
+        </testcase>
+        <testcase name="testDoPost4" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.19">
+        </testcase>
+        <testcase name="testDoPost5" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.19">
+        </testcase>
+        <testcase name="testDoPost6" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.20">
+        </testcase>
+        <testcase name="testDoPost7" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.35">
+        </testcase>
+        <testcase name="testDoPostRejectsEmptyBody" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.01">
+        </testcase>
+        <testcase name="testDoPostRejectsInvalidSignature" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.01">
+        </testcase>
+        <testcase name="testDoPostRejectsMissingSignature" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.01">
+        </testcase>
+        <testcase name="testDoPostValidSignatureIsAccepted" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.09">
+        </testcase>
+        <testcase name="testUploadFile" classname="CCCWA.C3WhatsappWebhookAPITest" time="0.94">
+        </testcase>
+        <testcase name="testDeleteTemplateQueueWithEmptySet" classname="CCCWA.C3DeleteTemplateQueueTest" time="0.11">
+        </testcase>
+        <testcase name="testDeleteTemplateQueueWithNullSet" classname="CCCWA.C3DeleteTemplateQueueTest" time="0.06">
+        </testcase>
+        <testcase name="testDeleteTemplateQueueWithValidTemplate" classname="CCCWA.C3DeleteTemplateQueueTest" time="1.53">
+        </testcase>
+        <testcase name="testMethod1" classname="CCCWA.C3BulkTemplateSenderLwcControllerTest" time="0.29">
+        </testcase>
+        <testcase name="method1" classname="CCCWA.C3WhatsAppWebServiceTest" time="0.43">
+        </testcase>
+        <testcase name="method2" classname="CCCWA.C3WhatsAppWebServiceTest" time="0.18">
+        </testcase>
+        <testcase name="method3" classname="CCCWA.C3WhatsAppWebServiceTest" time="0.14">
+        </testcase>
+        <testcase name="method4" classname="CCCWA.C3WhatsAppWebServiceTest" time="0.09">
+        </testcase>
+        <testcase name="method5" classname="CCCWA.C3WhatsAppWebServiceTest" time="1.00">
+        </testcase>
+        <testcase name="method6" classname="CCCWA.C3WhatsAppWebServiceTest" time="0.09">
+        </testcase>
+        <testcase name="method7" classname="CCCWA.C3WhatsAppWebServiceTest" time="0.24">
+        </testcase>
+        <testcase name="method2" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="0.51">
+        </testcase>
+        <testcase name="method3" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="0.68">
+        </testcase>
+        <testcase name="method4" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="0.36">
+        </testcase>
+        <testcase name="testCoreCoverage" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.49">
+        </testcase>
+        <testcase name="testDeleteWhatsAppTemplates" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.41">
+        </testcase>
+        <testcase name="testGetExistingTemplate_CallToActionPhoneBranch" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.48">
+        </testcase>
+        <testcase name="testGetExistingTemplate_QuickReplyButtonBranch" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.37">
+        </testcase>
+        <testcase name="testNullInputCoverage" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="0.15">
+        </testcase>
+        <testcase name="testSaveTemplateData_CoverMappingIdAndButtonIdBranches" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.58">
+        </testcase>
+        <testcase name="testSaveTemplateData_DeletesOldButtons" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.56">
+        </testcase>
+        <testcase name="testSaveTemplateData_DeletesOldMappings" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.54">
+        </testcase>
+        <testcase name="testSaveTemplateData_FieldAssignmentsCoverage" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.27">
+        </testcase>
+        <testcase name="testSaveTemplateData_HeaderMedia_StrDocUrlBranch" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="2.07">
+        </testcase>
+        <testcase name="testSaveTemplateData_QuickReply_BothButtonIdBranches" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.42">
+        </testcase>
+        <testcase name="testSendMessageWithNoMappings" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.47">
+        </testcase>
+        <testcase name="testVerifyUploadDeletesDocument" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="0.60">
+        </testcase>
+        <testcase name="testWhatsAppTemplates" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.23">
+        </testcase>
+        <testcase name="test_ExceptionHandling_Coverage_AllInOne" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="0.33">
+        </testcase>
+        <testcase name="test_getExistingTemplate_FullFieldCoverage_WithURLCTA" classname="CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest" time="1.44">
+        </testcase>
+        <testcase name="testInitializeAndSaveAdminConfig" classname="CCCWA.C3AdminPanelLwcControllerTest" time="0.41">
+        </testcase>
+        <testcase name="testAllConversationMessages" classname="CCCWA.C3WhatsAppUtilityBarCtrlTest" time="0.20">
+        </testcase>
+        <testcase name="testAllConversationMessages1" classname="CCCWA.C3WhatsAppUtilityBarCtrlTest" time="0.96">
+        </testcase>
+        <testcase name="testAllConversationMessages_FullBranchCoverage" classname="CCCWA.C3WhatsAppUtilityBarCtrlTest" time="0.19">
+        </testcase>
+        <testcase name="testExceptionHandlingCoverage" classname="CCCWA.C3WhatsAppUtilityBarCtrlTest" time="0.04">
+        </testcase>
+        <testcase name="testSortingBlockCoverage_ACTUAL_FIX" classname="CCCWA.C3WhatsAppUtilityBarCtrlTest" time="0.13">
+        </testcase>
+        <testcase name="testWrapperClassesCoverage" classname="CCCWA.C3WhatsAppUtilityBarCtrlTest" time="0.01">
+        </testcase>
+        <testcase name="testMethod1" classname="CCCWA.C3WhatsAppHomeAndConfigurationTest" time="0.64">
+        </testcase>
+        <testcase name="testMethod2" classname="CCCWA.C3WhatsAppHomeAndConfigurationTest" time="6.98">
+        </testcase>
+        <testcase name="testMethod3" classname="CCCWA.C3WhatsAppHomeAndConfigurationTest" time="0.22">
+        </testcase>
+        <testcase name="testBuildConvoRecord" classname="CCCWA.C3UtilityTest" time="0.07">
+        </testcase>
+        <testcase name="testBuildMessage" classname="CCCWA.C3UtilityTest" time="0.09">
+        </testcase>
+        <testcase name="testBuildMessageFullCoverage" classname="CCCWA.C3UtilityTest" time="0.07">
+        </testcase>
+        <testcase name="testBuildMessage_Video_NoFooter_NoButtons" classname="CCCWA.C3UtilityTest" time="0.03">
+        </testcase>
+        <testcase name="testFetchPhoneNumber" classname="CCCWA.C3UtilityTest" time="0.19">
+        </testcase>
+        <testcase name="testFetchPhoneNumber_NoConfig" classname="CCCWA.C3UtilityTest" time="0.11">
+        </testcase>
+        <testcase name="testFieldPermissionRequestSetters" classname="CCCWA.C3UtilityTest" time="0.01">
+        </testcase>
+        <testcase name="testGetFieldName" classname="CCCWA.C3UtilityTest" time="0.11">
+        </testcase>
+        <testcase name="testGetFormattedBodyUtility" classname="CCCWA.C3UtilityTest" time="0.05">
+        </testcase>
+        <testcase name="testGetObjectFields_InvalidObject" classname="CCCWA.C3UtilityTest" time="0.08">
+        </testcase>
+        <testcase name="testGetProjectNames_Empty" classname="CCCWA.C3UtilityTest" time="0.02">
+        </testcase>
+        <testcase name="testGetWhatsAppDetails" classname="CCCWA.C3UtilityTest" time="0.07">
+        </testcase>
+        <testcase name="testLogError_CoverageOnly" classname="CCCWA.C3UtilityTest" time="0.06">
+        </testcase>
+        <testcase name="testLogErrorwithInsufficientPermissions" classname="CCCWA.C3UtilityTest" time="0.25">
+        </testcase>
+        <testcase name="testLogErrorwithSufficientPermissions" classname="CCCWA.C3UtilityTest" time="0.06">
+        </testcase>
+        <testcase name="testMethod1" classname="CCCWA.C3UtilityTest" time="0.85">
+        </testcase>
+        <testcase name="testMethod2" classname="CCCWA.C3UtilityTest" time="0.13">
+        </testcase>
+        <testcase name="testUploadFile" classname="CCCWA.C3UtilityTest" time="0.84">
+        </testcase>
+        <testcase name="testUploadFileWithTestDataFactory" classname="CCCWA.C3UtilityTest" time="0.91">
+        </testcase>
+        <testcase name="testValdiateTemplatePrameters" classname="CCCWA.C3UtilityTest" time="0.51">
+        </testcase>
+        <testcase name="testCheckNumberConfigAndUtility" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.16">
+        </testcase>
+        <testcase name="testGetPublicUrl" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.42">
+        </testcase>
+        <testcase name="testGetTemplatesByProject_NoFilters" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.08">
+        </testcase>
+        <testcase name="testGetTemplatesByProject_ProjectOnly" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.07">
+        </testcase>
+        <testcase name="testInitAndFetchTemplates" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.61">
+        </testcase>
+        <testcase name="testLoadTextMessages_AndMedia" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.51">
+        </testcase>
+        <testcase name="testSaveMessage_TextMessage" classname="CCCWA.C3WhatsAppChatPanelCtrlTest" time="0.11">
+        </testcase>
+        <testcase name="method1" classname="CCCWA.C3SendtriggerMessagesFlowTest" time="0.51">
+        </testcase>
+        <testcase name="testAfterDeleteDirectInvocation" classname="CCCWA.C3TemplateTriggerHandlerTest" time="1.34">
+        </testcase>
+        <testcase name="testAfterDeleteTriggerFires" classname="CCCWA.C3TemplateTriggerHandlerTest" time="1.13">
+        </testcase>
+        <testcase name="testAfterDeleteWithRealList" classname="CCCWA.C3TemplateTriggerHandlerTest" time="0.87">
+        </testcase>
+        <testcase name="testDeleteTempateFromMetaWithEmptyList" classname="CCCWA.C3TemplateTriggerHandlerTest" time="0.01">
+        </testcase>
+        <testcase name="testDeleteTempateFromMetaWithValidList" classname="CCCWA.C3TemplateTriggerHandlerTest" time="0.02">
+        </testcase>
+        <testcase name="testExecuteWithCurrentUserPermissions" classname="CCCWA.C3RefreshTemplateSchedulableTest" time="0.34">
+        </testcase>
+    </testsuite>
+</testsuites>

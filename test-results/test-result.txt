@@ -1,38 +1,149 @@
 === Test Results
-TEST NAME                                                                OUTCOME  MESSAGE  RUNTIME (MS)
-───────────────────────────────────────────────────────────────────────  ───────  ───────  ────────────
-CCCWA.C3WhatsAppChatPanelCtrlTest.testCheckNumberConfigAndUtility        Pass              242         
-CCCWA.C3WhatsAppChatPanelCtrlTest.testGetPublicUrl                       Pass              844         
-CCCWA.C3WhatsAppChatPanelCtrlTest.testGetTemplatesByProject_NoFilters    Pass              154         
-CCCWA.C3WhatsAppChatPanelCtrlTest.testGetTemplatesByProject_ProjectOnly  Pass              105         
-CCCWA.C3WhatsAppChatPanelCtrlTest.testInitAndFetchTemplates              Pass              700         
-CCCWA.C3WhatsAppChatPanelCtrlTest.testLoadTextMessages_AndMedia          Pass              543         
-CCCWA.C3WhatsAppChatPanelCtrlTest.testSaveMessage_TextMessage            Pass              226         
+TEST NAME                                                                                         OUTCOME  MESSAGE  RUNTIME (MS)
+────────────────────────────────────────────────────────────────────────────────────────────────  ───────  ───────  ────────────
+CCCWA.C3CreateWhatsAppConversationQueueTest.testConstructorOnly                                   Pass              35          
+CCCWA.C3CreateWhatsAppConversationQueueTest.testQueueableExecutionWithTestData                    Pass              1571        
+CCCWA.C3CreateWhatsAppConversationQueueTest.testQueueableWithBigObject                            Pass              16          
+CCCWA.C3WhatsappWebhookAPITest.testDoGetInvalidToken                                              Pass              21          
+CCCWA.C3WhatsappWebhookAPITest.testDoGetValidToken                                                Pass              12          
+CCCWA.C3WhatsappWebhookAPITest.testDoPost                                                         Pass              238         
+CCCWA.C3WhatsappWebhookAPITest.testDoPost1                                                        Pass              285         
+CCCWA.C3WhatsappWebhookAPITest.testDoPost2                                                        Pass              182         
+CCCWA.C3WhatsappWebhookAPITest.testDoPost3                                                        Pass              198         
+CCCWA.C3WhatsappWebhookAPITest.testDoPost4                                                        Pass              188         
+CCCWA.C3WhatsappWebhookAPITest.testDoPost5                                                        Pass              187         
+CCCWA.C3WhatsappWebhookAPITest.testDoPost6                                                        Pass              196         
+CCCWA.C3WhatsappWebhookAPITest.testDoPost7                                                        Pass              354         
+CCCWA.C3WhatsappWebhookAPITest.testDoPostRejectsEmptyBody                                         Pass              13          
+CCCWA.C3WhatsappWebhookAPITest.testDoPostRejectsInvalidSignature                                  Pass              13          
+CCCWA.C3WhatsappWebhookAPITest.testDoPostRejectsMissingSignature                                  Pass              14          
+CCCWA.C3WhatsappWebhookAPITest.testDoPostValidSignatureIsAccepted                                 Pass              88          
+CCCWA.C3WhatsappWebhookAPITest.testUploadFile                                                     Pass              942         
+CCCWA.C3DeleteTemplateQueueTest.testDeleteTemplateQueueWithEmptySet                               Pass              108         
+CCCWA.C3DeleteTemplateQueueTest.testDeleteTemplateQueueWithNullSet                                Pass              58          
+CCCWA.C3DeleteTemplateQueueTest.testDeleteTemplateQueueWithValidTemplate                          Pass              1530        
+CCCWA.C3BulkTemplateSenderLwcControllerTest.testMethod1                                           Pass              291         
+CCCWA.C3WhatsAppWebServiceTest.method1                                                            Pass              432         
+CCCWA.C3WhatsAppWebServiceTest.method2                                                            Pass              181         
+CCCWA.C3WhatsAppWebServiceTest.method3                                                            Pass              138         
+CCCWA.C3WhatsAppWebServiceTest.method4                                                            Pass              91          
+CCCWA.C3WhatsAppWebServiceTest.method5                                                            Pass              1000        
+CCCWA.C3WhatsAppWebServiceTest.method6                                                            Pass              88          
+CCCWA.C3WhatsAppWebServiceTest.method7                                                            Pass              236         
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.method2                                                 Pass              510         
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.method3                                                 Pass              676         
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.method4                                                 Pass              362         
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testCoreCoverage                                        Pass              1491        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testDeleteWhatsAppTemplates                             Pass              1405        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testGetExistingTemplate_CallToActionPhoneBranch         Pass              1480        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testGetExistingTemplate_QuickReplyButtonBranch          Pass              1373        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testNullInputCoverage                                   Pass              152         
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testSaveTemplateData_CoverMappingIdAndButtonIdBranches  Pass              1584        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testSaveTemplateData_DeletesOldButtons                  Pass              1560        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testSaveTemplateData_DeletesOldMappings                 Pass              1538        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testSaveTemplateData_FieldAssignmentsCoverage           Pass              1272        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testSaveTemplateData_HeaderMedia_StrDocUrlBranch        Pass              2068        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testSaveTemplateData_QuickReply_BothButtonIdBranches    Pass              1415        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testSendMessageWithNoMappings                           Pass              1474        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testVerifyUploadDeletesDocument                         Pass              601         
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.testWhatsAppTemplates                                   Pass              1233        
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.test_ExceptionHandling_Coverage_AllInOne                Pass              328         
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.test_getExistingTemplate_FullFieldCoverage_WithURLCTA   Pass              1437        
+CCCWA.C3AdminPanelLwcControllerTest.testInitializeAndSaveAdminConfig                              Pass              409         
+CCCWA.C3WhatsAppUtilityBarCtrlTest.testAllConversationMessages                                    Pass              196         
+CCCWA.C3WhatsAppUtilityBarCtrlTest.testAllConversationMessages1                                   Pass              959         
+CCCWA.C3WhatsAppUtilityBarCtrlTest.testAllConversationMessages_FullBranchCoverage                 Pass              190         
+CCCWA.C3WhatsAppUtilityBarCtrlTest.testExceptionHandlingCoverage                                  Pass              45          
+CCCWA.C3WhatsAppUtilityBarCtrlTest.testSortingBlockCoverage_ACTUAL_FIX                            Pass              130         
+CCCWA.C3WhatsAppUtilityBarCtrlTest.testWrapperClassesCoverage                                     Pass              8           
+CCCWA.C3WhatsAppHomeAndConfigurationTest.testMethod1                                              Pass              639         
+CCCWA.C3WhatsAppHomeAndConfigurationTest.testMethod2                                              Pass              6982        
+CCCWA.C3WhatsAppHomeAndConfigurationTest.testMethod3                                              Pass              221         
+CCCWA.C3UtilityTest.testBuildConvoRecord                                                          Pass              70          
+CCCWA.C3UtilityTest.testBuildMessage                                                              Pass              91          
+CCCWA.C3UtilityTest.testBuildMessageFullCoverage                                                  Pass              73          
+CCCWA.C3UtilityTest.testBuildMessage_Video_NoFooter_NoButtons                                     Pass              27          
+CCCWA.C3UtilityTest.testFetchPhoneNumber                                                          Pass              189         
+CCCWA.C3UtilityTest.testFetchPhoneNumber_NoConfig                                                 Pass              111         
+CCCWA.C3UtilityTest.testFieldPermissionRequestSetters                                             Pass              7           
+CCCWA.C3UtilityTest.testGetFieldName                                                              Pass              113         
+CCCWA.C3UtilityTest.testGetFormattedBodyUtility                                                   Pass              50          
+CCCWA.C3UtilityTest.testGetObjectFields_InvalidObject                                             Pass              81          
+CCCWA.C3UtilityTest.testGetProjectNames_Empty                                                     Pass              20          
+CCCWA.C3UtilityTest.testGetWhatsAppDetails                                                        Pass              69          
+CCCWA.C3UtilityTest.testLogError_CoverageOnly                                                     Pass              64          
+CCCWA.C3UtilityTest.testLogErrorwithInsufficientPermissions                                       Pass              251         
+CCCWA.C3UtilityTest.testLogErrorwithSufficientPermissions                                         Pass              61          
+CCCWA.C3UtilityTest.testMethod1                                                                   Pass              848         
+CCCWA.C3UtilityTest.testMethod2                                                                   Pass              125         
+CCCWA.C3UtilityTest.testUploadFile                                                                Pass              837         
+CCCWA.C3UtilityTest.testUploadFileWithTestDataFactory                                             Pass              912         
+CCCWA.C3UtilityTest.testValdiateTemplatePrameters                                                 Pass              513         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testCheckNumberConfigAndUtility                                 Pass              156         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testGetPublicUrl                                                Pass              425         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testGetTemplatesByProject_NoFilters                             Pass              78          
+CCCWA.C3WhatsAppChatPanelCtrlTest.testGetTemplatesByProject_ProjectOnly                           Pass              73          
+CCCWA.C3WhatsAppChatPanelCtrlTest.testInitAndFetchTemplates                                       Pass              615         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testLoadTextMessages_AndMedia                                   Pass              506         
+CCCWA.C3WhatsAppChatPanelCtrlTest.testSaveMessage_TextMessage                                     Pass              107         
+CCCWA.C3SendtriggerMessagesFlowTest.method1                                                       Pass              512         
+CCCWA.C3TemplateTriggerHandlerTest.testAfterDeleteDirectInvocation                                Pass              1340        
+CCCWA.C3TemplateTriggerHandlerTest.testAfterDeleteTriggerFires                                    Pass              1128        
+CCCWA.C3TemplateTriggerHandlerTest.testAfterDeleteWithRealList                                    Pass              870         
+CCCWA.C3TemplateTriggerHandlerTest.testDeleteTempateFromMetaWithEmptyList                         Pass              5           
+CCCWA.C3TemplateTriggerHandlerTest.testDeleteTempateFromMetaWithValidList                         Pass              23          
+CCCWA.C3RefreshTemplateSchedulableTest.testExecuteWithCurrentUserPermissions                      Pass              338         
 
 
 === Apex Code Coverage by Class
-CLASSES                          PERCENT  UNCOVERED LINES       
-───────────────────────────────  ───────  ──────────────────────
-C3WhatsAppChatPanelCtrl          78%      68,97,141,160,161,... 
-C3WhatsAppWebService             84%      47,48,49,50,51,...    
-C3Utility                        79%      38,159,199,228,279,...
-C3WhatsAppTemplateScreenLWCCtrl  84%      37,38,43,83,136,...   
+CLASSES                            PERCENT  UNCOVERED LINES       
+─────────────────────────────────  ───────  ──────────────────────
+C3WhatsappNumberConfiguration      78%      26,63,64,65,83,...    
+C3SendtriggerMessagesFlow          100%                           
+C3WhatsappWebhookAPI               77%      39,187,241,243,255,...
+C3WhatsAppUtilityBarCtrl           96%      100,183,184,185       
+C3DeleteTemplateQueue              100%                           
+C3WhatsAppTemplateScreenLWCCtrl    91%      37,38,43,83,131,...   
+C3WhatsAppWebService               80%      47,48,49,50,51,...    
+C3WhatsAppTemplateHomeController   92%      39,83,93              
+C3InboundWrapper                   0%                             
+C3AdminPanelLwcController          83%      17,26,52,56           
+C3RefreshTemplateSchedulable       90%      52,103,109,110        
+C3WhatsAppSendTemplateBulkBatch    100%                           
+C3CreateWhatsAppConversationQueue  83%      28                    
+C3BulkTemplateSenderLwcController  82%      38,53,87,92,100,...   
+C3Utility                          86%      38,51,160,200,229,... 
+C3WhatsAppChatPanelCtrl            79%      68,97,141,160,161,... 
+C3TemplateTriggerHandler           100%                           
 
 
+=== Test Setup Time by Test Class for Run 707Aw00001VzQQm
+TEST SETUP METHOD NAME                                SETUP TIME
+────────────────────────────────────────────────────  ──────────
+CCCWA.C3WhatsappWebhookAPITest.makeData               1123      
+CCCWA.C3BulkTemplateSenderLwcControllerTest.makeData  2669      
+CCCWA.C3WhatsAppWebServiceTest.makeData               2842      
+CCCWA.C3WhatsAppTemplateScreenLWCCtrlTest.makeData    3567      
+CCCWA.C3WhatsAppUtilityBarCtrlTest.setupData          1425      
+CCCWA.C3WhatsAppHomeAndConfigurationTest.makeData     2289      
+CCCWA.C3UtilityTest.makeData                          3019      
+CCCWA.C3WhatsAppChatPanelCtrlTest.setupTestData       1099      
+CCCWA.C3SendtriggerMessagesFlowTest.testSendTemplate  1303      
+CCCWA.C3RefreshTemplateSchedulableTest.makeData       1284      
 
 
 === Test Summary
 NAME                 VALUE                        
 ───────────────────  ─────────────────────────────
 Outcome              Passed                       
-Tests Ran            7                            
+Tests Ran            102                          
 Pass Rate            100%                         
 Fail Rate            0%                           
 Skip Rate            0%                           
-Test Run Id                                       
-Test Setup Time      0 ms                         
-Test Execution Time  4614 ms                      
-Test Total Time      4614 ms                      
-Org Id               00DAq00000FOd1PMAT           
-Username             test-a5ugm2c7qvcm@example.com
-Org Wide Coverage    82%                          
+Test Run Id          707Aw00001VzQQm              
+Test Setup Time      20620 ms                     
+Test Execution Time  51132 ms                     
+Test Total Time      71752 ms                     
+Org Id               00DAw00000HWsQ5MAL           
+Username             test-qy0qm8mgung0@example.com
+Org Wide Coverage    84%                          

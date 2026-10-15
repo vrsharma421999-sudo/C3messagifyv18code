@@ -34,7 +34,7 @@
             <div class="slds-form-element slds-m-bottom_large">
                 <div class="slds-grid slds-grid_vertical-align-end">
                     <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
-                        <lightning-combobox 
+                        <lightning-combobox
                             name="templateObject"
                             label="Select Object"
                             required
@@ -46,7 +46,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Filter UI -->
             <template if:true={hasFilterableFields}>
                 <div class="slds-box slds-m-bottom_medium slds-theme_default">
@@ -98,6 +98,7 @@
                     <div class="slds-m-top_small slds-clearfix">
                         <div class="slds-float_left">
                             <lightning-button label="Add Filter" icon-name="utility:add" onclick={handleAddFilter}></lightning-button>
+                            <lightning-button label="Clear Filters" variant="neutral" class="slds-m-left_x-small" icon-name="utility:clear" onclick={handleClearFilters}></lightning-button>
                         </div>
                         <div class="slds-float_right">
                             <lightning-button label="Apply Filters & Fetch Records" variant="brand" onclick={handleApplyFilters}></lightning-button>
@@ -105,7 +106,7 @@
                     </div>
                 </div>
             </template>
-            
+
             <div class="full-height">
                 <template if:true={showRecordTable}>
                     <div class="table-container slds-box slds-p-around_none">
@@ -122,9 +123,9 @@
                     </div>
                     <div class="slds-m-top_medium slds-clearfix">
                         <div class="slds-float_right">
-                            <lightning-button 
-                                label="Next" 
-                                variant="brand" 
+                            <lightning-button
+                                label="Next"
+                                variant="brand"
                                 onclick={handleNext}>
                             </lightning-button>
                         </div>
@@ -144,14 +145,14 @@
                                 </lightning-record-picker>
                             </div>
                             <div class="slds-col slds-grow-none">
-                                <lightning-button 
-                                    label="Send Template" 
-                                    variant="brand" 
+                                <lightning-button
+                                    label="Send Template"
+                                    variant="brand"
                                     class="slds-m-right_small"
                                     onclick={handleSendTemplate}>
                                 </lightning-button>
-                                <lightning-button 
-                                    label="View" 
+                                <lightning-button
+                                    label="View"
                                     variant="neutral"
                                     onclick={handlePreviewTemplate}>
                                 </lightning-button>
@@ -198,7 +199,7 @@
                                                                         <lightning-formatted-rich-text value={templateViewBody}></lightning-formatted-rich-text>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <!-- Action Buttons inside chat -->
                                                                 <div class="slds-m-top_x-small">
                                                                     <template for:each={previewActionButtons} for:item="objMap">

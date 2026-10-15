@@ -1,5 +1,5 @@
 import { LightningElement,api,track } from 'lwc';
-import initWhatsAppNumberConfiguration from '@salesforce/apex/C3WhatsappNumberConfiguration.initWhatsAppNumberConfiguration'; // 
+import initWhatsAppNumberConfiguration from '@salesforce/apex/C3WhatsappNumberConfiguration.initWhatsAppNumberConfiguration'; //
 import saveWhatsAppNumberConfig from '@salesforce/apex/C3WhatsappNumberConfiguration.saveWhatsAppNumberConfig'; //
 import deleteWhatsAppNumberConfig from '@salesforce/apex/C3WhatsappNumberConfiguration.deleteWhatsAppNumberConfig'; //
 import getAllPhoneField from '@salesforce/apex/C3WhatsappNumberConfiguration.getAllPhoneField'; //
@@ -45,17 +45,17 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
 
 
 
-    connectedCallback() {      
-        this.isLoading = true;   
-        
+    connectedCallback() {
+        this.isLoading = true;
+
 
 
         initWhatsAppNumberConfiguration({})
         .then(result => {
-            this.isLoading = false;   
+            this.isLoading = false;
             if (result) {
                 this.objMainWrap = JSON.parse(result);
-                
+
                 if(this.objMainWrap.objectPickList != null && this.objMainWrap.objectPickList != undefined && this.objMainWrap.objectPickList.length > 0)
                     this.objectPicklist = this.objMainWrap.objectPickList;
                 if(this.objMainWrap.lstToNumberConfiguration != null && this.objMainWrap.lstToNumberConfiguration != undefined && this.objMainWrap.lstToNumberConfiguration.length > 0){
@@ -68,7 +68,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
             }
         })
         .catch(error => {
-            this.isLoading = false;  
+            this.isLoading = false;
             this.showToast('Error', error?.body?.message || 'Error loading configurations', 'error');
         });
     }
@@ -77,13 +77,13 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         this.isLoading = true;
         getAllPhoneField({sObjectName : objectName})
         .then(result => {
-            this.isLoading = false;   
+            this.isLoading = false;
             if (result) {
                 this.inLinefieldPicklist = JSON.parse(result);
             }
         })
         .catch(error => {
-            this.isLoading = false;  
+            this.isLoading = false;
             this.showToast('Error', error?.body?.message || 'Error loading fields', 'error');
         });
     }
@@ -92,24 +92,24 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         this.isLoading = true;
         getAllPhoneField({sObjectName : this.objectName})
         .then(result => {
-            this.isLoading = false;   
+            this.isLoading = false;
             if (result) {
                 this.fieldPicklist = JSON.parse(result);
             }
         })
         .catch(error => {
-            this.isLoading = false;  
+            this.isLoading = false;
             this.showToast('Error', error?.body?.message || 'Error loading fields', 'error');
         });
     }
 
     onGenericChange(event){
-        let strFieldName = event.target.name;
-        let value = event.target.value;
+        const strFieldName = event.target.name;
+        const value = event.target.value;
         if(strFieldName == 'objectName'){
             this.objectName = value;
             if (this.objectName) {
-                this.isLoading = true; 
+                this.isLoading = true;
                 this.getFields();
             }
         }
@@ -119,31 +119,31 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         }
     }
 
-    onNewConfigClick(event){
+    onNewConfigClick(){
         this.isNewConfigPopup = true;
     }
 
 
     onTableGenericChange(event){
-        let index = event.target.dataset.index;
+        const index = event.target.dataset.index;
         this.configRecords[index].CCCWA__Field_Name__c = event.target.value;
     }
 
     handleEdit(event){
         this.disable = true;
-        let index = event.target.dataset.index;
+        const index = event.target.dataset.index;
         this.configRecords[index].isEditMode = true;
         this.getInlineFields(this.configRecords[index].CCCWA__Object_Name__c);
     }
 
     handleCancel(event){
         this.disable = false;
-        let index = event.target.dataset.index;
+        const index = event.target.dataset.index;
         this.configRecords[index].isEditMode = false;
     }
     handleInlineSave(event){
         this.disable = false;
-        let index = event.target.dataset.index;
+        const index = event.target.dataset.index;
         this.configRecords[index].isEditMode = false;
         this.saveMethod(this.configRecords[index]);
     }
@@ -152,7 +152,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         if (this.isInputValid('.validate')) {
             for(let i = 0; i < this.objectPicklist.length; i++){
                 if(this.objectPicklist[i].value == this.objectName){
-                    let tempList = this.objectPicklist;
+                    const tempList = this.objectPicklist;
                     tempList.splice(i, 1);
                     this.objectPicklist = JSON.parse(JSON.stringify(tempList));
                     break;
@@ -169,7 +169,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         this.isLoading = true;
         saveWhatsAppNumberConfig({jsonNumberConfig : JSON.stringify(objWhatsAppConfigSetting)})
         .then(result => {
-            this.isLoading = false;   
+            this.isLoading = false;
             if (result) {
                 this.configRecords = JSON.parse(result);
                 for (let index = 0; index < this.configRecords.length; index++) {
@@ -180,17 +180,17 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
             }
         })
         .catch(error => {
-            this.isLoading = false;  
+            this.isLoading = false;
             this.showToast('Error', error?.body?.message || 'Error saving configuration', 'error');
         });
     }
 
     handleDelete(event){
         this.isLoading = true;
-        let index = event.target.dataset.index;
+        const index = event.target.dataset.index;
         deleteWhatsAppNumberConfig({jsonNumberConfig : JSON.stringify(this.configRecords[index])})
         .then(result => {
-            this.isLoading = false; 
+            this.isLoading = false;
             if (result) {
                 this.configRecords = JSON.parse(result);
                 if(this.configRecords != null && this.configRecords != undefined && this.configRecords.length > 0){
@@ -205,29 +205,29 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
             }
         })
         .catch(error => {
-            this.isLoading = false;  
+            this.isLoading = false;
             this.showToast('Error', error?.body?.message || 'Error deleting configuration', 'error');
         });
     }
 
     handleAfterDelete(strObjectName){
-        this.isLoading = true; 
+        this.isLoading = true;
         getObjectLabel({objectName : strObjectName})
         .then(result => {
             this.isLoading = false;
-            
+
             if (result) {
-                let obj = {
+                const obj = {
                     label : result,
                     value : strObjectName
                 }
-                let tempList = this.objectPicklist;
+                const tempList = this.objectPicklist;
                 tempList.push(obj);
                 this.objectPicklist = JSON.parse(JSON.stringify(tempList));
             }
         })
         .catch(error => {
-            this.isLoading = false;  
+            this.isLoading = false;
             this.showToast('Error', error?.body?.message || 'Error retrieving object label', 'error');
         });
     }
@@ -235,7 +235,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
 
     isInputValid(selector) {
         let isValid = true;
-        let inputFields = this.template.querySelectorAll(selector);
+        const inputFields = this.template.querySelectorAll(selector);
         // inputFields.push(this.template.querySelectorAll('lightning-combobox'));
         inputFields.forEach(inputField => {
           if (!inputField.checkValidity()) {
@@ -282,7 +282,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         this.fieldValue = event.target.value;
     }
 
-    
+
 
     handleClear(){
         this.objectName = '';
@@ -290,7 +290,7 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
         this.isNewConfigPopup = false;
     }
 
-    handleNCClear() {   
+    handleNCClear() {
     this.strRecordId = '';
     this.fieldValue = "";
     this.objectCode = '';
@@ -298,10 +298,10 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
     const selectedObj = this.template.querySelector('[data-id="objOption"]');
     if (selectedObj) {
         selectedObj.value = this.objectValue;
-    }    
+    }
     this.lstField = [];
     }
-    handleNCEdit(event) {        
+    handleNCEdit(event) {
         this.loaded = !this.loaded;
         this.disable = true;
         this.strRecordId = event.target.value;
@@ -354,8 +354,8 @@ lstObjectDetailsWrapper = [{ strObjectName: '-- None --', strObjectAPIName: '', 
             }
         }
     }
-    
-    
+
+
     RecordDeleted() {
         // Create and dispatch the toast event
         const event = new ShowToastEvent({

@@ -10,8 +10,8 @@
 * @date June 2025
 * @company CloudCentric
 */
-public with sharing class C3WhatsAppTemplateHomeController { 
-    
+public with sharing class C3WhatsAppTemplateHomeController {
+
     /**
 * @method WhatsAppTemplates
 * @description
@@ -28,7 +28,7 @@ public with sharing class C3WhatsAppTemplateHomeController {
         try {
             TemplateWrapper objwrap = new TemplateWrapper();
             List<CCCWA__Template_Object__c > listOfTemplates = new List<CCCWA__Template_Object__c >();
-            
+
             // Pass standard un-prefixed field names; C3Utility handles namespace resolution safely
             if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(
                 'Template_Object__c',
@@ -45,20 +45,20 @@ public with sharing class C3WhatsAppTemplateHomeController {
                     LIMIT 49000
                 ];
             }
-            
+
             if (!listOfTemplates.isEmpty()) {
                 objwrap.success = true;
                 objwrap.listOfTemplates = listOfTemplates;
             }
-            
+
             return JSON.serialize(objwrap);
-            
+
         } catch (Exception ex) {
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '', 'WhatsAppTemplateHomeController', 'WhatsAppTemplates', '');
             return null;
         }
     }
-    
+
     /**
 * @method deleteWhatsAppTemplates
 * @description
@@ -75,16 +75,16 @@ public with sharing class C3WhatsAppTemplateHomeController {
     public static String deleteWhatsAppTemplates(String recordId) {
         try {
             TemplateWrapper objwrap = new TemplateWrapper();
-            
+
             if (String.isNotBlank(recordId)) {
                 List<CCCWA__Template_Object__c > deleteTemp = new List<CCCWA__Template_Object__c >();
-                
+
                 if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', new List<String>{'Id'}, true))) {
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 } else {
                     deleteTemp = [SELECT Id FROM CCCWA__Template_Object__c WHERE Id = :recordId WITH SECURITY_ENFORCED];
                 }
-                
+
                 if (!deleteTemp.isEmpty()) {
                     if (C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', null, true))
                         && C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isDeletable', null, true))) {
@@ -93,18 +93,18 @@ public with sharing class C3WhatsAppTemplateHomeController {
                         throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                     }
                 }
-                
+
             }
-            
+
             objwrap = (TemplateWrapper) JSON.deserialize(WhatsAppTemplates(), TemplateWrapper.class);
             return JSON.serialize(objwrap);
-            
+
         } catch (Exception ex) {
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '', 'WhatsAppTemplateHomeController', 'deleteWhatsAppTemplates', '');
             return null;
         }
     }
-     
+
     /**
 * @class TemplateWrapper
 * @description
@@ -115,13 +115,13 @@ public with sharing class C3WhatsAppTemplateHomeController {
 * Indicates success of the operation.
 */
         public Boolean success;
-        
+
         /**
 * List of WhatsApp templates returned from the query.
 */
         public List<Template_Object__c> listOfTemplates;
     }
-    
+
     /**
 * @class TemplateObject
 * @description
@@ -132,7 +132,7 @@ public with sharing class C3WhatsAppTemplateHomeController {
 * Name of the template.
 */
         public String name;
-        
+
         /**
 * Status of the template.
 */

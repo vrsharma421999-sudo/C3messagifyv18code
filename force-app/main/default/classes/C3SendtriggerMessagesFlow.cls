@@ -46,7 +46,7 @@ global without sharing class C3SendtriggerMessagesFlow {
          * @description The ID of the active WhatsApp template to be used for the message.
          */
 
-        @InvocableVariable(label='Active Template Id') 
+        @InvocableVariable(label='Active Template Id')
         global String templateRecordId;
     }
 }

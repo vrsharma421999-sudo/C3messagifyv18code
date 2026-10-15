@@ -15,7 +15,7 @@ export default class AdminPanelLwc extends LightningElement {
     }
     isDisabled = false;
     isSave = false;
-    
+
     // For WABA ID
     get maskedWabaId() {
         return this.maskValue(this.objWhatsAppAdmin.CCCWA__WabaId__c);
@@ -33,8 +33,8 @@ export default class AdminPanelLwc extends LightningElement {
         this.objWhatsAppAdmin.CCCWA__NumberID__c = value;
     }
 
-    
-    
+
+
 
     maskValue(value) {
         if (value && value.length > 2) {
@@ -45,11 +45,11 @@ export default class AdminPanelLwc extends LightningElement {
         }
         return value;  // For short values (1 or 2 characters), return as is
     }
-    
+
     connectedCallback(){
         this.isDisabled = true;
         //this.adjustHeight();
-        
+
         //loadStyle(this, modal);
         this.isLoading = true;
         this.init();
@@ -74,28 +74,28 @@ export default class AdminPanelLwc extends LightningElement {
 
 
     genericHandler(event){
-        let value = event.target.value;
-        let fieldName = event.target.name; 
+        const value = event.target.value;
+        const fieldName = event.target.name;
         if (fieldName == "wabaId") {
             this.objWhatsAppAdmin.CCCWA__WabaId__c = value;
         }
         if (fieldName == "numId") {
             this.objWhatsAppAdmin.CCCWA__NumberID__c = value;
         }
-       
+
     }
 
 
     adjustHeight(){
         //this.res = "Height: "+screen.height + "Width: "+screen.width;
-        let tempHeight = screen.height;
+        const tempHeight = screen.height;
         if(screen.width < 500){
             this.height = 'max-height : '+String(tempHeight - 25) + 'px' ;
         }else{
             this.height = 'max-height : '+String((tempHeight * 0.6) - 35) + 'px' ;
         }
-            
-    }  
+
+    }
 
     handleSave(){
         if(this.isInputValid('.validate')){
@@ -124,7 +124,7 @@ export default class AdminPanelLwc extends LightningElement {
     letsGo(){
         this.isWelcome = false;
     }
-    
+
 
 
     toastEvent(type,title, message){
@@ -141,13 +141,13 @@ export default class AdminPanelLwc extends LightningElement {
             let tempErrorList = [];
             if (Array.isArray(error.body)) {
                 tempErrorList = error.body.map((e) => e.message);
-            } 
+            }
             else if (error.body && typeof error.body.message === 'string') {
                 tempErrorList = [error.body.message];
-            } 
+            }
             else if (error.body && error.body.fieldErrors && error.body.fieldErrors.message) {
                 tempErrorList = Object.values(error.body.fieldErrors)
-                    .flat() 
+                    .flat()
                     .map((fieldError) => fieldError.message);
             }
             else if (Array.isArray(error.body.pageErrors) && error.body.pageErrors.length > 0) {
@@ -165,7 +165,7 @@ export default class AdminPanelLwc extends LightningElement {
 
     isInputValid(selector) {
         let isValid = true;
-        let inputFields = this.template.querySelectorAll(selector);
+        const inputFields = this.template.querySelectorAll(selector);
         // inputFields.push(this.template.querySelectorAll('lightning-combobox'));
         inputFields.forEach(inputField => {
           if (!inputField.checkValidity()) {
@@ -176,5 +176,5 @@ export default class AdminPanelLwc extends LightningElement {
         return isValid;
     }
 
-   
+
 }

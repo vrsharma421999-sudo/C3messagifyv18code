@@ -3,17 +3,21 @@
 * @description Factory class to create test data for WhatsApp-related custom objects including Account, Contact,
 * Template_Object__c, Template_Parameter__c, and Template_Button__c. Intended for use in unit tests.
 */
-@isTest
+@IsTest
 public with sharing class C3TestDataFactory {
-    
-    
+
+
     public static User cachedUser;
-    
+
+    /**
+     * @description Creates or returns a cached standard test user with Messagify permissions assigned.
+     * @return User The test user.
+     */
     public static User getRunAsUser() {
         if (cachedUser != null) return cachedUser;
-        
+
         Profile p = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
-        
+
         User u = new User(
             Alias = 'tusr',
             Email = 'testuser@gmail.com',
@@ -26,25 +30,25 @@ public with sharing class C3TestDataFactory {
             UserName = 'testuser' + System.currentTimeMillis() + '@gmail.com'
         );
         insert u;
-        
+
         PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Messagify_WhatsApp' LIMIT 1];
         insert new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = ps.Id);
-        
+
         PermissionSet ps3 = [SELECT Id FROM PermissionSet WHERE Name = 'WhatsApp_Named_Credential' LIMIT 1];
         insert new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = ps3.Id);
         PermissionSet ps4 = [SELECT Id FROM PermissionSet WHERE Name = 'WhatsApp_Site_Access' LIMIT 1];
         insert new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = ps4.Id);
-        
+
         cachedUser = u;
         return cachedUser;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     //user created with assigned permissions
-    
+
     /**
 
 * @description Creates a test Account record with predefined values.
@@ -61,7 +65,7 @@ public with sharing class C3TestDataFactory {
         objAccount.NumberOfEmployees = 89;
         objAccount.Website = 'www.cccinfotech.com/contact-us';
         objAccount.Type='Customer';
-        
+
         return objAccount;
     }
     /**
@@ -85,7 +89,7 @@ public with sharing class C3TestDataFactory {
             objTemplate.CCCWA__Header__c='Lead';
             objTemplate.CCCWA__Template_Message__c='Hello {{1}},This side {{2}} from salesforce partner if you have the requirement of CRM software to manage your customer list efficiently, along with all the customization we are the Salesforce partner, who provide the fully CRM solution that can significantly enhance your business operations and drive sales growth. I would be more than happy to arrange a personalized demo to showcase how [CRM] can revolutionize your companys sales and customer management efforts. If you are interested, please let me know, and we can find a convenient time to discuss further. Kindly share me your contact number and email id for easy communication.Best regards,{{3}} {{4}}{{5}}Powered By CCC Infotech';
             objTemplate.CCCWA__Whatsapp_Template__c='Hello {{1}},This side {{2}} from salesforce partner if you have the requirement of CRM software to manage your customer list efficiently, along with all the customization we are the Salesforce partner, who provide the fully CRM solution that can significantly enhance your business operations and drive sales growth. I would be more than happy to arrange a personalized demo to showcase how [CRM] can revolutionize your companys sales and customer management efforts. If you are interested, please let me know, and we can find a convenient time to discuss further. Kindly share me your contact number and email id for easy communication.Best regards,{{3}} {{4}}{{5}}Powered By CCC Infotech';
-            objTemplate.CCCWA__Media_Handler__c = 'asdasdasd'; 
+            objTemplate.CCCWA__Media_Handler__c = 'asdasdasd';
             if (Test.isRunningTest()) {
                 insert objTemplate; // 🔥 SYSTEM MODE
             } else {
@@ -112,10 +116,10 @@ public with sharing class C3TestDataFactory {
             objContact.Phone='919911410564';
             objContact.AssistantPhone = '919911410564';
             objContact.Email = 'shreya@cccinfotech.com';
-            
+
             lstContact.add(objContact);
         }
-        
+
         return lstContact;
     }
     /**
@@ -123,7 +127,7 @@ public with sharing class C3TestDataFactory {
 * @description Creates and inserts a single Contact record with predefined values.
 * @return Contact - The inserted Contact record.
 */
-    
+
     public static Contact createContacts(){
         // List<Contact> lstContact = new List<Contact>();
         Contact objContact = new Contact();
@@ -136,7 +140,7 @@ public with sharing class C3TestDataFactory {
         Database.INSERT(objContact, AccessLevel.USER_MODE);
         return objContact;
     }
-    
+
     /**
 * @method createTemplateMappings
 * @description Creates a list of Template_Parameter__c records linked to a given template.
@@ -144,10 +148,10 @@ public with sharing class C3TestDataFactory {
 * @param templateId String - ID of the related Template_Object__c.
 * @return List<Template_Parameter__c> - List of Template_Parameter__c records (not inserted).
 */
-    
+
     public static List<Template_Parameter__c> createTemplateMappings(Integer numb, String templateId){
         List<Template_Parameter__c> listTemplateParameter = new List<Template_Parameter__c>();
-        
+
         Template_Parameter__c objTemplateParameter1 = new Template_Parameter__c();
         objTemplateParameter1.Example_Text__c='test';
         objTemplateParameter1.Object_name__c = 'Contact';
@@ -155,7 +159,7 @@ public with sharing class C3TestDataFactory {
         objTemplateParameter1.Field_Name__c= 'FirstName';
         objTemplateParameter1.Template__c = templateId;
         listTemplateParameter.add(objTemplateParameter1);
-        
+
         Template_Parameter__c objTemplateParameter2 = new Template_Parameter__c();
         objTemplateParameter2.Example_Text__c='test';
         objTemplateParameter2.Object_name__c = 'Contact';
@@ -163,7 +167,7 @@ public with sharing class C3TestDataFactory {
         objTemplateParameter2.Field_Name__c= 'LastName';
         objTemplateParameter2.Template__c = templateId;
         listTemplateParameter.add(objTemplateParameter2);
-        
+
         Template_Parameter__c objTemplateParameter3 = new Template_Parameter__c();
         objTemplateParameter3.Example_Text__c='test';
         objTemplateParameter3.Object_name__c = 'Contact';
@@ -171,7 +175,7 @@ public with sharing class C3TestDataFactory {
         objTemplateParameter3.Field_Name__c= 'Name';
         objTemplateParameter3.Template__c = templateId;
         listTemplateParameter.add(objTemplateParameter3);
-        
+
         Template_Parameter__c objTemplateParameter4 = new Template_Parameter__c();
         objTemplateParameter4.Example_Text__c='917948948998';
         objTemplateParameter4.Object_name__c = 'Contact';
@@ -179,7 +183,7 @@ public with sharing class C3TestDataFactory {
         objTemplateParameter4.Field_Name__c= 'MobilePhone';
         objTemplateParameter4.Template__c = templateId;
         listTemplateParameter.add(objTemplateParameter4);
-        
+
         Template_Parameter__c objTemplateParameter5 = new Template_Parameter__c();
         objTemplateParameter5.Example_Text__c='test@gmail.com';
         objTemplateParameter5.Object_name__c = 'Contact';
@@ -188,7 +192,7 @@ public with sharing class C3TestDataFactory {
         objTemplateParameter5.Template__c = templateId;
         listTemplateParameter.add(objTemplateParameter5);
         return listTemplateParameter;
-        
+
     }
     /**
 * @method createTemplateButtons
@@ -196,10 +200,10 @@ public with sharing class C3TestDataFactory {
 * @param templateId String - ID of the related Template_Object__c.
 * @return List<Template_Button__c> - Inserted list of Template_Button__c records.
 */
-    
-    
+
+
     public static List<Template_Button__c> createTemplateButtons( String templateId){
-        
+
         List<Template_Button__c> listOfTemplateButton = new List<Template_Button__c>();
         System.runAs(getRunAsUser()){
             Template_Button__c objButton = new Template_Button__c();
@@ -208,27 +212,27 @@ public with sharing class C3TestDataFactory {
             objButton.Button_text__c = 'asdasd';
             objButton.Country_Code__c = '91';
             objButton.Phone_Number__c = 'objLstAct.phoneNumber';
-            
+
             objButton.URL_Type__c = 'static';
-            
+
             objButton.Website_URL__c = 'objLstAct.websiteUrl';
-            
+
             objButton.Template__c = templateId;
             listOfTemplateButton.add(objButton);
-            
+
             Template_Button__c objButton2 = new Template_Button__c();
             objButton2.Button_Type__c = 'QUICK_REPLY';
             objButton2.Button_text__c = 'asdasd';
-            
-            
+
+
             objButton2.Template__c = templateId;
             listOfTemplateButton.add(objButton2);
-            
+
             Database.INSERT(listOfTemplateButton, AccessLevel.USER_MODE);
         }
         return listOfTemplateButton;
     }
-    
+
     /**
 * @description Builds a WhatsApp conversation record with test/mock data using a wrapper input.
 * This method is typically used in test classes to generate WhatsApp_Conversation__b records.
@@ -241,10 +245,10 @@ public with sharing class C3TestDataFactory {
 *
 * @return WhatsApp_Conversation__b record populated with sample values.
 */
-    
+
     public static CCCWA__whatsApp_conversation__b buildConvoRecord(WhatsAppInputWrapper input){
         CCCWA__whatsApp_conversation__b objTxtMsg = new CCCWA__whatsApp_conversation__b();
-        
+
         objTxtMsg.CCCWA__Direction__c = 'Outbound';
         objTxtMsg.CCCWA__Status__c = 'sent';
         objTxtMsg.CCCWA__Record_ID__c = input.recordId;
@@ -256,9 +260,9 @@ public with sharing class C3TestDataFactory {
         objTxtMsg.CCCWA__Interaction_Type__c = 'MMS';
         objTxtMsg.CCCWA__Created_date__c = DateTime.now();
         objTxtMsg.CCCWA__sid__c = input.wamId;
-        objTxtMsg.CCCWA__Media_URL__c = 'testURL.com'; 
-        objTxtMsg.CCCWA__File_Name__c = 'Test_file_Name'; 
-        objTxtMsg.CCCWA__Media_Type__c = 'image'; 
+        objTxtMsg.CCCWA__Media_URL__c = 'testURL.com';
+        objTxtMsg.CCCWA__File_Name__c = 'Test_file_Name';
+        objTxtMsg.CCCWA__Media_Type__c = 'image';
         objTxtMsg.CCCWA__Unique_Key__c = input.recordId + '-' + System.Now().formatLong();
         return objTxtMsg;
     }
@@ -294,10 +298,10 @@ public with sharing class C3TestDataFactory {
 * @param fileType MIME type of the file (e.g., image/png).
 * @return The inserted ContentVersion record.
 */
-    
+
     public static ContentVersion testInsertContentVersion(Blob fileContent, String fileName, String fileType) {
         ContentVersion objCV = new ContentVersion();
-        
+
         objCV.VersionData = fileContent;
         objCV.Title = fileName;
         objCV.PathOnClient = fileName;
@@ -307,7 +311,7 @@ public with sharing class C3TestDataFactory {
             objCV.Title = objCV.Title + ext ;
         }
         Database.INSERT(objCV, AccessLevel.USER_MODE);
-        
+
         return objCV;
     }
     /**
@@ -325,8 +329,8 @@ public with sharing class C3TestDataFactory {
                 C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('ContentVersion', 'isAccessible', listFields, false))
             ) {
                 objCDL.ContentDocumentId = [
-                    SELECT Id, ContentDocumentId 
-                    FROM ContentVersion 
+                    SELECT Id, ContentDocumentId
+                    FROM ContentVersion
                     WHERE Id = :cvId
                 ].ContentDocumentId;
             }
@@ -342,19 +346,19 @@ public with sharing class C3TestDataFactory {
 * @description Inserts a WhatsApp Admin configuration record with test data.
 * @return The inserted WhatsApp_Admin__c record.
 */
-    
+
     public static WhatsApp_Admin__c insertWhatsAppAdmin() {
         WhatsApp_Admin__c objAdminConfig = new WhatsApp_Admin__c(Name = 'admin', NumberID__c = 'asdasdasd', WabaId__c = 'dsfgasdas', App_Secret__c = 'c02a44143f272da9a1a171b3158ffbd0', Webhook_Verify_Token__c = 'CloudCentric@2025');
         insert objAdminConfig; // SYSTEM MODE by default
         //Database.INSERT(objAdminConfig, AccessLevel.USER_MODE);
-        
+
         return objAdminConfig;
     }
     /**
 * @description Inserts a WhatsApp Number Configuration record for the Lead object.
 * @return The inserted WhatsApp_Number_Configuration__c record.
 */
-    
+
     public static WhatsApp_Number_Configuration__c insertWhatsNumberConfig() {
         WhatsApp_Number_Configuration__c objNumberConfig = new WhatsApp_Number_Configuration__c(Name = 'Lead', Field_Name__c = 'MobilePhone', Object_Name__c = 'Lead');
         Database.INSERT(objNumberConfig, AccessLevel.USER_MODE);

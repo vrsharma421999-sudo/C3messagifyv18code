@@ -10,15 +10,17 @@ export default class WhatsAppUtilityBar extends LightningElement {
 
     isMobile = false;
     isPC = false;
-    
+
     // label = {
     //     Component_Refersh
     // };
 
+    // These are public @api properties because this component is part of a
+    // managed package and the properties cannot be removed from its contract.
     @api diplayChatPanel = false;
     @api recordId;
     @api objectApiName;
-    
+
     strErrorMsg = '';
     currentUserId;
     organizationId;
@@ -54,12 +56,12 @@ export default class WhatsAppUtilityBar extends LightningElement {
                 this.displayUnreadMsgCount(this.totalUnreadCount);
 
 
-                    
+
 
             })
             .catch((error) => {
                 if (error) {
-                    var errorMg = "Unknown error";
+                    let errorMg = "Unknown error";
                     if (Array.isArray(error.body)) {
                         errorMg = error.body.map((e) => e.message);
                     }
@@ -80,10 +82,10 @@ export default class WhatsAppUtilityBar extends LightningElement {
         this.strErrorMsg = '';
     }
 
-  
+
     handleClickTextMessage(event) {
         if (event.target.dataset.id) {
-            var selectedMsg = this.lstMessage.find(
+            const selectedMsg = this.lstMessage.find(
                 (item) => item.recordId == event.target.dataset.id
             );
             this.recordId = event.target.dataset.id;
@@ -114,9 +116,9 @@ export default class WhatsAppUtilityBar extends LightningElement {
 
   refresh() {
       this.getAllTexts(false);
-    
+
   }
-    
+
 
     displayUnreadMsgCount(unreadMsgCount) {
         this.dispatchEvent(new CustomEvent('chatnotification', { detail: { 'unreadMsgCount': unreadMsgCount } }));

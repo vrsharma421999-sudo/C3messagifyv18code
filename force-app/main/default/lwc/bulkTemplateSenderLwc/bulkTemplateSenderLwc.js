@@ -54,9 +54,9 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     stripNamespace(obj) {
         if (!obj || typeof obj !== 'object') return obj;
         if (Array.isArray(obj)) return obj.map(item => this.stripNamespace(item));
-        
-        let newObj = {};
-        for (let key in obj) {
+
+        const newObj = {};
+        for (const key in obj) {
             let newKey = key;
             if (key.endsWith('__c') && key.split('__').length === 3) {
                 newKey = key.split('__')[1] + '__c';
@@ -92,14 +92,14 @@ export default class BulkTemplateSenderLwc extends LightningElement {
 
     // Handle the change event for the object selection
     genericChange(event) {
-        let fieldName = event.target.name;
-        let value = event.target.value;
+        const fieldName = event.target.name;
+        const value = event.target.value;
 
         if (fieldName === 'templateObject') {
             this.selectedObject = value; // Set selected object
             this.resetTableData(); // Reset table data
             this.filterRows = [];
-            this.fetchFieldsAndValidate(value); 
+            this.fetchFieldsAndValidate(value);
         }
     }
 
@@ -114,7 +114,7 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     fetchFieldsAndValidate(objectName) {
         this.isLoading = true;
         this.objectValidate = false;
-        
+
         validateObject({ objectName: objectName })
             .then(result => {
                 if (result) {
@@ -128,6 +128,14 @@ export default class BulkTemplateSenderLwc extends LightningElement {
                     this.filterableFields = JSON.parse(fieldsJson);
                     // Initialize with one empty filter row
                     this.filterRows = [{ id: Date.now(), field: '', operator: '=', value: '' }];
+                    // Automatically load initial records for the selected object
+                    return fetchObjectRecords({ objectName: objectName, whereClause: '', orderBy: '' });
+                }
+                return null;
+            })
+            .then(data => {
+                if (data && data.length > 0) {
+                    this.populateTableData(data);
                 }
             })
             .catch(error => {
@@ -144,89 +152,137 @@ export default class BulkTemplateSenderLwc extends LightningElement {
     }
 
     handleAddFilter() {
-        this.filterRows.push({ id: Date.now(), field: '', operator: '=', value: '' });
+        this.filterRows = [...this.filterRows, { id: Date.now(), field: '', operator: '=', value: '' }];
     }
 
     handleRemoveFilter(event) {
-        const idToRemove = event.target.dataset.id;
-        this.filterRows = this.filterRows.filter(row => row.id.toString() !== idToRemove.toString());
+        const idToRemove = event.target.dataset?.id || event.currentTarget?.dataset?.id;
+        if (!idToRemove) return;
+        this.filterRows = this.filterRows.filter(row => String(row.id) !== String(idToRemove));
     }
 
     handleFilterChange(event) {
-        const rowId = event.target.dataset.id;
+        const rowId = event.target.dataset?.id || event.currentTarget?.dataset?.id;
         const fieldName = event.target.name;
         const value = event.target.value;
-        
-        const rowIndex = this.filterRows.findIndex(row => row.id.toString() === rowId.toString());
+
+        if (!rowId) return;
+
+        const rowIndex = this.filterRows.findIndex(row => String(row.id) === String(rowId));
         if (rowIndex !== -1) {
-            this.filterRows[rowIndex][fieldName] = value;
+            this.filterRows[rowIndex] = {
+                ...this.filterRows[rowIndex],
+                [fieldName]: value
+            };
+            this.filterRows = [...this.filterRows];
         }
     }
 
+    handleClearFilters() {
+        this.filterRows = [{ id: Date.now(), field: '', operator: '=', value: '' }];
+        this.handleApplyFilters();
+    }
+
     buildWhereClause() {
-        let conditions = [];
+        const conditions = [];
         this.filterRows.forEach(row => {
-            if (row.field && row.value) {
+            if (row.field && row.value !== '' && row.value !== undefined && row.value !== null) {
                 let condition = '';
-                const fieldType = this.filterableFields.find(f => f.value === row.field)?.type;
                 let val = String(row.value).trim();
-                
-                // Escape single quotes for SOQL
-                val = val.replace(/'/g, "\\'");
-                
-                let isString = (fieldType === 'STRING' || fieldType === 'PICKLIST' || fieldType === 'TEXTAREA' || fieldType === 'PHONE' || fieldType === 'EMAIL' || fieldType === 'URL');
-                
+                val = val.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+
+                const fieldObj = this.filterableFields.find(f => f.value?.toLowerCase() === row.field?.toLowerCase());
+                const fieldType = fieldObj ? fieldObj.type : 'STRING';
+
+                const isStringOrId = (
+                    fieldType === 'STRING' ||
+                    fieldType === 'PICKLIST' ||
+                    fieldType === 'MULTIPICKLIST' ||
+                    fieldType === 'TEXTAREA' ||
+                    fieldType === 'PHONE' ||
+                    fieldType === 'EMAIL' ||
+                    fieldType === 'URL' ||
+                    fieldType === 'ID' ||
+                    fieldType === 'REFERENCE' ||
+                    fieldType === 'COMBOBOX'
+                );
+
                 if (row.operator === 'LIKE') {
                     condition = `${row.field} LIKE '%${val}%'`;
-                } else if (isString && (row.operator === '=' || row.operator === '!=') ) {
+                } else if (isStringOrId) {
                     condition = `${row.field} ${row.operator} '${val}'`;
+                } else if (fieldType === 'BOOLEAN') {
+                    const boolVal = (val.toLowerCase() === 'true' || val === '1') ? 'true' : 'false';
+                    condition = `${row.field} ${row.operator} ${boolVal}`;
                 } else {
                     condition = `${row.field} ${row.operator} ${val}`;
                 }
                 conditions.push(condition);
             }
         });
-        
+
         return conditions.join(' AND ');
     }
 
     handleApplyFilters() {
         this.isLoading = true;
-        const whereClause = this.buildWhereClause();
-        
-        let orderBy = '';
-        if (this.sortedBy) {
-            orderBy = `${this.sortedBy} ${this.sortDirection}`;
-        }
-        
-        fetchObjectRecords({ objectName: this.selectedObject, whereClause: whereClause, orderBy: orderBy })
-            .then(data => {
-                if (data && data.length > 0) {
-                    this.populateTableData(data);
-                } else {
+        try {
+            const whereClause = this.buildWhereClause();
+
+            let orderBy = '';
+            if (this.sortedBy) {
+                orderBy = `${this.sortedBy} ${this.sortDirection}`;
+            }
+
+            fetchObjectRecords({ objectName: this.selectedObject, whereClause: whereClause, orderBy: orderBy })
+                .then(data => {
+                    if (data && data.length > 0) {
+                        this.populateTableData(data);
+                    } else {
+                        this.resetTableData();
+                        this.showToast('Warning', 'No records found matching the filter criteria. Please adjust your filters and try again.', 'warning');
+                    }
+                })
+                .catch(error => {
                     this.resetTableData();
-                    this.showToast('Info', 'No records found matching the criteria.', 'info');
-                }
-            })
-            .catch(error => {
-                this.handleError(error);
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+                    this.handleError(error);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        } catch (err) {
+            this.isLoading = false;
+            this.handleError(err);
+        }
     }
 
     populateTableData(data) {
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            this.resetTableData();
+            this.showToast('Warning', 'No records found matching the filter criteria.', 'warning');
+            return;
+        }
         this.tableData = data;
-        this.columns = Object.keys(data[0])
-            .filter(field => field !== 'Id' && typeof data[0][field] !== 'object')
+
+        const labelMap = new Map();
+        if (this.filterableFields && Array.isArray(this.filterableFields)) {
+            this.filterableFields.forEach(f => {
+                if (f.value) {
+                    labelMap.set(f.value.toLowerCase(), f.label);
+                }
+            });
+        }
+
+        const sampleRecord = data[0] || {};
+        this.columns = Object.keys(sampleRecord)
+            .filter(field => field.toLowerCase() !== 'id')
             .map(field => ({
-                label: field.replace(/_/g, ' '),
+                label: labelMap.get(field.toLowerCase()) || field.replace(/_/g, ' '),
                 fieldName: field,
                 type: 'text',
                 sortable: true
             }));
-        this.showRecordTable = true; 
+        this.showRecordTable = true;
     }
 
     handleSort(event) {
@@ -253,7 +309,7 @@ export default class BulkTemplateSenderLwc extends LightningElement {
         };
     }
 
-    
+
 
     // Handle the Next button click
     handleNext() {
@@ -339,7 +395,7 @@ export default class BulkTemplateSenderLwc extends LightningElement {
         this.templateViewBody = header; // Set the preview body
         let body = this.templateViewBody;
         if (this.objTemplate.listMapping != null && this.objTemplate.listMapping != undefined && this.objTemplate.listMapping.length > 0) {
-            let list = [];
+            const list = [];
             for (let i = 0; i < this.objTemplate.listMapping.length; i++) {
                 list.push(this.objTemplate.listMapping[i].exampleText);
                 // var expression = "^[" + this.lstMapping[i].placeHolder + "].*$";
@@ -416,7 +472,15 @@ export default class BulkTemplateSenderLwc extends LightningElement {
             } else if (typeof error.message === 'string') {
                 tempErrorList = [error.message];
             }
-            this.showToast('Error!', tempErrorList.join(', '), 'error'); // Show error message
+            let errorMsg = 'An unexpected error occurred.';
+            if (tempErrorList.length > 0 && tempErrorList.join(', ').trim() !== '') {
+                errorMsg = tempErrorList.join(', ');
+            } else if (typeof error === 'string') {
+                errorMsg = error;
+            } else if (error && error.message) {
+                errorMsg = error.message;
+            }
+            this.showToast('Error!', errorMsg, 'error'); // Show error message
         }
         this.isLoading = false; // Stop loading
     }

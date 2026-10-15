@@ -1,10 +1,10 @@
 .dummy{
 	color : black;
 }
-.TableRowContent{	
+.TableRowContent{
 	overflow: hidden;
 }
-.TableRowMessageContent{	
+.TableRowMessageContent{
 	overflow: hidden;
 	white-space: initial;
 }

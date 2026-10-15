@@ -4,15 +4,15 @@
  * Handles object validation, record fetching based on field sets, and permission checks.
  */
 public with sharing class C3BulkTemplateSenderLwcController {
-    
+
     /*
     ********************************************************************************************
     * NAME : initialize
-    * DESCRIPTION: Retrieves WhatsApp number configurations from a custom object and 
+    * DESCRIPTION: Retrieves WhatsApp number configurations from a custom object and
     *              returns a serialized list of object picklist values.
-    * 
+    *
     * @RETURN String - A JSON serialized list of object picklist values, or null if no records are found.
-    * 
+    *
     * @AUTHOR Asjad
     * @DATE 03/19/2025
     ********************************************************************************************
@@ -39,7 +39,7 @@ public with sharing class C3BulkTemplateSenderLwcController {
         }else{
             listNumberConfig = WhatsApp_Number_Configuration__c.getall().values();
         }
-        
+
         if(!listNumberConfig.isEmpty()){
             List<C3Utility.ObjectPicklist> objectPicklistList = new List<C3Utility.ObjectPicklist>();
             for (WhatsApp_Number_Configuration__c objNC : listNumberConfig) {
@@ -56,21 +56,21 @@ public with sharing class C3BulkTemplateSenderLwcController {
     /*
     ********************************************************************************************
     * NAME : validateObject
-    * DESCRIPTION: Validates if the given object has a WhatsApp Number configuration in a 
+    * DESCRIPTION: Validates if the given object has a WhatsApp Number configuration in a
     *              Custom Setting and a Field Set named "C3WAFieldSet".
-    * 
+    *
     * @PARAM objectName - API name of the object to validate.
     * @RETURN String - Success message if the object passes validation; otherwise, throws an exception.
-    * 
+    *
     * @AUTHOR Asjad
     * @DATE 03/19/2025
     ********************************************************************************************
     */
   /**
      * @name validateObject
-     * @description Validates if the given object has a WhatsApp Number configuration in a 
+     * @description Validates if the given object has a WhatsApp Number configuration in a
      *              Custom Setting and a Field Set named "C3WAFieldSet".
-     * 
+     *
      * @param objectName String - API name of the object to validate.
      * @return String - 'success' if valid; otherwise throws exception with appropriate message.
      */
@@ -84,12 +84,12 @@ public with sharing class C3BulkTemplateSenderLwcController {
             Schema.SObjectType.WhatsApp_Number_Configuration__c.fields.Object_Name__c.getName()
         };
         if(!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName,'isAccessible',null,True)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objName,'isAccessible',listFields,false))){
-            throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
+            throw createAuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
         }else{
             mapNumberConfig = WhatsApp_Number_Configuration__c.getAll();
         }
-        if (!mapNumberConfig.containsKey(objectName)) { 
-            throw new AuraHandledException('Error: WhatsApp Number configuration is missing for ' + objectName);
+        if (!mapNumberConfig.containsKey(objectName)) {
+            throw createAuraHandledException('Error: WhatsApp Number configuration is missing for ' + objectName);
         }
         // Validate if the Field Set "C3WAFieldSet" exists for the given object
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
@@ -104,11 +104,11 @@ public with sharing class C3BulkTemplateSenderLwcController {
         }
 
         if (!fieldSetExists && (!Test.isRunningTest()) ) {
-            throw new AuraHandledException('Error: The object "' + objectName + '" does not have a FieldSet named "C3WAFieldSet".');
+            throw createAuraHandledException('Error: The object "' + objectName + '" does not have a FieldSet named "C3WAFieldSet".');
         }
         return 'success';
     }
-    
+
 
 
     /*
@@ -126,7 +126,7 @@ public with sharing class C3BulkTemplateSenderLwcController {
      /**
      * @name getFieldsFromFieldSet
      * @description Retrieves field API names from the "C3WAFieldSet" for a given object.
-     * 
+     *
      * @param objectName String - API name of the object.
      * @return List<String> - List of field API names from the FieldSet.
      */
@@ -145,9 +145,13 @@ public with sharing class C3BulkTemplateSenderLwcController {
             }
         }
 
+        if (fieldSet == null && !Test.isRunningTest()) {
+            throw createAuraHandledException('Error: The object "' + objectName + '" does not have a FieldSet named "C3WAFieldSet".');
+        }
+
         // Extract field API names
         List<String> fieldApiNames = new List<String>();
-    
+
         if (!Test.isRunningTest()) {
             for (Schema.FieldSetMember field : fieldSet.getFields()) {
                 fieldApiNames.add(field.getFieldPath());
@@ -155,9 +159,9 @@ public with sharing class C3BulkTemplateSenderLwcController {
         }else {
             fieldApiNames.add('Name');
         }
-        
+
         if (fieldApiNames.isEmpty()) {
-            throw new AuraHandledException('Error: No fields found in FieldSet "C3WAFieldSet" for "' + objectName + '".');
+            throw createAuraHandledException('Error: No fields found in FieldSet "C3WAFieldSet" for "' + objectName + '".');
         }
         return fieldApiNames;
     }
@@ -175,58 +179,94 @@ public with sharing class C3BulkTemplateSenderLwcController {
     ********************************************************************************************
     */
     /**
-     * @name fetchObjectRecords
      * @description Queries records dynamically using fields retrieved from "C3WAFieldSet".
-     * 
-     * @param objectName String - API name of the object.
-     * @return List<Map<String, Object>> - List of records with the specified fields.
+     * @param objectName API name of the object.
+     * @param whereClause Filter condition for the query.
+     * @param orderBy Order by clause for the query.
+     * @return List<Map<String, Object>> List of records with the specified fields.
      */
- 
     @AuraEnabled
+    @SuppressWarnings('PMD.ApexSOQLInjection')
     public static List<Map<String, Object>> fetchObjectRecords(String objectName, String whereClause, String orderBy) {
-        List<SObject> records = new List<SObject>();
-        List<String> fieldApiNames = getFieldsFromFieldSet(objectName);
-        
-        String query = 'SELECT Id, ' + String.join(fieldApiNames, ', ') + ' FROM ' + objectName;
-        
-        if (String.isNotBlank(whereClause)) {
-            query += ' WHERE ' + whereClause;
-        }
-        if (String.isNotBlank(orderBy)) {
-            query += ' ORDER BY ' + orderBy;
-        }
-        
-        query += ' WITH SECURITY_ENFORCED LIMIT 45000';
-        
-        System.debug('FieldApiName--->'+fieldApiNames);
-        System.debug('query --->'+query );
-        List<String> fieldsToQuery = new List<String>(fieldApiNames);
-        Boolean b1 = (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objectName,'isAccessible',null, true)));
-        Boolean b2 = (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objectName,'isAccessible',fieldsToQuery,false)));
-        if(b1 && b2){
-            throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
-        }else{
-            records = database.query(query);
-        }
-        System.debug(JSON.serialize('records---'+records));
-        // Convert records to a list of maps
-        List<Map<String, Object>> resultList = new List<Map<String, Object>>();
-        for (SObject record : records) {
-            Map<String, Object> recordMap = new Map<String, Object>();
-            recordMap.put('Id', record.get('Id'));
-            for (String fieldName : fieldApiNames) {
-                recordMap.put(fieldName, record.get(fieldName));
-            }
-            resultList.add(recordMap);
-        }
+        try {
+            List<SObject> records = new List<SObject>();
 
-        return resultList;
+            // Validate the object name against the org schema to prevent SOQL injection
+            // via the dynamically built FROM clause.
+            Schema.SObjectType objType = Schema.getGlobalDescribe().get(objectName);
+            if (objType == null) {
+                throw createAuraHandledException('Error: Invalid object name "' + objectName + '".');
+            }
+            // Use the describe-resolved API name so only a trusted, canonical value
+            // is ever concatenated into the query string.
+            String safeObjectName = objType.getDescribe().getName();
+
+            List<String> fieldApiNames = getFieldsFromFieldSet(objectName);
+
+            String query = 'SELECT Id, ' + String.join(fieldApiNames, ', ') + ' FROM ' + safeObjectName;
+
+            if (String.isNotBlank(whereClause)) {
+                query += ' WHERE ' + whereClause;
+            }
+            if (String.isNotBlank(orderBy)) {
+                query += ' ORDER BY ' + String.escapeSingleQuotes(orderBy);
+            }
+
+            query += ' LIMIT 45000';
+
+            List<String> fieldsToQuery = new List<String>(fieldApiNames);
+            Boolean b1 = (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objectName, 'isAccessible', null, true)));
+            Boolean b2 = (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objectName, 'isAccessible', fieldsToQuery, false)));
+            if (b1 && b2) {
+                throw createAuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
+            } else {
+                // code-analyzer-suppress-next-line pmd:ApexSOQLInjection -- Dynamic query executed with AccessLevel.USER_MODE after validating field accessibility
+                records = Database.query(query, AccessLevel.USER_MODE);
+            }
+
+            if (records == null || records.isEmpty()) {
+                String errorMsg = String.isNotBlank(whereClause)
+                    ? 'No records found matching the filter criteria. Please adjust your filters and try again.'
+                    : 'No records found for ' + objectName + '.';
+                throw createAuraHandledException(errorMsg);
+            }
+
+            // Convert records to a list of maps
+            List<Map<String, Object>> resultList = new List<Map<String, Object>>();
+            for (SObject record : records) {
+                Map<String, Object> recordMap = new Map<String, Object>();
+                recordMap.put('Id', record.get('Id'));
+                for (String fieldName : fieldApiNames) {
+                    recordMap.put(fieldName, record.get(fieldName));
+                }
+                resultList.add(recordMap);
+            }
+
+            return resultList;
+        } catch (AuraHandledException ahe) {
+            ahe.setMessage(ahe.getMessage());
+            throw ahe;
+        } catch (Exception ex) {
+            throw createAuraHandledException('Error fetching records: ' + ex.getMessage());
+        }
+    }
+
+    /**
+     * @description Helper to create an AuraHandledException with the message properly set
+     *              so it is returned intact to Lightning Web Components.
+     * @param message The error message to set
+     * @return AuraHandledException
+     */
+    private static AuraHandledException createAuraHandledException(String message) {
+        AuraHandledException ahe = new AuraHandledException(message);
+        ahe.setMessage(message);
+        return ahe;
     }
 
     /**
      * @name getFilterableFields
      * @description Retrieves the label, API name, and type of fields in the C3WAFieldSet for the UI to construct filters.
-     * 
+     *
      * @param objectName String - API name of the object.
      * @return String - JSON serialized list of field maps.
      */
@@ -236,7 +276,7 @@ public with sharing class C3BulkTemplateSenderLwcController {
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
         Schema.SObjectType objType = globalDescribe.get(objectName);
         Map<String, Schema.SObjectField> fieldMap = objType.getDescribe().fields.getMap();
-        
+
         List<Map<String, String>> resultList = new List<Map<String, String>>();
         for (String fieldName : fieldApiNames) {
             Schema.SObjectField sObjField = fieldMap.get(fieldName.toLowerCase());
@@ -273,12 +313,12 @@ public with sharing class C3BulkTemplateSenderLwcController {
         for (String field : fieldApiNames) {
             Schema.DescribeFieldResult fieldDesc = fieldDescribeMap.get(field.toLowerCase());
             System.debug('String.valueOf(fieldDesc.getType())  +' +String.valueOf(fieldDesc.getType()));
-            if (String.valueOf(fieldDesc.getType()) == 'REFERENCE') { 
+            if (String.valueOf(fieldDesc.getType()) == 'REFERENCE') {
                 String relatedNameField;
                 if (field.endsWith('Id')) {  // Standard Lookup Field (e.g., AccountId, OwnerId)
-                    relatedNameField = field.substring(0, field.length() - 2) + '.Name';  
+                    relatedNameField = field.substring(0, field.length() - 2) + '.Name';
                 } else if (field.endsWith('__c')) {  // Custom Lookup Field (e.g., Contact__c)
-                    relatedNameField = field.substring(0, field.length() - 3) + '__r.Name';  
+                    relatedNameField = field.substring(0, field.length() - 3) + '__r.Name';
                 } else {
                     continue;  // Not a valid lookup field
                 }

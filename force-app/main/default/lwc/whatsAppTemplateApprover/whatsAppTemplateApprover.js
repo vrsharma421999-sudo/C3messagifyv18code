@@ -82,7 +82,7 @@ export default class whatsAppTemplateApprover extends LightningElement {
     }
 
     fetchTemplateDetails() {
-        
+
         if(this.recordId){
             this.isUpdate = true;
             getExistingTemplate({templateId : this.recordId})
@@ -101,7 +101,7 @@ export default class whatsAppTemplateApprover extends LightningElement {
                             this.bodyLength = 1024 - this.objTemplate.templateBodyText.length;
                         else
                             this.bodyLength = 1024 - this.objTemplate.templateBody.length;
-                        
+
                         this.lstActions = this.objTemplate.listActions;
                     }
                     if(this.objTemplate.listQuickReply != null && this.objTemplate.listQuickReply != undefined && this.objTemplate.listQuickReply.length > 0){
@@ -135,7 +135,7 @@ export default class whatsAppTemplateApprover extends LightningElement {
             // this.handleObjectFields(this.objTemplate.objectName);
             this.isLoading = false;
         }
-        
+
         getObjectsfromNumberConfig()
         .then(result => {
             this.objectOptions = JSON.parse(result);
@@ -145,11 +145,11 @@ export default class whatsAppTemplateApprover extends LightningElement {
         });
     }
 
-    
+
 @wire(getProjectNames)
-wiredProjects({ error, data }) {   
+wiredProjects({ error, data }) {
     if (data) {
-            
+
         this.projectOptions = data.map(name => ({
             label: name,
             value: name
@@ -159,13 +159,13 @@ wiredProjects({ error, data }) {
     }
 }
 
-    
 
 
 
-  
 
-    
+
+
+
     get countryPhoneCodeOptions() {
         return [
             { "label": "(+93) Afghanistan", "value": "93" },
@@ -481,10 +481,10 @@ wiredProjects({ error, data }) {
             {label: 'Vietnamese', value: 'vi'},
             {label: 'Zulu', value: 'zu'}
         ];
-    } 
- 
+    }
 
-    
+
+
 /*
 get ProjectOptions() {
         return [
@@ -503,14 +503,14 @@ get ProjectOptions() {
         ];
     }
 
-    
-    
+
+
 
     mappingGenericChange(event){
-        let index = event.target.dataset.index;
-        let fieldName = event.target.name;
-        let fieldValue = event.target.value;
-        
+        const index = event.target.dataset.index;
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
+
         if(fieldName == 'fieldName')
         {
             this.lstMapping[index].fieldName = fieldValue;
@@ -531,7 +531,7 @@ get ProjectOptions() {
         this.resetDetails();
         this.isShowPopup = false;
         this.isNextModal = false;
-        
+
     }
 
     handleTemplateNameChange(event) {
@@ -560,7 +560,7 @@ get ProjectOptions() {
         this.footerText = event.target.value;
     }
 
-    
+
     get button_options() {
         if (this.category == 'MARKETING') {
             return [
@@ -590,7 +590,7 @@ get ProjectOptions() {
 
         return [
             { label: 'Custom', value: 'Custom' }
-           
+
         ];
     }
 
@@ -681,7 +681,7 @@ get ProjectOptions() {
     }
 
 
-    
+
     get codeDeliveryOptions() {
         return [
             { label: 'Copy code', value: 'copyCode' },
@@ -711,7 +711,7 @@ get ProjectOptions() {
     get selectedValues() {
         return this.value.join(',');
     }
-    
+
     handleMessageContentChange(event) {
         this.mesaageOptionsValue = event.detail.value;
         this.isExpirationTime = false;
@@ -851,13 +851,12 @@ get ProjectOptions() {
 
       handleFileSelect(event) {
         const selectedFileType = event.target.dataset.fileType; // Get the selected file type
-        
+
         const fileInput = this.template.querySelector('input[type="file"]');
         const files = fileInput.files; // Get the selected files
 
-        const filteredFiles = Array.from(files).filter(file => {
-            return file.type.includes(selectedFileType);
-        });
+        // Keep only files whose type matches the selected header type.
+        Array.from(files).filter(file => file.type.includes(selectedFileType));
     }
 
     handleHeaderType(value){
@@ -883,7 +882,7 @@ get ProjectOptions() {
         }else if(value == 'MEDIA'){
             this.isHeaderText = false;
             this.isHeaderMedia = true ;
-            this.objTemplate.headerText     = "";   
+            this.objTemplate.headerText     = "";
             this.objTemplate.headerType     = "MEDIA";
             if(this.objTemplate.mediaType == 'VIDEO'){
                 this.divVideoClick();
@@ -902,10 +901,8 @@ get ProjectOptions() {
     deleteUploadedDocument(){
         this.isLoading = true;
         deleteUploadedDocument({documentId : this.objTemplate.documentId})
-        .then(result => {
+        .then(() => {
             this.isLoading = false;
-            /*if(result){
-            }*/
         })
         .catch(error => {
             this.isLoading = false;
@@ -914,20 +911,20 @@ get ProjectOptions() {
     }
 
     newGenericHandler(event){
-        let fieldName = event.target.name;
-        let fieldValue = event.target.value;
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
 
          switch (fieldName) {
             case "headerType":
                 this.objTemplate.headerType = fieldValue;
                 this.handleHeaderType(fieldValue);
-                
+
                 break;
 
             case "language":
                 this.objTemplate.language = fieldValue;
                 break;
-                
+
             case "project":
                this.objTemplate.project =fieldValue;
                break;
@@ -949,7 +946,7 @@ get ProjectOptions() {
                     this.bodyLength = 1024 - event.detail.value.length;
                 else
                     this.bodyLength = 1024;
-                
+
                 if(this.bodyLength > 1024){
                     this.objTemplate.templateBody = this.objTemplate.templateBody.slice(0, 1024);
                 }
@@ -959,14 +956,14 @@ get ProjectOptions() {
                 this.objTemplate.footer = fieldValue;
                 break;
 
-            case "category":    
+            case "category":
                 this.objTemplate.category = fieldValue;
                 break;
 
-            case "headerText":    
+            case "headerText":
                 this.objTemplate.headerText = fieldValue;
                 break;
-                
+
             case "buttonOption":
                 this.objTemplate.buttonOption = fieldValue;
                 this.listQuickReply = [];
@@ -976,21 +973,21 @@ get ProjectOptions() {
                 this.processActions();
                 this.showAddButton = true;
                 break;
-        
-        
+
+
             default:
                 break;
         }
     }
 
-    
+
     @track isActionList = false;
     @track isQuickReplyList = false;
     processActions(){
         if(this.objTemplate.buttonOption == 'call to action'){
             this.isActionList = true;
             if(this.lstActions.length < 2){
-                let objAction = {
+                const objAction = {
                     buttonId : "",
                     typeOfAction : "",
                     buttonText : "",
@@ -1013,7 +1010,7 @@ get ProjectOptions() {
         else if(this.objTemplate.buttonOption == 'QUICK_REPLY'){
             this.isQuickReplyList = true;
             if(this.listQuickReply.length < 2){
-                let objAction = {
+                const objAction = {
                     buttonId : "",
                     isIcon : false,
                     buttonText : "",
@@ -1034,7 +1031,7 @@ get ProjectOptions() {
         this.utilityClass = 'cursor: pointer; border-radius: 5px';
         this.authClass = 'cursor: pointer; border-radius: 5px';
         this.objTemplate.category = 'MARKETING';
-       
+
     }
 
     @track utilityClass = 'cursor: pointer; border-radius: 5px';
@@ -1043,7 +1040,7 @@ get ProjectOptions() {
         this.marketingClass = 'cursor: pointer; border-radius: 5px';
         this.authClass = 'cursor: pointer; border-radius: 5px';
         this.objTemplate.category = 'UTILITY';
-        
+
     }
 
     @track authClass = 'cursor: pointer; border-radius: 5px';
@@ -1056,7 +1053,7 @@ get ProjectOptions() {
 
 
 
-    
+
     @track videoClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;';
     divVideoClick(){
         this.videoClass = 'width: 200px; height : 100px; border-radius: 5px; cursor: pointer;  background-color:#bceae7;';
@@ -1069,7 +1066,7 @@ get ProjectOptions() {
         this.showUploadFiles = true;
         this._acceptedFormats ='.mp4';
 
-        
+
 
     }
 
@@ -1109,14 +1106,14 @@ get ProjectOptions() {
         .then((result)=>{
             this.fieldNameOptions = JSON.parse(result).lstObjectPicklist;
             this.isLoading = false;
-            
+
         }).catch((error) => {
             this.isLoading = false;
             this.handleError(error);
         });
     }
 
-    
+
 
     selectedObjectHandler(event){
         this.objTemplate.objectName = event.target.value;
@@ -1124,9 +1121,9 @@ get ProjectOptions() {
     }
 
     buttonHandler(event){
-        let fieldName = event.target.name;
-        let fieldValue = event.target.value;
-        let index = event.target.dataset.index;
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
+        const index = event.target.dataset.index;
          switch (fieldName) {
             case "actionType":
                 this.lstActions[index].actionType = fieldValue;
@@ -1161,19 +1158,19 @@ get ProjectOptions() {
                 this.lstActions[index].urlType = fieldValue;
                 break;
 
-            
+
             default:
                 break;
         }
     }
 
     buttonReplyHandler(event){
-        let fieldName = event.target.name;
-        let fieldValue = event.target.value;
-        let index = event.target.dataset.index;
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
+        const index = event.target.dataset.index;
 
          switch (fieldName) {
-            
+
 
             case "buttonText":
                 this.listQuickReply[index].buttonText = fieldValue;
@@ -1201,7 +1198,7 @@ get ProjectOptions() {
         try {
             this.isLoading = true;
             const uploadedFiles = event.detail.files;
-            let file = uploadedFiles[0];
+            const file = uploadedFiles[0];
             if(file){
                 this.objTemplate.documentId = file.documentId;
                 this.objTemplate.contentVersionId = file.contentVersionId;
@@ -1228,19 +1225,19 @@ get ProjectOptions() {
                 this.isLoading = false;
                 this.handleError(error);
             });
-            
+
         } catch (error) {
             this.handleError(error);
         }
-        
+
     }
 
     handleCancel(){
         this.isShowPopup = false;
         setTimeout(() => {
-            let sfdcBaseURL = window.location.origin + '/lightning/n/CCCWA__WA_Templates';
+            const sfdcBaseURL = window.location.origin + '/lightning/n/CCCWA__WA_Templates';
             window.open(sfdcBaseURL, "_self");
-        }, 500); 
+        }, 500);
     }
 
     handleNext(){
@@ -1367,8 +1364,8 @@ get ProjectOptions() {
             const placeholderRegex = /\{\{(\d+)\}\}/g;
             const placeholders = Array.from(body.matchAll(placeholderRegex));
             if(placeholders != undefined && placeholders != null && placeholders.length > 0){
-                let lastParam = placeholders[placeholders.length -1][1];
-                let lastParamNumber = Number(lastParam) +1;
+                const lastParam = placeholders[placeholders.length -1][1];
+                const lastParamNumber = Number(lastParam) +1;
                 body = body.concat('{{'+String(lastParamNumber) + '}}')
             }else{
                 body = body + ' {{1}} ';
@@ -1387,7 +1384,7 @@ get ProjectOptions() {
     }
 
 
-   
+
 
     processBody(body){
         const myString = body;
@@ -1396,7 +1393,7 @@ get ProjectOptions() {
         this.showMapping = false;
         if(placeholders != null && placeholders != undefined && placeholders.length > 0){
             this.showMapping = true;
-            let placeholdersLength =  placeholders.length;
+            const placeholdersLength =  placeholders.length;
             let tempListMappinglength = 0; // what was the length
             if(this.tempListMapping != null && this.tempListMapping != undefined && this.tempListMapping.length > 0){
                 tempListMappinglength = this.tempListMapping.length;
@@ -1419,8 +1416,8 @@ get ProjectOptions() {
                 const secondPart = placeholders.slice(tempListMappinglength );
                 secondPart.forEach((match) => {
                     const placeholderNumber = match[1];
-                    let placeHolder ='{{'+placeholderNumber+'}}';
-                    let objMapping =
+                    const placeHolder ='{{'+placeholderNumber+'}}';
+                    const objMapping =
                     {
                         fieldName : "",
                         parameterNum : placeholderNumber,
@@ -1454,14 +1451,14 @@ get ProjectOptions() {
                 header = /*'<p><img src="'+this.strDocPublicUrl+'"  width="250" height="250"></p>' + */this.objTemplate.templateBody;
             else
                 header = this.objTemplate.templateBody;
-            
+
         }else{
             header = this.objTemplate.templateBody;
-        }   
-        
+        }
+
 
         if(this.objTemplate.footer != '' && this.objTemplate.footer != null && this.objTemplate.footer != undefined){
-           let footer = '</br><p style="font-size : 12px" class="slds-text-color_inverse-weak">'+ this.objTemplate.footer +'<p>';
+           const footer = '</br><p style="font-size : 12px" class="slds-text-color_inverse-weak">'+ this.objTemplate.footer +'<p>';
            header = header + footer;
         }
 
@@ -1469,7 +1466,7 @@ get ProjectOptions() {
         let body = this.templateViewBody;
 
         if(this.objTemplate.listMapping != null && this.objTemplate.listMapping != undefined && this.objTemplate.listMapping.length > 0){
-            let list = [];
+            const list = [];
             for(let i=0; i < this.lstMapping.length; i++){
                 list.push(this.lstMapping[i].exampleText);
                 // var expression = "^[" + this.lstMapping[i].placeHolder + "].*$";
@@ -1478,7 +1475,7 @@ get ProjectOptions() {
             body = this.replacePlaceholders(body, list);
             this.templateViewBody = body;
         }
-        
+
         if(this.isQuickReplyList){
             this.previewActionButtons = this.listQuickReply;
         }
@@ -1506,7 +1503,7 @@ get ProjectOptions() {
                 }
                 if(this.lstMapping && this.lstMapping.length >0)
                     this.objTemplate.listMapping = this.lstMapping;
-                
+
                 saveTemplateData({jsonData : JSON.stringify(this.objTemplate)})
                 .then(result => {
                     this.isLoading = false;
@@ -1521,7 +1518,7 @@ get ProjectOptions() {
                     this.isPath3 = false;
                     this.isPath4 = false;
                     this.isPath5 = false;
-                    
+
                     this.isPath6 = true;
                     this.showToast('Alert!', 'Do you want to submit it? it will take upto 24hrs to be approved from Meta!', 'info' );
                 })
@@ -1536,22 +1533,22 @@ get ProjectOptions() {
     }
 
     handleFinish(){
-        this.isLoading = true; 
+        this.isLoading = true;
         try{
             sendWhatsAppTemplateToMeta({jsonObject : JSON.stringify(this.objTemplate)})
             .then(data => {
                 this.isLoading = false;
                 if(data){
-                    let result = JSON.parse(data);
+                    const result = JSON.parse(data);
                     if(result.isSuccess == true){
                         //this.showToast('success', result.messgae, 'success', false);
                         setTimeout(() => {
-                            let sfdcBaseURL = window.location.origin + '/lightning/n/CCCWA__WA_Templates';
+                            const sfdcBaseURL = window.location.origin + '/lightning/n/CCCWA__WA_Templates';
                             window.open(sfdcBaseURL, "_self");
-                        }, 500); 
+                        }, 500);
                     }else{
                         this.showToast('error', result.message, 'error', false);
-                    } 
+                    }
                 }
             })
             .catch(error => {
@@ -1576,7 +1573,7 @@ get ProjectOptions() {
                 //break;
 
             case "2":
-               
+
                 if(this.isInputValid('.validate-step2') && ((this.isHeaderText == false && this.isHeaderMedia == false) || ((this.isHeaderText == true && (this.objTemplate.headerText != '' && this.objTemplate.headerText != null && this.objTemplate.headerText != undefined) ) || (this.isHeaderMedia && (this.objTemplate.mediaType != '' && this.objTemplate.mediaType != null && this.objTemplate.mediaType != undefined) && (this.objTemplate.fileName != '' && this.objTemplate.fileName != null && this.objTemplate.fileName != undefined)))) && (this.uploadError == false)){
                     return true;
                 }
@@ -1640,20 +1637,20 @@ get ProjectOptions() {
             variant: variant
         });
         this.dispatchEvent(evt);
-    } 
+    }
 
     handleError(error) {
         if (error) {
             let tempErrorList = [];
             if (Array.isArray(error.body)) {
                 tempErrorList = error.body.map((e) => e.message);
-            } 
+            }
             else if (error.body && typeof error.body.message === 'string') {
                 tempErrorList = [error.body.message];
-            } 
+            }
             else if (error.body && error.body.fieldErrors && error.body.fieldErrors.message) {
                 tempErrorList = Object.values(error.body.fieldErrors)
-                    .flat() 
+                    .flat()
                     .map((fieldError) => fieldError.message);
             }
             else if (Array.isArray(error.body.pageErrors) && error.body.pageErrors.length > 0) {
@@ -1672,7 +1669,7 @@ get ProjectOptions() {
 
     isInputValid(selector) {
         let isValid = true;
-        let inputFields = this.template.querySelectorAll(selector);
+        const inputFields = this.template.querySelectorAll(selector);
         // inputFields.push(this.template.querySelectorAll('lightning-combobox'));
         inputFields.forEach(inputField => {
           if (!inputField.checkValidity()) {

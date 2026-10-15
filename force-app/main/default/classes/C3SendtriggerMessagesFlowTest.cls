@@ -1,7 +1,7 @@
-@isTest
+@IsTest
 private class C3SendtriggerMessagesFlowTest {
-    
-    @testSetup
+
+    @TestSetup
     static void testSendTemplate() {
 
         Profile sysAdminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
@@ -33,14 +33,14 @@ private class C3SendtriggerMessagesFlowTest {
             }
         }
         insert psAssignments;
-    
+
         System.runAs(testUser) {
-        
+
             Lead testLead = new Lead(LastName = 'Test Lead', Company = 'Testing Lead');
             insert testLead;
-            
+
             CCCWA__Template_Object__c templateRecord = new CCCWA__Template_Object__c();
-            
+
             templateRecord.CCCWA__Category__c = 'Marketing';
             templateRecord.CCCWA__Header_Type__c = 'Text';
             templateRecord.CCCWA__Header__c = 'Demo';
@@ -48,13 +48,13 @@ private class C3SendtriggerMessagesFlowTest {
             templateRecord.CCCWA__Language_Code__c = 'English';
             templateRecord.CCCWA__Object__c = 'Lead';
             templateRecord.CCCWA__Template_Message__c = 'Testing';
-            
+
             insert templateRecord;
-        
+
         }
     }
 
-    @isTest
+    @IsTest
     static void method1() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -68,10 +68,10 @@ private class C3SendtriggerMessagesFlowTest {
                 Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageSendTemplate'));
                 C3SendtriggerMessagesFlow.sendTemplate(flowInputs);
             Test.stopTest();
-            
+
             System.assertNotEquals(null, flowInput.recordId, 'recordId should not be null');
             System.assertNotEquals(null, flowInput.templateRecordId, 'templateRecordId should not be null');
-   
+
         }
     }
 }

@@ -4,8 +4,8 @@
     <template if:true={isShowPopup}>
         <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_large">
             <div class="slds-modal__container">
-                
-                
+
+
                 <div class="slds-modal__header">
                 <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Create Template</h1>
                 </div>
@@ -33,15 +33,15 @@
                                     <p class="slds-text-color_inverse-weak">
                                         Promotion or information about your bussiness, product or services. Or any message that isn't utility or authentcation.
                                     </p>
-                                </div> 
-                                
+                                </div>
+
                                 <div onclick={divUtilityClick} class="slds-box slds-theme_default slds-p-vertical_large slds-m-vertical_small" style={utilityClass}>
                                     <p class="slds-text-heading_medium">Utility</p>
                                     <p class="slds-text-color_inverse-weak">
                                         Message about a specific transaction, account, order or request.
                                     </p>
-                                </div>  
-                                
+                                </div>
+
                                 <!-- <div onclick={divAuthClick} class="slds-box slds-theme_default slds-p-vertical_large slds-m-vertical_small" style={authClass}>
                                     <p class="slds-text-heading_medium">Authentication</p>
                                     <p class="slds-text-color_inverse-weak">
@@ -59,14 +59,14 @@
                                 <p class="slds-text-color_inverse-weak">
                                     Add a title to template or choose which type of media you'll use for the template title.
                                 </p>
-                                
+
                                 <div class="slds-grid slds-p-top_small" >
                                         <div class="slds-size_2-of-12">
                                             <lightning-combobox
                                                 name="headerType"
                                                 value={objTemplate.headerType}
                                                 onchange={newGenericHandler}
-                                                variant="label-hidden" 
+                                                variant="label-hidden"
                                                 required
                                                 disabled={fieldDisabled}
                                                 placeholder="Text Or Media"
@@ -77,8 +77,8 @@
                                         </div>
                                         <div class="slds-size_4-of-12 slds-p-left_small">
                                             <template if:true={isHeaderText}>
-                                                <lightning-input 
-                                                    type="text" 
+                                                <lightning-input
+                                                    type="text"
                                                     name="headerText"
                                                     required
                                                     disabled={fieldDisabled}
@@ -89,13 +89,13 @@
                                                     variant="label-hidden" >
                                                 </lightning-input>
                                             </template>
-                                            
+
                                         </div>
                                         <div class="slds-size_6-of-12"></div>
                                 </div>
                                 <template if:true={isHeaderMedia}>
                                     <div class="slds-grid slds-p-top_small" >
-                                        
+
                                         <div class="slds-size_2-of-12 slds-align_absolute-center slds-box slds-theme_default slds-m-right_small" onclick={divImageClick} style={imageClass} >
                                             <table class="slds-align_absolute-center">
                                                 <tr><td>
@@ -145,7 +145,7 @@
                                             </table>
                                         </div>
                                         <div class="slds-size_6-of-12"></div>
-                                    </div>                          
+                                    </div>
                                 </template>
                                 <template if:true={showUploadFiles}>
                                     <div class="slds-box slds-theme_shade slds-p-vertical_large slds-m-bottom_small slds-m-top_medium">
@@ -156,7 +156,7 @@
                                         <p><b>Note:</b> Please ensure that file does not exceed 4 MB in size.</p>
 
                                         <p class=" slds-p-top_large slds-text-heading_small">
-                                            <lightning-file-upload 
+                                            <lightning-file-upload
                                                     name="fileUploader"
                                                     accept={acceptedFormats}
                                                     onuploadfinished={handleUploadFinished}
@@ -178,16 +178,16 @@
                                         <td><lightning-helptext class="slds-p-bottom_medium" content="Name of the template should be unique."></lightning-helptext></td>
                                     </tr>
                                 </table>
-                                
-                                
+
+
                                 <p class="slds-text-color_inverse-weak">
                                     Name your Message template.
                                 </p>
-                                
+
                                 <div class="slds-grid slds-p-top_small" >
                                     <div class="slds-size_4-of-12">
-                                        <lightning-input 
-                                                    type="text" 
+                                        <lightning-input
+                                                    type="text"
                                                     name="templateName"
                                                     required
                                                     class="validate-step3"
@@ -197,7 +197,7 @@
                                                     variant="label-hidden" >
                                         </lightning-input>
                                     </div>
-                                    <div class="slds-size_8-of-12"></div>   
+                                    <div class="slds-size_8-of-12"></div>
                                 </div>
                             </div>
                             <div class="slds-box slds-theme_default slds-p-vertical_large slds-m-bottom_small">
@@ -205,7 +205,7 @@
                                 <p class="slds-text-color_inverse-weak">
                                     Choose Languages for your message template.
                                 </p>
-                                
+
                                 <div class="slds-grid slds-p-top_small" >
                                     <div class="slds-size_4-of-12">
                                         <lightning-combobox
@@ -214,21 +214,21 @@
                                             class="validate-step3"
                                             value={objTemplate.language}
                                             onchange={newGenericHandler}
-                                            variant="label-hidden" 
+                                            variant="label-hidden"
                                             options={LanguageOptions}
                                             >
                                         </lightning-combobox>
                                     </div>
-                                    <div class="slds-size_8-of-12"></div>   
+                                    <div class="slds-size_8-of-12"></div>
                                 </div>
                             </div>
-                            
+
                             <div class="slds-box slds-theme_default slds-p-vertical_large slds-m-bottom_small">
                                 <p class="slds-text-heading_medium"><span class="slds-text-color_error">*</span>Project</p>
                                 <p class="slds-text-color_inverse-weak">
                                     Choose Project for your message template.
                                 </p>
-                                
+
                                 <div class="slds-grid slds-p-top_small" >
                                     <div class="slds-size_4-of-12">
                                         <lightning-combobox
@@ -237,12 +237,12 @@
                                             class="validate-step3"
                                             value={objTemplate.project}
                                             onchange={newGenericHandler}
-                                            variant="label-hidden" 
+                                            variant="label-hidden"
                                             options={projectOptions}
                                             >
                                         </lightning-combobox>
                                     </div>
-                                    <div class="slds-size_8-of-12"></div>   
+                                    <div class="slds-size_8-of-12"></div>
                                 </div>
                             </div>
 
@@ -267,12 +267,12 @@
                                             value={objTemplate.objectName}
                                             label="Select Object"
                                             onchange={selectedObjectHandler}
-                                            variant="label-hidden" 
+                                            variant="label-hidden"
                                             options={objectOptions}
                                         >
                                         </lightning-combobox>
                                     </div>
-                                    <div class="slds-size_8-of-12"></div>   
+                                    <div class="slds-size_8-of-12"></div>
                                 </div>
                             </div>
                         </div>
@@ -280,9 +280,9 @@
                     <template if:true={isPath4}>
                         <div class="slds-p-horizontal_medium slds-p-top_medium slds-box slds-theme_default">
                             <div class="slds-box slds-theme_default slds-p-vertical_large slds-m-bottom_small">
-                                
-                                
-                                
+
+
+
                                 <div class="slds-grid" >
                                     <div class="slds-size_6-of-12">
                                         <table style="width: auto;">
@@ -298,8 +298,8 @@
                                             </tr>
                                         </table>
                                         <div class="slds-p-top_small">
-                                            <lightning-input-rich-text 
-                                                type="text" 
+                                            <lightning-input-rich-text
+                                                type="text"
                                                 name="templateBody"
                                                 value={objTemplate.templateBody}
                                                 onchange={newGenericHandler}
@@ -312,7 +312,7 @@
                                         <div style="text-align: right">
                                             <button class="slds-button slds-button_brand slds-m-horizontal_medium slds-m-bottom_small" onclick={addMappingParam}>+ Add Parameter</button>
                                         </div>
-                                        
+
                                         <div class="slds-box slds-theme_shade slds-m-horizontal_medium slds-m-bottom_small">
                                             <table style="width: auto;">
                                                 <tr>
@@ -320,20 +320,20 @@
                                                     <td><lightning-helptext class="slds-p-bottom_medium" content={templateHelpText}></lightning-helptext></td>
                                                 </tr>
                                             </table>
-                                            
+
                                             <p class="slds-text-color_inverse-weak slds-p-top_small">
                                                 To help us review your message template, please add an example for each variable in your body text. Do not use real customer information. Cloud API hosted by Meta reviews templates and variable parameters to protect the security and integrity of our services.
                                             </p>
                                             <template if:true={showMapping}>
-                                                
+
                                                     <table style="width: auto; " class="slds-p-top_large">
                                                         <tr>
                                                             <td style="width: auto;" class="slds-text-heading_medium">Parameters</td>
                                                             <td><lightning-helptext class="slds-p-bottom_medium" content="Example value will be used as default if given field value is blank on the record."></lightning-helptext></td>
                                                         </tr>
                                                     </table>
-                                                    
-                                                
+
+
                                                 <template for:each={lstMapping} for:item="objMapping" for:index="index">
                                                     <div key={objMapping} class="slds-grid  slds-p-horizontal_large slds-p-top_small" >
                                                         <div class="slds-size_1-of-12 slds-p-right_medium slds-p-top_large">
@@ -348,30 +348,30 @@
                                                                 required
                                                                 class="validate-step4 combobox-custom-width"
                                                                 onchange={mappingGenericChange}
-                                                                variant="label-stacked" 
+                                                                variant="label-stacked"
                                                                 options={fieldNameOptions}
                                                                 >
                                                             </lightning-combobox>
                                                         </div>
                                                         <div class="slds-size_1-of-12"></div>
                                                         <!--<div class="slds-size_3-of-12">
-                                                            <lightning-input 
-                                                                type="text" 
-                                                                name="parameterNum" 
+                                                            <lightning-input
+                                                                type="text"
+                                                                name="parameterNum"
                                                                 data-index={index}
                                                                 required
                                                                 class="validate-step4"
                                                                 value={objMapping.parameterNum}
                                                                 onchange={mappingGenericChange}
                                                                 label="Parameter Number"
-                                                                variant="label-stacked" > 
+                                                                variant="label-stacked" >
                                                             </lightning-input>
                                                         </div>
                                                         <div class="slds-size_1-of-12"></div>-->
                                                         <div class="slds-size_4-of-12">
-                                                            <lightning-input 
-                                                                type="text" 
-                                                                name="exampleText" 
+                                                            <lightning-input
+                                                                type="text"
+                                                                name="exampleText"
                                                                 data-index={index}
                                                                 required
                                                                 class="validate-step4"
@@ -387,11 +387,11 @@
                                                 </template>
                                             </template>
                                         </div>
-                                    </div>   
-                                </div>  
+                                    </div>
+                                </div>
                             </div>
-                            
-                            
+
+
                         </div>
                     </template>
                     <template if:true={isPath5}>
@@ -401,11 +401,11 @@
                                 <p class="slds-text-color_inverse-weak">
                                     Add a short line of text to the bottom of your message template. If you add the marketing opt-out button, the associated footer will be shown here by default.
                                 </p>
-                                
+
                                 <div class="slds-grid slds-p-top_small" >
                                     <div class="slds-size_4-of-12">
-                                        <lightning-input 
-                                                    type="text" 
+                                        <lightning-input
+                                                    type="text"
                                                     name="footer"
                                                     message-when-bad-input="According to the Meta guidelines, Character limit is 1024!"
                                                     valid={bodyValidity}
@@ -414,10 +414,10 @@
                                                     placeholder="Enter text in English  "
                                                     variant="label-hidden" >
                                         </lightning-input>
-                                           
+
                                     </div>
                                     <div class="slds-size_8-of-12 slds-p-left_small">
-                                    </div>    
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -428,29 +428,29 @@
                                 <p class="slds-text-color_inverse-weak">
                                     Create up to 2 buttons that let customers respond to your message or take action.
                                 </p>
-                                
+
                                 <div class="slds-grid slds-p-top_small" >
                                         <div class="slds-size_2-of-12">
                                            <lightning-combobox
                                                 name="buttonOption"
                                                 value={objTemplate.buttonOption}
                                                 onchange={newGenericHandler}
-                                                variant="label-stacked" 
+                                                variant="label-stacked"
                                                 options={button_options}
                                                 >
                                             </lightning-combobox>
                                         </div>
                                         <div class="slds-size_10-of-12 slds-p-left_small">
                                         </div>
-                                        
+
                                 </div>
                                 <template if:true={isActionList}>
-                                    
+
                                     <div class="slds-m-left_large slds-theme_shade slds-p-vertical_small" style="border-radius: 5px; border: 1px solid #ccc;" >
-                                        
+
                                             <template for:each={lstActions} for:item="objAction" for:index="index">
                                                 <div key={objAction} class="slds-grid slds-p-horizontal_medium " >
-                                                        
+
                                                         <div class="slds-size_2-of-12 slds-p-right_medium">
                                                             <lightning-combobox
                                                                 name="actionType"
@@ -460,16 +460,16 @@
                                                                 label="Type of Action"
                                                                 data-index={index}
                                                                 onchange={buttonHandler}
-                                                                variant="label-stacked" 
+                                                                variant="label-stacked"
                                                                 options={actionTypeOptions}
                                                                 >
                                                             </lightning-combobox>
                                                         </div>
-                                                        
+
                                                         <div class="slds-size_2-of-12 slds-p-right_medium">
-                                                            <lightning-input 
-                                                                type="text" 
-                                                                name="buttonText" 
+                                                            <lightning-input
+                                                                type="text"
+                                                                name="buttonText"
                                                                 required
                                                                 class="validate-step5"
                                                                 data-index={index}
@@ -479,12 +479,12 @@
                                                                 variant="label-stacked" >
                                                             </lightning-input>
                                                         </div>
-                                                        
+
                                                         <div class="slds-size_2-of-12 slds-p-right_medium">
                                                             <template if:true={objAction.isActionPhoneNumber}>
-                                                                <!-- <lightning-input 
-                                                                    type="text" 
-                                                                    name="countryCode" 
+                                                                <!-- <lightning-input
+                                                                    type="text"
+                                                                    name="countryCode"
                                                                     required
                                                                     class="validate-step5"
                                                                     data-index={index}
@@ -501,7 +501,7 @@
                                                                     label="Country Code"
                                                                     data-index={index}
                                                                     onchange={buttonHandler}
-                                                                    variant="label-stacked" 
+                                                                    variant="label-stacked"
                                                                     options={countryPhoneCodeOptions}
                                                                     >
                                                                 </lightning-combobox>
@@ -515,18 +515,18 @@
                                                                     class="validate-step5"
                                                                     data-index={index}
                                                                     onchange={buttonHandler}
-                                                                    variant="label-stacked" 
+                                                                    variant="label-stacked"
                                                                     options={URLoptions}
                                                                     >
                                                                 </lightning-combobox>
                                                             </template>
                                                         </div>
-                                                        
+
                                                         <div class="slds-size_2-of-12 ">
                                                             <template if:true={objAction.isActionPhoneNumber}>
-                                                                <lightning-input 
-                                                                    type="text" 
-                                                                    name="phoneNumber" 
+                                                                <lightning-input
+                                                                    type="text"
+                                                                    name="phoneNumber"
                                                                     required
                                                                     class="validate-step5"
                                                                     data-index={index}
@@ -537,9 +537,9 @@
                                                                 </lightning-input>
                                                         </template>
                                                         <template if:true={objAction.isActionUrl}>
-                                                            <lightning-input 
-                                                                type="text" 
-                                                                name="websiteUrl" 
+                                                            <lightning-input
+                                                                type="text"
+                                                                name="websiteUrl"
                                                                 required
                                                                 class="validate-step5"
                                                                 data-index={index}
@@ -554,10 +554,10 @@
                                                     </div>
                                                 </div>
                                             </template>
-                                    
-                                        
-                                        
-                                        
+
+
+
+
 
 
 
@@ -567,7 +567,7 @@
                                         <div class="slds-m-horizontal_medium slds-p-vertical_small slds-theme_shade" style="border-radius: 5px; border: 1px solid #ccc; ">
                                             <template for:each={listQuickReply} for:item="objReply" for:index="index">
                                                 <div key={objReply} class="slds-grid  slds-p-horizontal_medium  " >
-                                                        
+
                                                         <div class="slds-size_2-of-12 slds-p-right_medium">
                                                             <lightning-combobox
                                                                 name="type"
@@ -575,16 +575,16 @@
                                                                 label="Type"
                                                                 data-index={index}
                                                                 onchange={buttonReplyHandler}
-                                                                variant="label-stacked" 
+                                                                variant="label-stacked"
                                                                 options={typeOptions}
                                                                 >
                                                             </lightning-combobox>
                                                         </div>
-                                                        
+
                                                         <div class="slds-size_2-of-12 slds-p-right_medium">
-                                                            <lightning-input 
-                                                                type="text" 
-                                                                name="buttonText" 
+                                                            <lightning-input
+                                                                type="text"
+                                                                name="buttonText"
                                                                 data-index={index}
                                                                 value={objReply.buttonText}
                                                                 onchange={buttonReplyHandler}
@@ -596,7 +596,7 @@
                                                 </div>
                                             </template>
                                         </div>
-                                            
+
                                     </template>
 
 
@@ -606,11 +606,11 @@
                                         <lightning-button variant="brand" label="+ Add Another Button" title="titleName" onclick={processActions}></lightning-button>
                                     </template>
                                 </div>
-                                    
+
 
                             </div>
 
-                            
+
                         </div>
                     </template>
                     <template if:true={isPath6}>
@@ -618,16 +618,16 @@
                             <div class="slds-box slds-theme_shade slds-p-vertical_large slds-m-bottom_small ">
                                 <p class="slds-text-heading_medium slds-align_absolute-center">Preview</p>
                                 <div class="slds-grid slds-p-top_small" >
-                                    <div class="slds-size_4-of-12"></div>       
+                                    <div class="slds-size_4-of-12"></div>
                                     <div class="slds-size_4-of-12 slds-box slds-align_absolute-center" style="background-color: #e3d9d1; width: 400px">
-                                        
+
                                         <section role="log" class="slds-chat slds-align_absolute-center">
-                                            <ul class="slds-chat-list"> 
+                                            <ul class="slds-chat-list">
                                                 <li class="slds-chat-listitem slds-chat-listitem_inbound">
                                                     <div class="slds-chat-message">
                                                         <div class="slds-chat-message__body" >
                                                             <div class="slds-chat-message__text slds-chat-message__text_inbound" style="background-color:white; width:350px">
-                                                                
+
                                                                 <template if:true={isMediaImage}>
                                                                     <img width="300" height="350x" src={strDocPublicUrl}>
                                                                 </template>
@@ -672,18 +672,18 @@
                                                                         <tr >
                                                                             <td style="width: 40%; background-color:white; font-size : 18px; border-radius: 5px 0px 0px 5px; padding : 5px; padding-right:0px; margin-top : 5px; text-align:right; color: #4191e1;  text-decoration: underline">
                                                                                 <template if:true={objMap.isIcon}>
-                                                                                    <lightning-icon 
-                                                                                        icon-name={objMap.iconName} 
-                                                                                        size="small" 
+                                                                                    <lightning-icon
+                                                                                        icon-name={objMap.iconName}
+                                                                                        size="small"
                                                                                         >
                                                                                     </lightning-icon>
                                                                                 </template>
                                                                             </td>
                                                                             <td style="width: 60%; background-color:white; font-size : 18px; border-radius: 0px 5px 5px 0px; padding : 5px; margin-top : 5px; padding-left:12px; text-align:left; color: #4191e1;  text-decoration: underline">{objMap.buttonText}</td>
                                                                         </tr>
-                                                                    </table>   
+                                                                    </table>
                                                                 </template>
-                                                                
+
                                                             </template>
                                                         </div>
                                                     </div>
@@ -691,13 +691,13 @@
                                             </ul>
                                         </section>
                                     </div>
-                                    <div class="slds-size_4-of-12"></div>   
+                                    <div class="slds-size_4-of-12"></div>
                                 </div>
                             </div>
                         </div>
                     </template>
                 </div>
-                
+
 
 
 
@@ -715,7 +715,7 @@
                     <template if:false={isPath5}>
                         <template if:false={isPath6}>
                             <button class="slds-button slds-button_brand" onclick={handleNext}>Next</button>
-                        </template>  
+                        </template>
                     </template>
                     <template if:true={isPath6}>
                         <button class="slds-button slds-button_brand" onclick={handleFinish}>Submit</button>
@@ -729,8 +729,8 @@
             </template>
         </section>
         <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
-        
+
     </template>
-    
+
 
 </template>

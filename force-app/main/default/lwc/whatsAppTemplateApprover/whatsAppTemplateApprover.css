@@ -1,10 +1,10 @@
 .table-container {
     width: 100%;
-    overflow-x: hidden; 
+    overflow-x: hidden;
   }
 
   .table-slider {
-    overflow-x: auto; 
+    overflow-x: auto;
   }
 
   .slds-table {

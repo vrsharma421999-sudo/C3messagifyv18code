@@ -2,7 +2,7 @@
     <!-- Chat Section -->
     <section role="log" class="slds-chat slds-m-horizontal_small slds-m-bottom_small slds-m-top_small slds-theme_default"
         style="border-radius: 15px; border: 2px solid #ccc; box-shadow: 5px 5px 10px #b8b8b8, -5px -5px 10px #ffffff;">
-        
+
         <!-- Chat Header -->
         <lightning-layout class={strChatHeaderClass} style="border-radius: 15px 15px 0px 0px;">
             <template if:true={displayBackBtn}>
@@ -42,31 +42,31 @@
                     </template>
                 </span>
             </lightning-layout-item>
-             <lightning-layout-item size="4" class="recordNameStyle slds-m-left--medium"> 
-                 <!--<lightning-combobox 
-        label="Projects" 
-        name="Projects" 
-        disabled={notNumberConfigurationImplemented} 
+             <lightning-layout-item size="4" class="recordNameStyle slds-m-left--medium">
+                 <!--<lightning-combobox
+        label="Projects"
+        name="Projects"
+        disabled={notNumberConfigurationImplemented}
         value={selectedProjectId}
-        placeholder="Select a project" 
+        placeholder="Select a project"
         options={projectOptions}
-        onchange={handleProjectChange} 
-        variant="label-hidden" 
+        onchange={handleProjectChange}
+        variant="label-hidden"
         class="slds-m-right_x-small">
     </lightning-combobox>-->
-    
+
     <!-- Templates Combobox (Updated) -->
-    <lightning-combobox 
-        label="Templates" 
-        name="MessagingTemplate" 
-        disabled={notNumberConfigurationImplemented} 
+    <lightning-combobox
+        label="Templates"
+        name="MessagingTemplate"
+        disabled={notNumberConfigurationImplemented}
         value={strSelectedMessagingTemplate}
-        placeholder="Select a template" 
+        placeholder="Select a template"
         options={lstMessagingTemplateOptions}
-        onchange={onMessagingTemplateChange} 
+        onchange={onMessagingTemplateChange}
         variant="label-hidden">
     </lightning-combobox>
-                
+
             </lightning-layout-item>
            <!-- <lightning-layout-item size="4" class="recordNameStyle slds-m-left--medium">
                 <lightning-combobox label="Send using Template" name="MessagingTemplate"
@@ -75,7 +75,7 @@
                     onchange={onMessagingTemplateChange} variant="label-hidden" class="slds-m-right_x-small">
                 </lightning-combobox>
             </lightning-layout-item> -->
-            
+
         </lightning-layout>
 
         <!-- Loading Spinner -->

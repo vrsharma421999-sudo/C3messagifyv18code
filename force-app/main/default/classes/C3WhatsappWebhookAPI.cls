@@ -5,20 +5,20 @@
 */
 @RestResource(urlmapping = '/WhatsappWebhook')
 // Suppressing PMD.SharingViolation warning for this class.
-// Reason: This is a REST API entry point for WhatsApp Webhook verification.  
-// The class is intentionally declared `global without sharing` because:  
-//  - Webhook callbacks come from WhatsApp, not Salesforce users, so no user-level record visibility applies.  
-//  - The class does not query or manipulate sensitive Salesforce data; it only validates the hub.verify_token  
-//    and returns the hub.challenge string for verification.  
-//  - Running `with sharing` or `inherited sharing` would have no security benefit here since no business  
-//    objects are queried or modified.  
-//  - This approach aligns with Salesforce security guidance for webhook/third-party callback handlers.  
+// Reason: This is a REST API entry point for WhatsApp Webhook verification.
+// The class is intentionally declared `global without sharing` because:
+//  - Webhook callbacks come from WhatsApp, not Salesforce users, so no user-level record visibility applies.
+//  - The class does not query or manipulate sensitive Salesforce data; it only validates the hub.verify_token
+//    and returns the hub.challenge string for verification.
+//  - Running `with sharing` or `inherited sharing` would have no security benefit here since no business
+//    objects are queried or modified.
+//  - This approach aligns with Salesforce security guidance for webhook/third-party callback handlers.
 //
 // Safe to suppress since field-level and object-level security are not bypassed here.
 //@SuppressWarnings('PMD.SharingViolation')
 
 global without sharing class C3WhatsappWebhookAPI {
-    
+
     public static string strResponseBody= '';
     /**
 * @description Handles GET requests for webhook verification from WhatsApp.
@@ -51,10 +51,10 @@ global without sharing class C3WhatsappWebhookAPI {
 * @param recordId The ID of the record to link the file to.
 * @return The public download URL for the uploaded file.
 */
-    
+
     /**
-* @description Uploads a file to Salesforce by creating a `ContentVersion`, linking it to a record via `ContentDocumentLink`, 
-*              and generating a public URL using `ContentDistribution`. Ensures all necessary field and object-level permissions 
+* @description Uploads a file to Salesforce by creating a `ContentVersion`, linking it to a record via `ContentDocumentLink`,
+*              and generating a public URL using `ContentDistribution`. Ensures all necessary field and object-level permissions
 *              are checked using `insertIfPermitted()` before performing DML.
 *
 * @param request An instance of `FileUploadRequest` containing:
@@ -112,18 +112,20 @@ global without sharing class C3WhatsappWebhookAPI {
 * - Hence, suppression is the only feasible option.
 * - This is documented here and in the security review package guide
 *   for future reference.
+* @param request Details of the file to be uploaded.
+* @return String The public download URL or created distribution details.
 */
    // @SuppressWarnings('PMD.ApexFlsViolation')
-    
+
     public static String uploadFile(FileUploadRequest request) {
         ContentVersion objCV = createContentVersion(request);
         insertIfPermitted(objCV, 'ContentVersion', new String[]{'VersionData', 'Title', 'PathOnClient', 'fileType'});
-        
+
         ContentDocumentLink objCDL = createContentDocumentLink(objCV.Id, request.recordId);
         insertIfPermitted(objCDL, 'ContentDocumentLink', new String[]{'LinkedEntityId', 'ShareType', 'ContentDocumentId'});
-        
+
         ContentDistribution objCD = new ContentDistribution();
-        
+
         // NOPMD(ApexFlsViolation) – Safe because:
         // - Name is a standard, non-sensitive field required for ContentDistribution.
         // - Value comes from validated request payload.
@@ -140,7 +142,7 @@ global without sharing class C3WhatsappWebhookAPI {
         // - This field controls distribution behavior (not sensitive business data).
         // - Create permissions for ContentDistribution implicitly include this field.
         // - Explicit access check not required because security is enforced at object creation level.
-        
+
         objCD.PreferencesAllowViewInBrowser = true;
         // NOPMD(ApexFlsViolation) – PMD flags PreferencesAllowOriginalDownload.
         // Justification:
@@ -160,23 +162,23 @@ global without sharing class C3WhatsappWebhookAPI {
         // - All fields on objCD are validated against FLS earlier (via insertIfPermitted pattern).
         // - SYSTEM_MODE is required because ContentDistribution is often created by integration/system processes.
         Database.insert(objCD, AccessLevel.SYSTEM_MODE);
-        
-        
+
+
         List<ContentDistribution> listContentDistributions = [
-            SELECT Id, ContentDownloadUrl 
-            FROM ContentDistribution 
-            WHERE Id = :objCD.Id 
+            SELECT Id, ContentDownloadUrl
+            FROM ContentDistribution
+            WHERE Id = :objCD.Id
             WITH SYSTEM_MODE
         ];
         return listContentDistributions[0].ContentDownloadUrl;
     }
-    
+
     private static ContentVersion createContentVersion(FileUploadRequest request) {
         ContentVersion objCV = new ContentVersion();
         objCV.VersionData = request.fileContent;
         objCV.Title = request.fileName;
         objCV.PathOnClient = request.fileName;
-        
+
         if (String.isNotBlank(request.fileType) && request.fileType.contains('/')) {
             String ext = request.fileType.split('/')[1];
             objCV.PathOnClient += ext;
@@ -187,30 +189,26 @@ global without sharing class C3WhatsappWebhookAPI {
                 throw new System.NoAccessException();
             }
         }
-        
-        
+
+
         return objCV;
     }
-    
+
     private static ContentDocumentLink createContentDocumentLink(Id contentVersionId, Id recordId) {
-        
-        System.debug('Record Id-->' +recordId);
-        System.debug('CV Id-->' +contentVersionId);
-        
         ContentVersion cv = [
-            SELECT Id, ContentDocumentId 
-            FROM ContentVersion 
-            WHERE Id = :contentVersionId 
+            SELECT Id, ContentDocumentId
+            FROM ContentVersion
+            WHERE Id = :contentVersionId
             WITH SYSTEM_MODE
         ];
-        
+
         ContentDocumentLink objCDL = new ContentDocumentLink();
         objCDL.ContentDocumentId = cv.ContentDocumentId;
         objCDL.LinkedEntityId = recordId;
         objCDL.ShareType = 'V';
         return objCDL;
     }
-    
+
     private static void insertIfPermitted(SObject obj, String objectName, String[] fields) {
         if (
             C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest(objectName, 'isAccessible', null, true)) &&
@@ -221,14 +219,14 @@ global without sharing class C3WhatsappWebhookAPI {
             Database.insert(obj, AccessLevel.SYSTEM_MODE);
         }
     }
-    
+
     /**
 *  @description Sends a custom push notification to the record owner's user for a WhatsApp message.
 *
 * @param recordId The ID of the record for which to send the notification.
 * @param message The message content to send in the notification.
 */
-    
+
     public static void sendPushWhatsAppNotification(String recordId, String message){
         if (String.isNotBlank(recordId)) {
             Id recId = Id.valueOf(recordId);
@@ -245,7 +243,7 @@ global without sharing class C3WhatsappWebhookAPI {
                     sRecord = database.query( String.escapeSingleQuotes(query), AccessLevel.SYSTEM_MODE);
                 }
             String userId = (String)sRecord.get('OwnerId');
-            
+
             Messaging.CustomNotification customNotificationObj = new Messaging.CustomNotification();
             customNotificationObj.setBody( message);
             customNotificationObj.setTitle('WhatsApp New Message');
@@ -270,6 +268,7 @@ global without sharing class C3WhatsappWebhookAPI {
 * Deserializes the message, matches it to existing records, or creates a new log.
 */
     @HttpPost
+    @SuppressWarnings('PMD.EmptyCatchBlock')
     global static void doPost(){
         RestRequest request = RestContext.request;
         RestResponse response = RestContext.response;
@@ -312,88 +311,119 @@ global without sharing class C3WhatsappWebhookAPI {
                     return;
                 }
             }
-            
-            System.debug('=== META WEBHOOK DEBUG START ===');
-            System.debug('Webhook URL: ' + request.requestURI);
-            System.debug('HTTP Method: ' + request.httpMethod);
-            System.debug('Content-Type: ' + request.headers.get('Content-Type'));
-            System.debug('X-Hub-Signature-256: ' + sigHeader);
-            System.debug('Request Body: ' + strRequestBody);
-            System.debug('=== META WEBHOOK DEBUG END ===');
 
             if(strRequestBody.contains('"from"')){
                 strRequestBody = strRequestBody.replace('"from"','"fromNumber"');
-            }        
-            
+            }
+
             C3InboundWrapper objWrap1=new C3InboundWrapper();
             C3InboundWrapper.ClsStatuses entry=new C3InboundWrapper.ClsStatuses();
-            objWrap1=(C3InboundWrapper)JSON.deserialize(strRequestBody, C3InboundWrapper.class);        
+            objWrap1=(C3InboundWrapper)JSON.deserialize(strRequestBody, C3InboundWrapper.class);
             if(objWrap1!=null )
-            { 
+            {
                 String[] listFields = new String[]{'Id', 'CCCWA__Direction__c', 'CCCWA__Status__c', 'CCCWA__Record_ID__c', 'CCCWA__Read__c', 'CCCWA__Message__c', 'CCCWA__Message_formatted__c', 'CCCWA__Media_URL__c', 'CCCWA__Media_Type__c', 'CCCWA__File_Name__c', 'CCCWA__From_Phone__c', 'CCCWA__To_Phone__c', 'CCCWA__Interaction_Type__c', 'CCCWA__Created_date__c', 'CCCWA__sid__c', 'CCCWA__Unique_Key__c'};
                     List<CCCWA__WhatsApp_Conversation__b> records = new List<CCCWA__WhatsApp_Conversation__b>();
                 //String str = 'Id,Record_ID__c,sid__c,Status__c,Message_formatted__c, Unique_Key__c,To_Phone__c,From_Phone__c, Created_Date__c';
                 //  List<String> fieldsToQuery = str.split(',');
-                
+
                 if (
                     !C3Utility.checkFieldPermission(
                         new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isAccessible', null, true)
-                    ) 
+                    )
                 ) {
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }
                 else{
                     records = [SELECT Id,CCCWA__Record_ID__c, CCCWA__Message_formatted__c, CCCWA__sid__c,CCCWA__Status__c, CCCWA__Unique_Key__c,CCCWA__To_Phone__c,CCCWA__From_Phone__c, CCCWA__Created_Date__c FROM CCCWA__WhatsApp_Conversation__b WITH SECURITY_ENFORCED];
                 }
-                
+
                 boolean found=false;
                 String recordId='';
                 datetime createddate;
-                if(objWrap1.entry != null && (!objWrap1.entry.isempty()) && objWrap1.entry != null 
+                if(objWrap1.entry != null && (!objWrap1.entry.isempty()) && objWrap1.entry != null
                    && (!objWrap1.entry[0].changes.isempty())
                    && objWrap1.entry != null && objWrap1.entry[0].changes[0].value!=null
                    && objWrap1.entry != null && objWrap1.entry[0].changes[0].value.statuses != null)
-                {                
-                    
+                {
+                    String statusWamId = objWrap1.entry[0].changes[0].value.statuses[0].id;
+                    String statusVal = objWrap1.entry[0].changes[0].value.statuses[0].status;
+
+                    // Extract all status updates from the webhook payload (Delivered, Read, Sent, Failed)
+                    Map<String, String> statusMap = new Map<String, String>();
+                    if (objWrap1.entry != null) {
+                        for (C3InboundWrapper.ClsEntry ent : objWrap1.entry) {
+                            if (ent.changes != null) {
+                                for (C3InboundWrapper.ClsChanges ch : ent.changes) {
+                                    if (ch.value != null && ch.value.statuses != null) {
+                                        for (C3InboundWrapper.ClsStatuses st : ch.value.statuses) {
+                                            if (String.isNotBlank(st.id) && String.isNotBlank(st.status)) {
+                                                statusMap.put(st.id, st.status);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Query Bulk_Message_Tracking__c records to update (DML is deferred until AFTER Big Object callouts)
+                    List<Bulk_Message_Tracking__c> bmtToUpdate = new List<Bulk_Message_Tracking__c>();
+                    if (!statusMap.isEmpty()) {
+                        List<Bulk_Message_Tracking__c> bmtList = [
+                            SELECT Id, Message_ID__c, Status__c, Recipient_Record_ID__c
+                            FROM Bulk_Message_Tracking__c
+                            WHERE Message_ID__c IN :statusMap.keySet()
+                            WITH SYSTEM_MODE
+                        ];
+                        if (!bmtList.isEmpty()) {
+                            for (Bulk_Message_Tracking__c bmt : bmtList) {
+                                String rawStatus = statusMap.get(bmt.Message_ID__c);
+                                if (String.isNotBlank(rawStatus)) {
+                                    String targetStatus = rawStatus.capitalize();
+
+                                    // Hierarchy check: do not revert Read to Delivered or Sent
+                                    Boolean isCurrentRead = (bmt.Status__c != null && bmt.Status__c.equalsIgnoreCase('Read'));
+                                    Boolean isIncomingDeliveredOrSent = (rawStatus.equalsIgnoreCase('delivered') || rawStatus.equalsIgnoreCase('sent'));
+
+                                    if (!(isCurrentRead && isIncomingDeliveredOrSent)) {
+                                        bmt.Status__c = targetStatus;
+                                        bmtToUpdate.add(bmt);
+                                    }
+
+                                    // Recover recordId from tracking record if not yet known
+                                    if (String.isBlank(recordId) && String.isNotBlank(bmt.Recipient_Record_ID__c)) {
+                                        recordId = bmt.Recipient_Record_ID__c;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     for(CCCWA__WhatsApp_Conversation__b objWAConversation : records)
                     {
-                        if(objWAConversation.CCCWA__sid__c!=null && objWAConversation.CCCWA__sid__c ==objWrap1.entry[0].changes[0].value.statuses[0].id)
+                        if(objWAConversation.CCCWA__sid__c!=null && objWAConversation.CCCWA__sid__c == statusWamId)
                         {
-                            System.debug('Status--->'+objWrap1.entry[0].changes[0].value.statuses[0].id); //comment added by Vanshika 01/09/2025
                             found=true;
                             recordId=objWAConversation.CCCWA__Record_ID__c;
                             createddate=objWAConversation.CCCWA__Created_Date__c;
                             break;
                         }
                     }
+
                     if(!found){
                         CCCWA__WhatsApp_Conversation__b objfilteredMessages = new CCCWA__WhatsApp_Conversation__b();
                         objfilteredMessages.CCCWA__Direction__c ='Outbound';
-                        objfilteredMessages.CCCWA__Status__c='Sent';
+                        objfilteredMessages.CCCWA__Status__c = String.isNotBlank(statusVal) ? statusVal : 'sent';
                         objfilteredMessages.CCCWA__To_Phone__c= objWrap1.entry[0].changes[0].value.statuses[0].recipientid!=null?objWrap1.entry[0].changes[0].value.statuses[0].recipientid : '';
                         objfilteredMessages.CCCWA__From_Phone__c=objWrap1.entry[0].changes[0].value.metadata.displayphonenumber!=null?objWrap1.entry[0].changes[0].value.metadata.displayphonenumber : '';
-                        objfilteredMessages.CCCWA__Read__c='false';
-                        objfilteredMessages.CCCWA__sid__c=objWrap1.entry[0].changes[0].value.statuses[0].id!=null?objWrap1.entry[0].changes[0].value.statuses[0].id:'';
+                        objfilteredMessages.CCCWA__Read__c = (statusVal != null && statusVal.equalsIgnoreCase('read')) ? 'true' : 'false';
+                        objfilteredMessages.CCCWA__sid__c = statusWamId != null ? statusWamId : '';
                         objfilteredMessages.CCCWA__Created_date__c=DateTime.now();
                         objfilteredMessages.CCCWA__Response_Body__c=strRequestBody;
-                        
-                        // Create a related Task
-                        Task t = new Task();
-                        t.Subject = 'Follow up WhatsApp Message';
-                        t.Status = 'Not Started';
-                        t.Priority = 'Normal';
-                        t.Description = 'WhatsApp message sent to: ' + objfilteredMessages.CCCWA__To_Phone__c;
-                        t.ActivityDate = Date.today().addDays(1); 
-                        //t.WhoId = contactId;
-                        //Commented on 30/07/2025
-                        //insert t;
-                        if (Schema.sObjectType.Task.isCreateable()) {
-                            insert t;
-                        } else {
-                            throw new System.NoAccessException();
+                        if(String.isNotBlank(recordId)){
+                            objfilteredMessages.CCCWA__Record_ID__c = recordId;
                         }
-                        
-                        
+
                         if(test.isRunningTest()){
                             CCCWA__WhatsApp_Conversation__b rec =new CCCWA__WhatsApp_Conversation__b();
                             rec.CCCWA__Media_Type__c='test1';
@@ -412,7 +442,7 @@ global without sharing class C3WhatsappWebhookAPI {
                             rec.CCCWA__sid__c='records';
                             rec.CCCWA__Read__c='testing';
                         }
-                        
+
                         if(!test.isrunningtest()){
                             if (
                                 !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isAccessible', null, true)) &&
@@ -422,47 +452,31 @@ global without sharing class C3WhatsappWebhookAPI {
                             ){
                                 throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                             }else{
-                                Database.insertImmediate(objfilteredMessages, AccessLevel.SYSTEM_MODE); 
+                                Database.insertImmediate(objfilteredMessages, AccessLevel.SYSTEM_MODE);
                             }
                         }
                     }
-                  
+
                     else{
                         CCCWA__WhatsApp_Conversation__b objfilteredMessage1 = new CCCWA__WhatsApp_Conversation__b();
                         objfilteredMessage1.CCCWA__Record_ID__c=recordId;
-                        objfilteredMessage1.CCCWA__Status__c = objWrap1.entry[0].changes[0].value.statuses[0].status;
-                        System.debug('message status---' +objfilteredMessage1.CCCWA__Status__c);
-                        
-                        objfilteredMessage1.Created_date__c = createddate;
-                        if (
-                            !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isAccessible', null, true)) &&
-                            !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isAccessible', listFields, false)) &&
-                            !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isCreateable', null, true)) &&
-                            !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isCreateable', listFields, false))
-                        ){
-                            //   System.debug('WhatsApp Block.');
-                            throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
-                        }else{
-                            Database.insertImmediate(objfilteredMessage1, AccessLevel.SYSTEM_MODE); 
+                        objfilteredMessage1.CCCWA__Status__c = statusVal;
+                        objfilteredMessage1.CCCWA__sid__c = statusWamId;
+                        if (statusVal != null && statusVal.equalsIgnoreCase('read')) {
+                            objfilteredMessage1.CCCWA__Read__c = 'true';
                         }
-                        
-                        // Update Bulk_Message_Tracking__c if applicable
-                        String messageId = objWrap1.entry[0].changes[0].value.statuses[0].id;
-                        String newStatus = objWrap1.entry[0].changes[0].value.statuses[0].status;
-                        if (String.isNotBlank(messageId) && String.isNotBlank(newStatus)) {
-                            List<Bulk_Message_Tracking__c> bmtList = [SELECT Id, Status__c FROM Bulk_Message_Tracking__c WHERE Message_ID__c = :messageId WITH SYSTEM_MODE LIMIT 1];
-                            if (!bmtList.isEmpty()) {
-                                bmtList[0].Status__c = newStatus;
-                                String[] bmtFields = new String[]{'Status__c'};
-                                if (
-                                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isAccessible', null, true)) &&
-                                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isUpdateable', null, true)) &&
-                                    !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('Bulk_Message_Tracking__c', 'isUpdateable', bmtFields, false))
-                                ){
-                                    throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
-                                } else {
-                                    Database.update(bmtList, AccessLevel.SYSTEM_MODE);
-                                }
+                        objfilteredMessage1.CCCWA__Created_date__c = createddate;
+                        if(!test.isrunningtest()){
+                            if (
+                                !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isAccessible', null, true)) &&
+                                !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isAccessible', listFields, false)) &&
+                                !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isCreateable', null, true)) &&
+                                !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__WhatsApp_Conversation__b', 'isCreateable', listFields, false))
+                            ){
+                                //   System.debug('WhatsApp Block.');
+                                throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
+                            }else{
+                                Database.insertImmediate(objfilteredMessage1, AccessLevel.SYSTEM_MODE);
                             }
                         }
 
@@ -470,7 +484,11 @@ global without sharing class C3WhatsappWebhookAPI {
                             //C3Utility.logError(objWrap1.entry[0].changes[0].value.statuses[0].errors[0].errordata.details,'', 178, strRequestBody,'C3WhatsappWebhookAPI','status update', '');
                         }
                     }
-                    
+
+                    if (!bmtToUpdate.isEmpty()) {
+                        // NOPMD(ApexCRUDViolation, ApexFlsViolation) – Safe because this updates bulk message delivery status from Meta webhook in system mode.
+                        Database.update(bmtToUpdate, AccessLevel.SYSTEM_MODE);
+                    }
                 }
                 else{
                     //  Boolean isWamId= false;
@@ -488,11 +506,11 @@ global without sharing class C3WhatsappWebhookAPI {
                     objfilteredMessages.CCCWA__sid__c = objWrap1.entry[0].changes[0].value.messages[0].id!=null?objWrap1.entry[0].changes[0].value.messages[0].id:'';
                     objfilteredMessages.CCCWA__From_Phone__c = objWrap1.entry[0].changes[0].value.metadata.displayphonenumber!=null? objWrap1.entry[0].changes[0].value.metadata.displayphonenumber:'';
                     objfilteredMessages.CCCWA__Message__c = '';
-                    
+
                     for (CCCWA__WhatsApp_Conversation__b conversation : records) {
                         wamIdSet.add(conversation.CCCWA__sid__c);
                     }
-                    
+
                     if (!records.isEmpty() || test.isRunningTest()) {
                         if(test.isRunningTest()){
                             objfilteredMessages.CCCWA__To_Phone__c='919911410564';
@@ -532,13 +550,13 @@ global without sharing class C3WhatsappWebhookAPI {
                                         throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                                         //  System.debug('WhatsApp Block.');
                                     }else{
-                                        Database.insertImmediate(objfilteredMessages, AccessLevel.SYSTEM_MODE); 
+                                        Database.insertImmediate(objfilteredMessages, AccessLevel.SYSTEM_MODE);
                                     }
                                 }
                                 if(String.isNotBlank(objfilteredMessages.CCCWA__Record_ID__c)){
                                     sendPushWhatsAppNotification(objfilteredMessages.CCCWA__Record_ID__c, objfilteredMessages.CCCWA__Message__c);
                                 }
-                                
+
                             }
                         }
                         else{
@@ -576,7 +594,7 @@ global without sharing class C3WhatsappWebhookAPI {
                             }
                             objfilteredMessages.CCCWA__Status__c='Retrieved';
                             objfilteredMessages.CCCWA__Created_date__c=DateTime.now();
-                            
+
                             if(String.isNotBlank(webhookMediaId) && String.isNotBlank(webhookMediaType)){
                                 sfDownloadURL = C3WhatsAppWebService.getMediaFromAPI(webhookMediaId, webhookMediaName, webhookMediaType, objfilteredMessages.CCCWA__Record_ID__c);
                             }
@@ -584,11 +602,11 @@ global without sharing class C3WhatsappWebhookAPI {
                                 objfilteredMessages.CCCWA__Media_URL__c=sfDownloadURL;
                                 objfilteredMessages.CCCWA__File_Name__c=webhookMediaName;
                                 objfilteredMessages.CCCWA__Media_Type__c=webhookMediaType;
-                                
+
                             }
                             objfilteredMessages.CCCWA__Response_Body__c=strRequestBody;
                             if(!(wamIdSet.contains(objfilteredMessages.CCCWA__sid__c))){
-                                
+
                                 if(!test.isrunningtest()){
                                     //    System.enqueueJob(new C3CreateWhatsAppConversationQueue(objfilteredMessages));
                                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
@@ -596,24 +614,28 @@ global without sharing class C3WhatsappWebhookAPI {
                             }
                         }
                     }
-                }  
+                }
             }
         }
         catch(exception ex){
-            C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), strRequestBody,'C3WhatsappWebhookAPI','doPost','');
+            try {
+                C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), strRequestBody,'C3WhatsappWebhookAPI','doPost','');
+            } catch (Exception logEx) {
+                // code-analyzer-suppress-next-line pmd:EmptyCatchBlock -- Intentional fallback swallow
+            }
         }
     }
-    
+
     /**
 * @description Represents a file upload request containing content, name, type, and associated record ID.
 */
     global class FileUploadRequest {
-        
+
         public Blob fileContent;
         public String fileName;
         public String fileType;
         public String recordId;
-        
+
         /**
 * @description Constructor to initialize the file upload request.
 * @param fileContent The binary content of the file.
@@ -628,6 +650,6 @@ global without sharing class C3WhatsappWebhookAPI {
             this.recordId = recordId;
         }
     }
-    
-    
+
+
 }

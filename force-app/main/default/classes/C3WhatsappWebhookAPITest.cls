@@ -2,10 +2,10 @@
 * @description
 * This is a test class for the C3WhatsappWebhookAPI class. It covers various scenarios
 * for incoming WhatsApp webhook messages including text, image, video, audio, and button types.
-* 
+*
 * @test
 */
-@isTest
+@IsTest
 private class C3WhatsappWebhookAPITest {
 
     // Keep in sync with the secret configured for the webhook.
@@ -60,7 +60,7 @@ private class C3WhatsappWebhookAPITest {
     /**
 *  @description Sets up test data including a test user and related permission sets.
 */
-    @testSetup
+    @TestSetup
     public static void makeData(){
         Profile sysAdminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
         User testUser = new User(
@@ -91,41 +91,41 @@ private class C3WhatsappWebhookAPITest {
             }
         }
         insert psAssignments;
-        
+
         System.runAs(testUser) {
             C3TestDataFactory.insertWhatsAppAdmin();
             C3TestDataFactory.createAccount();
         }
     }
-    
+
     /**
 *   @description Tests the doPost method with a text message payload.
 */
-    @isTest
+    @IsTest
     static void testDoPost() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
             Test.startTest();
-            
+
             String jsonBody = '{ "object": "whatsapp_business_account", "entry": [ { "id": "8856996819413533", "changes": [ { "value": { "messaging_product": "whatsapp", "metadata": { "display_phone_number": "16505553333", "phone_number_id": "27681414235104944" }, "contacts": [ { "profile": { "name": "Kerry Fisher" }, "wa_id": "16315551234" } ], "messages": [ { "from": "16315551234", "id": "wamid.ABGGFlCGg0cvAgo-sJQh43L5Pe4W", "timestamp": "1603059201", "text": { "body": "Hello this is an answer" }, "type": "text" } ] }, "field": "messages" } ] } ] }';
             // Set up the POST request
             RestRequest request = new RestRequest();
             request.httpMethod = 'POST';
             RestContext.request = request;
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
-            
+
             // Call the doPost method
             sendSignedPost(jsonBody);
-            
+
             System.assertNotEquals(null, jsonBody, 'Expected jsonBody to not be null');
             Test.stopTest();
         }
     }
-    
+
     /**
 *  @description Tests the doPost method with a status message payload.
 */
-    @isTest
+    @IsTest
     static void testDoPost1() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -136,16 +136,16 @@ private class C3WhatsappWebhookAPITest {
             request.httpMethod = 'POST';
             RestContext.request = request;
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
-            
+
             // Call the doPost method
             sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest
+
+    @IsTest
     static void testDoPost2() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -156,16 +156,16 @@ private class C3WhatsappWebhookAPITest {
             request.httpMethod = 'POST';
             RestContext.request = request;
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
-            
+
             // Call the doPost method
             sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest
+
+    @IsTest
     static void testDoPost3() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -177,16 +177,16 @@ private class C3WhatsappWebhookAPITest {
             request.httpMethod = 'POST';
             RestContext.request = request;
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
-            
+
             // Call the doPost method
             sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest
+
+    @IsTest
     static void testDoPost4() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -198,16 +198,16 @@ private class C3WhatsappWebhookAPITest {
             request.httpMethod = 'POST';
             RestContext.request = request;
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
-            
+
             // Call the doPost method
             sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest
+
+    @IsTest
     static void testDoPost5() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -219,16 +219,16 @@ private class C3WhatsappWebhookAPITest {
             request.httpMethod = 'POST';
             RestContext.request = request;
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
-            
+
             // Call the doPost method
             sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest
+
+    @IsTest
     static void testDoPost6() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
@@ -240,161 +240,197 @@ private class C3WhatsappWebhookAPITest {
             request.httpMethod = 'POST';
             RestContext.request = request;
             RestContext.request.requestBody = Blob.valueOf(jsonBody);
-            
+
             // Call the doPost method
             sendSignedPost(jsonBody);
             System.assertNotEquals(null, RestContext.request, 'RestContext.request should be initialized before calling doPost');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest
+
+    @IsTest
     static void testDoPost7() {
         User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
         System.runAs(testUser) {
             Test.startTest();
-            Lead objLead = new Lead(LastName = 'test', Company='Testasd'); 
+            Lead objLead = new Lead(LastName = 'test', Company='Testasd');
             insert objLead;
             C3WhatsappWebhookAPI.sendPushWhatsAppNotification(objLead.Id, 'New MEessage');
-            
+
             //sendSignedPost(jsonBody);
             //C3WhatsappWebhookAPI.uploadFile(fileContent, fileName, fileType, recordId)
             System.assertNotEquals(null, objLead.Id, 'Lead Id should not be null');
             Test.stopTest();
         }
     }
-    @isTest
+    @IsTest
     static void testDoGetValidToken() {
-        // Set up simulated request
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        req.httpMethod = 'GET';
-        req.requestURI = '/services/apexrest/WhatsappWebhook';
-        req.addParameter('hub.verify_token', 'CloudCentric@2025');
-        req.addParameter('hub.challenge', 'challengeString123');
-        
-        RestContext.request = req;
-        RestContext.response = res;
-        
-        // Call the method (which won't set responseBody due to Test.isRunningTest())
-        C3WhatsappWebhookAPI.doGet();
-        
-        // 🛠 Workaround: Manually mock the responseBody (since main class skips it during test)
-        if (RestContext.response.responseBody == null) {
-            RestContext.response.responseBody = Blob.valueOf('SimulatedTestChallenge');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            // Set up simulated request
+            RestRequest req = new RestRequest();
+            RestResponse res = new RestResponse();
+            req.httpMethod = 'GET';
+            req.requestURI = '/services/apexrest/WhatsappWebhook';
+            req.addParameter('hub.verify_token', 'CloudCentric@2025');
+            req.addParameter('hub.challenge', 'challengeString123');
+
+            RestContext.request = req;
+            RestContext.response = res;
+
+            // Call the method (which won't set responseBody due to Test.isRunningTest())
+            C3WhatsappWebhookAPI.doGet();
+
+            // 🛠 Workaround: Manually mock the responseBody (since main class skips it during test)
+            if (RestContext.response.responseBody == null) {
+                RestContext.response.responseBody = Blob.valueOf('SimulatedTestChallenge');
+            }
+
+            // Assert it is no longer null
+            System.assertNotEquals(null, RestContext.response.responseBody, 'Expected responseBody to be returned for valid token');
         }
-        
-        // Assert it is no longer null
-        System.assertNotEquals(null, RestContext.response.responseBody, 'Expected responseBody to be returned for valid token');
     }
-    
-    
-    @isTest
+
+    @IsTest
     static void testDoGetInvalidToken() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        req.httpMethod = 'GET';
-        req.requestURI = '/services/apexrest/yourendpoint';
-        
-        RestContext.request = req;
-        RestContext.response = res;
-        
-        // Set parameters using addParameter
-        RestContext.request.addParameter('hub.verify_token', 'InvalidToken');
-        RestContext.request.addParameter('hub.challenge', 'challengeString123');
-        
-        // Call the method
-        C3WhatsappWebhookAPI.doGet();
-        
-        // Since the token is invalid, responseBody should not be set
-        System.assertEquals(null, RestContext.response.responseBody, 'Expected responseBody to be null for invalid token');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            RestRequest req = new RestRequest();
+            RestResponse res = new RestResponse();
+            req.httpMethod = 'GET';
+            req.requestURI = '/services/apexrest/yourendpoint';
+
+            RestContext.request = req;
+            RestContext.response = res;
+
+            // Set parameters using addParameter
+            RestContext.request.addParameter('hub.verify_token', 'InvalidToken');
+            RestContext.request.addParameter('hub.challenge', 'challengeString123');
+
+            // Call the method
+            C3WhatsappWebhookAPI.doGet();
+
+            // Since the token is invalid, responseBody should not be set
+            System.assertEquals(null, RestContext.response.responseBody, 'Expected responseBody to be null for invalid token');
+        }
     }
-    
-    @isTest
+
+    @IsTest
     static void testUploadFile() {
-        // Create a test Account to link file to
-        Account acc = new Account(Name = 'Test Account');
-        insert acc;
-        
-        // Dummy file content
-        Blob fileBody = Blob.valueOf('Test file content');
-        String fileName = 'TestFile';
-        String fileType = 'application/pdf'; // mimics a PDF upload
-        String recordId = acc.Id;
-        
-        // (Optional) Mock utility class permissions if needed
-        // Assuming C3Utility is checking field-level permissions, ensure it returns true
-        // You can mock this behavior using a stub class if it's an interface
-        
-        // Call the method
-        Test.startTest();
-        C3WhatsappWebhookAPI.FileUploadRequest request = new C3WhatsappWebhookAPI.FileUploadRequest(
-            fileBody,
-            fileName,
-            fileType, 
-            recordId
-        );
-        
-        String url = C3WhatsappWebhookAPI.uploadFile(request);
-        
-        Test.stopTest();
-        
-        // Assert the result
-        System.assertNotEquals(null, url, 'Download URL should not be null');
-        
-        // Optionally, assert database state
-        List<ContentDocumentLink> links = [SELECT Id, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId = :acc.Id];
-        System.assertEquals(1, links.size(), 'One file should be linked to the account');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            // Create a test Account to link file to
+            Account acc = new Account(Name = 'Test Account');
+            insert acc;
+
+            // Dummy file content
+            Blob fileBody = Blob.valueOf('Test file content');
+            String fileName = 'TestFile';
+            String fileType = 'application/pdf'; // mimics a PDF upload
+            String recordId = acc.Id;
+
+            // Call the method
+            Test.startTest();
+            C3WhatsappWebhookAPI.FileUploadRequest request = new C3WhatsappWebhookAPI.FileUploadRequest(
+                fileBody,
+                fileName,
+                fileType,
+                recordId
+            );
+
+            String url = C3WhatsappWebhookAPI.uploadFile(request);
+
+            Test.stopTest();
+
+            // Assert the result
+            System.assertNotEquals(null, url, 'Download URL should not be null');
+
+            // Optionally, assert database state
+            List<ContentDocumentLink> links = [SELECT Id, LinkedEntityId FROM ContentDocumentLink WHERE LinkedEntityId = :acc.Id];
+            System.assertEquals(1, links.size(), 'One file should be linked to the account');
+        }
     }
-    
 
-
-    @isTest
+    @IsTest
     static void testDoPostRejectsMissingSignature() {
-        RestResponse res = sendPostWithSignature(
-            '{"object":"whatsapp_business_account"}',
-            null
-        );
-        System.assertEquals(401, res.statusCode,
-            'Webhook requests without a signature should be rejected.');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            RestResponse res = sendPostWithSignature(
+                '{"object":"whatsapp_business_account"}',
+                null
+            );
+            System.assertEquals(401, res.statusCode,
+                'Webhook requests without a signature should be rejected.');
+        }
     }
 
-    @isTest
+    @IsTest
     static void testDoPostRejectsInvalidSignature() {
-        RestResponse res = sendPostWithSignature(
-            '{"object":"whatsapp_business_account"}',
-            'sha256=invalid'
-        );
-        System.assertEquals(401, res.statusCode,
-            'Webhook requests with an invalid signature should be rejected.');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            RestResponse res = sendPostWithSignature(
+                '{"object":"whatsapp_business_account"}',
+                'sha256=invalid'
+            );
+            System.assertEquals(401, res.statusCode,
+                'Webhook requests with an invalid signature should be rejected.');
+        }
     }
 
-    @isTest
+    @IsTest
     static void testDoPostRejectsEmptyBody() {
-        RestResponse res = sendPostWithSignature('', 'sha256=invalid');
-        System.assertEquals(401, res.statusCode,
-            'Webhook requests with an empty body should be rejected.');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            RestResponse res = sendPostWithSignature('', 'sha256=invalid');
+            System.assertEquals(401, res.statusCode,
+                'Webhook requests with an empty body should be rejected.');
+        }
     }
 
-    @isTest
+    @IsTest
     static void testDoPostValidSignatureIsAccepted() {
-        String jsonBody =
-            '{"object":"whatsapp_business_account","entry":[{"id":"entry1",' +
-            '"changes":[{"field":"messages","value":{' +
-            '"messaging_product":"whatsapp",' +
-            '"metadata":{"display_phone_number":"16505553333",' +
-            '"phone_number_id":"27681414235104944"},' +
-            '"contacts":[{"profile":{"name":"Kerry Fisher"},"wa_id":"16315551234"}],' +
-            '"messages":[{"from":"16315551234","id":"wamid.test.text.signature",' +
-            '"timestamp":"1603059201","text":{"body":"Hello from test"},"type":"text"}]}}]}]}';
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            String jsonBody =
+                '{"object":"whatsapp_business_account","entry":[{"id":"entry1",' +
+                '"changes":[{"field":"messages","value":{' +
+                '"messaging_product":"whatsapp",' +
+                '"metadata":{"display_phone_number":"16505553333",' +
+                '"phone_number_id":"27681414235104944"},' +
+                '"contacts":[{"profile":{"name":"Kerry Fisher"},"wa_id":"16315551234"}],' +
+                '"messages":[{"from":"16315551234","id":"wamid.test.text.signature",' +
+                '"timestamp":"1603059201","text":{"body":"Hello from test"},"type":"text"}]}}]}]}';
 
-        Test.startTest();
-        RestResponse res = sendSignedPost(jsonBody);
-        Test.stopTest();
+            Test.startTest();
+            RestResponse res = sendSignedPost(jsonBody);
+            Test.stopTest();
 
-        System.assertNotEquals(401, res.statusCode,
-            'A correctly signed webhook should pass signature validation.');
+            System.assertNotEquals(401, res.statusCode,
+                'A correctly signed webhook should pass signature validation.');
+        }
+    }
+
+    @IsTest
+    static void testBulkMessageTrackingStatusDeliveredAndRead() {
+        User testUser = [SELECT Id FROM User WHERE Email = 'testadmin@example.com' LIMIT 1];
+        System.runAs(testUser) {
+            Bulk_Message_Tracking__c bmt = new Bulk_Message_Tracking__c(
+                Message_ID__c = 'wamid.bulkTrackingTest1',
+                Status__c = 'Sent',
+                Phone_Number__c = '16505553333'
+            );
+            insert bmt;
+
+            Test.startTest();
+            // Test Delivered status update
+            String deliveredJson = '{ "object": "whatsapp_business_account", "entry": [ { "id": "8856996819413533", "changes": [ { "value": { "messaging_product": "whatsapp", "metadata": { "display_phone_number": "16505553333", "phone_number_id": "27681414235104944" }, "statuses": [ { "id": "wamid.bulkTrackingTest1", "recipient_id": "16505553333", "status": "delivered", "timestamp": "1603059201" } ] }, "field": "messages" } ] } ] }';
+            sendSignedPost(deliveredJson);
+
+            Bulk_Message_Tracking__c updatedBmt = [SELECT Id, Status__c FROM Bulk_Message_Tracking__c WHERE Id = :bmt.Id];
+            System.assertEquals('Delivered', updatedBmt.Status__c, 'Status should be updated to Delivered');
+
+            // Test Read status update
+            String readJson = '{ "object": "whatsapp_business_account", "entry": [ { "id": "8856996819413533", "changes": [ { "value": { "messaging_product": "whatsapp", "metadata": { "display_phone_number": "16505553333", "phone_number_id": "27681414235104944" }, "statuses": [ { "id": "wamid.bulkTrackingTest1", "recipient_id": "16505553333", "status": "read", "timestamp": "1603059205" } ] }, "field": "messages" } ] } ] }';
+            sendSignedPost(readJson);
+
+            Bulk_Message_Tracking__c readBmt = [SELECT Id, Status__c FROM Bulk_Message_Tracking__c WHERE Id = :bmt.Id];
+            System.assertEquals('Read', readBmt.Status__c, 'Status should be updated to Read');
+            Test.stopTest();
+        }
     }
 
 }

@@ -25,7 +25,6 @@
         <enabled>true</enabled>
         <externalCredentialPrincipal>CCCWA__GetMediaUrl-Auth</externalCredentialPrincipal>
     </externalCredentialPrincipalAccesses>
-    <!-- Field permissions for Bulk_Message_Tracking__c introduced in version upgrade -->
     <fieldPermissions>
         <editable>true</editable>
         <field>Bulk_Message_Tracking__c.Message_ID__c</field>
@@ -149,6 +148,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Template_Object__c.Object__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Template_Object__c.Project__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -283,7 +287,6 @@
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>WhatsApp Access</label>
-    <!-- Object permissions for Bulk_Message_Tracking__c -->
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -338,7 +341,6 @@
         <tab>Admin</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <!-- Tab settings for Bulk_Message_Tracking__c -->
     <tabSettings>
         <tab>Bulk_Message_Tracking__c</tab>
         <visibility>Visible</visibility>

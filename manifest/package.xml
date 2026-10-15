@@ -73,6 +73,7 @@
         <members>Send_Bulk_Templates</members>
         <members>Template_Object__c</members>
         <members>Error_Log__c</members>
+        <members>Bulk_Message_Tracking__c</members>
         <name>CustomTab</name>
     </types>
 
@@ -129,8 +130,10 @@
         <members>CCCWA__Template_Parameter__c.CCCWA__Object_name__c</members>
         <members>CCCWA__Template_Parameter__c.CCCWA__Parameter_Name__c</members>
         <members>CCCWA__Template_Parameter__c.CCCWA__Template__c</members>
+        <members>CCCWA__WhatsApp_Admin__c.CCCWA__App_Secret__c</members>
         <members>CCCWA__WhatsApp_Admin__c.CCCWA__NumberID__c</members>
         <members>CCCWA__WhatsApp_Admin__c.CCCWA__WabaId__c</members>
+        <members>CCCWA__WhatsApp_Admin__c.CCCWA__Webhook_Verify_Token__c</members>
         <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Created_Date__c</members>
         <members>CCCWA__WhatsApp_Conversation__b.CCCWA__Direction__c</members>
         <members>CCCWA__WhatsApp_Conversation__b.CCCWA__File_Name__c</members>
@@ -152,16 +155,18 @@
         <members>CCCWA__WhatsApp_Number_Configuration__c.CCCWA__Field_Name__c</members>
         <members>CCCWA__WhatsApp_Number_Configuration__c.CCCWA__Object_Name__c</members>
         <members>CCCWA__WhatsApp_Number_Configuration__c.CCCWA__Object_Label__c</members>
+        <members>CCCWA__Whatsapp_Attachment__c.CCCWA__Attachment__c</members>
+        <members>CCCWA__Whatsapp_Attachment__c.CCCWA__Campaign__c</members>
+        <members>CCCWA__Whatsapp_Attachment__c.CCCWA__Task_Creation__c</members>
+        <members>CCCWA__Bulk_Message_Tracking__c.CCCWA__Message_ID__c</members>
+        <members>CCCWA__Bulk_Message_Tracking__c.CCCWA__Phone_Number__c</members>
+        <members>CCCWA__Bulk_Message_Tracking__c.CCCWA__Recipient_Record_ID__c</members>
+        <members>CCCWA__Bulk_Message_Tracking__c.CCCWA__Status__c</members>
+        <members>CCCWA__Bulk_Message_Tracking__c.CCCWA__Template_Object__c</members>
+        <members>CCCWA__Bulk_Message_Tracking__c.CCCWA__Delivery_Status__c</members>
         <!-- Project CMT custom field -->
         <members>CCCWA__Project__mdt.CCCWA__Project_Name__c</members>
         <name>CustomField</name>
-    </types>
-
-    <types>
-        <members>Access_Token</members>
-        <members>Phone_Number_ID</members>
-        <members>WABA_ID</members>
-        <name>CustomLabel</name>
     </types>
 
     <types>
@@ -172,6 +177,7 @@
 
     <types>
         <!-- All custom objects + CMT merged into one block -->
+        <members>CCCWA__Bulk_Message_Tracking__c</members>
         <members>CCCWA__Error_Log__c</members>
         <members>CCCWA__Template_Button__c</members>
         <members>CCCWA__Template_Object__c</members>
@@ -183,8 +189,8 @@
         <members>CCCWA__Project__mdt</members>
         <name>CustomObject</name>
     </types>
-
     <types>
+        <members>Bulk_Message_Tracking__c-Bulk Message Tracking Layout</members>
         <members>Error_Log__c-Error Log Layout</members>
         <members>Template_Button__c-Template Button Layout</members>
         <members>Template_Object__c-Template Layout</members>
@@ -192,6 +198,7 @@
         <members>Project__mdt-Project Layout</members> 
         <name>Layout</name>
     </types>
+
 
     <types>
         <members>SiteSamples</members>

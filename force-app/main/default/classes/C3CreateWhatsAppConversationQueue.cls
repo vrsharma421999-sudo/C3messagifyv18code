@@ -4,9 +4,9 @@
  */
 public without sharing class C3CreateWhatsAppConversationQueue implements Queueable, Database.AllowsCallouts{
       /**
-     * @description Stores the WhatsApp conversation record to be processed. 
+     * @description Stores the WhatsApp conversation record to be processed.
      */
-     
+
     public CCCWA__WhatsApp_Conversation__b  objfilteredMessages;
      /**
      * @description Constructor to initialize the queue with a WhatsApp conversation object.
@@ -24,9 +24,9 @@ public without sharing class C3CreateWhatsAppConversationQueue implements Queuea
 
     public void execute(QueueableContext context) {
         if (!Test.isRunningTest() ) {
-             
-            Database.insertImmediate(this.objfilteredMessages);  
+
+            Database.insertImmediate(this.objfilteredMessages);
         }
-        
-    }     
+
+    }
 }

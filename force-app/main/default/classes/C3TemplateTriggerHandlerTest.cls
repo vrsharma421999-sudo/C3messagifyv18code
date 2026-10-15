@@ -1,8 +1,18 @@
-@isTest
+/**
+ * @description Test class for C3TemplateTriggerHandler.
+ */
+@IsTest
 public class C3TemplateTriggerHandlerTest {
-    
-    // Mock callout to simulate external service used in C3DeleteTemplateQueue
+
+    /**
+     * @description Mock callout to simulate external service used in C3DeleteTemplateQueue.
+     */
     public class MockDeleteTemplateCallout implements HttpCalloutMock {
+        /**
+         * @description Returns mock HTTP response for delete template callout.
+         * @param req The HTTP request.
+         * @return HttpResponse The mocked response.
+         */
         public HTTPResponse respond(HTTPRequest req) {
             HttpResponse res = new HttpResponse();
             res.setStatusCode(200);
@@ -10,8 +20,8 @@ public class C3TemplateTriggerHandlerTest {
             return res;
         }
     }
-    
-    /*  @isTest
+
+    /*  @IsTest
 static void testAfterDeleteTriggerFires() {
 Test.setMock(HttpCalloutMock.class, new MockDeleteTemplateCallout());
 
@@ -27,46 +37,48 @@ Test.stopTest();
 Integer countTemplates = [SELECT COUNT() FROM CCCWA__Template_Object__c WHERE Id = :template.Id];
 System.assertEquals(0, countTemplates, 'Template should be deleted');
 }*/
-    @isTest
+    @IsTest
     static void testAfterDeleteTriggerFires() {
-        
+
         Test.setMock(HttpCalloutMock.class, new MockDeleteTemplateCallout());
-        
+
         User runAsUser = C3TestDataFactory.getRunAsUser();
-        
+
         System.runAs(runAsUser) {
-            
+
             CCCWA__Template_Object__c template =
                 C3TestDataFactory.createTemplate();
-            
+
             System.assert(
                 Schema.sObjectType.CCCWA__Template_Object__c.isDeletable(),
                 'User must have delete permission'
             );
-            
+
             Test.startTest();
             Database.delete(template, AccessLevel.USER_MODE);
             Test.stopTest();
-            
+
             Integer cnt =
                 [SELECT COUNT() FROM CCCWA__Template_Object__c WHERE Id = :template.Id];
-            
+
             System.assertEquals(0, cnt);
         }
     }
-    
-    
-    @isTest
+
+
+    @IsTest
     static void testDeleteTempateFromMetaWithEmptyList() {
-        Test.startTest();
-        C3TemplateTriggerHandler.deleteTempateFromMeta(new List<CCCWA__Template_Object__c>());
-        Test.stopTest();
-        
-        // Just asserting no exception thrown — this branch has no output.
-        System.assert(true, 'deleteTempateFromMeta should handle empty list gracefully');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            Test.startTest();
+            C3TemplateTriggerHandler.deleteTempateFromMeta(new List<CCCWA__Template_Object__c>());
+            Test.stopTest();
+
+            // Just asserting no exception thrown — this branch has no output.
+            System.assert(true, 'deleteTempateFromMeta should handle empty list gracefully');
+        }
     }
-    
-    /* @isTest
+
+    /* @IsTest
 static void testAfterDeleteWithRealList() {
 Test.setMock(HttpCalloutMock.class, new MockDeleteTemplateCallout());
 
@@ -94,51 +106,51 @@ Integer countTemplates = [SELECT COUNT() FROM CCCWA__Template_Object__c WHERE Id
 System.assertEquals(0, countTemplates, 'Template should be deleted');
 }
 */
-    @isTest
+    @IsTest
     static void testAfterDeleteWithRealList() {
-        
+
         Test.setMock(HttpCalloutMock.class, new MockDeleteTemplateCallout());
-        
+
         // Use shared runAs user from factory
         User runAsUser = C3TestDataFactory.getRunAsUser();
-        
+
         System.runAs(runAsUser) {
-            
+
             // Step 1: Insert template (system mode via factory)
             CCCWA__Template_Object__c template =
                 C3TestDataFactory.createTemplate();
-            
+
             System.assertNotEquals(
                 null,
                 template.Id,
                 'Template must be inserted for testing'
             );
-            
+
             // Step 2: Query fresh copy (simulates trigger.old)
             CCCWA__Template_Object__c templateToDelete = [
                 SELECT Id, Name
                 FROM CCCWA__Template_Object__c
                 WHERE Id = :template.Id
             ];
-            
+
             System.assertNotEquals(
                 null,
                 templateToDelete.Name,
                 'Template name should not be null'
             );
-            
+
             // Step 3: Perform delete (this will fire afterDelete trigger automatically)
             Test.startTest();
             Database.delete(templateToDelete, AccessLevel.USER_MODE);
             Test.stopTest();
-            
+
             // Step 4: Confirm template is deleted
             Integer countTemplates = [
                 SELECT COUNT()
                 FROM CCCWA__Template_Object__c
                 WHERE Id = :template.Id
             ];
-            
+
             System.assertEquals(
                 0,
                 countTemplates,
@@ -146,15 +158,15 @@ System.assertEquals(0, countTemplates, 'Template should be deleted');
             );
         }
     }
-    @isTest
+    @IsTest
     static void testAfterDeleteDirectInvocation() {
-        
+
         Test.setMock(HttpCalloutMock.class, new MockDeleteTemplateCallout());
-        
+
         User runAsUser = C3TestDataFactory.getRunAsUser();
-        
+
         System.runAs(runAsUser) {
-            
+
             // Prepare fake deleted records (no DML required)
             CCCWA__Template_Object__c t1 = new CCCWA__Template_Object__c(
                 Name = 'Template_One'
@@ -162,34 +174,35 @@ System.assertEquals(0, countTemplates, 'Template should be deleted');
             CCCWA__Template_Object__c t2 = new CCCWA__Template_Object__c(
                 Name = 'Template_Two'
             );
-            
+
             List<CCCWA__Template_Object__c> deletedList =
                 new List<CCCWA__Template_Object__c>{ t1, t2 };
-                    
+
                     Test.startTest();
             C3TemplateTriggerHandler.afterDelete(deletedList);
             Test.stopTest();
-            
+
             System.assert(true, 'afterDelete should enqueue job successfully');
         }
     }
-    
-    @isTest
+
+    @IsTest
     static void testDeleteTempateFromMetaWithValidList() {
-        
-        Test.setMock(HttpCalloutMock.class, new MockDeleteTemplateCallout());
-        
-        CCCWA__Template_Object__c temp =
-            new CCCWA__Template_Object__c(Name = 'Valid_Template');
-        
-        Test.startTest();
-        C3TemplateTriggerHandler.deleteTempateFromMeta(
-            new List<CCCWA__Template_Object__c>{ temp }
-        );
-        Test.stopTest();
-        
-        System.assert(true, 'Queueable should be enqueued');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            Test.setMock(HttpCalloutMock.class, new MockDeleteTemplateCallout());
+
+            CCCWA__Template_Object__c temp =
+                new CCCWA__Template_Object__c(Name = 'Valid_Template');
+
+            Test.startTest();
+            C3TemplateTriggerHandler.deleteTempateFromMeta(
+                new List<CCCWA__Template_Object__c>{ temp }
+            );
+            Test.stopTest();
+
+            System.assert(true, 'Queueable should be enqueued');
+        }
     }
-    
-    
+
+
 }

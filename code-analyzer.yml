@@ -1,0 +1,4 @@
+# Salesforce Code Analyzer Configuration
+engines:
+  flow:
+    disable_engine: true

@@ -20,7 +20,7 @@
 * @license Salesforce Public License
 * @date June 2025
 */
-public with sharing class C3WhatsAppTemplateScreenLWCCtrl {    
+public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
     /**
 * @method searchTemplates
 * @description Searches WhatsApp templates with field-level security enforcement
@@ -50,11 +50,11 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
 * @return CCCWA__Template_Object__c Complete template record with child relationships
 * @throws AuraHandledException When security checks fail
 */
-    
+
     @AuraEnabled(cacheable=true)
     public static CCCWA__Template_Object__c getRecordData(String recordId, String objectName) {
         try{
-            
+
             String [] fieldsToQuery = new String [] {'Id', 'CCCWA__Name', 'CCCWA__Language_Code__c', 'CCCWA__Status__c', 'CCCWA__Template_Message__c', 'CCCWA__Header_Type__c', 'CCCWA__File_Name__c', 'CCCWA__Media_Type__c', 'CCCWA__Media_Handler__c', 'CCCWA__Footer__c', 'CCCWA__Header__c', 'CCCWA__Document_Url__c'  };
                 String [] fieldsToQuery2 = new String [] {'Id', 'CCCWA__Field_Name__c', 'CCCWA__Object_name__c', 'CCCWA__Parameter_Name__c'  };
                     String [] fieldsToQuery3 = new String [] {'Id', 'CCCWA__Button_text__c', 'CCCWA__Button_Type__c', 'CCCWA__Country_Code__c', 'CCCWA__phone_Number__c', 'CCCWA__Type__c', 'CCCWA__Type_of_Action__c', 'CCCWA__URL_Type__c', 'CCCWA__Website_URL__c'  };
@@ -64,23 +64,23 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
             Boolean b12 = !C3Utility.checkFieldPermission(
                 new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', fieldsToQuery, false)
             );
-            
+
             Boolean b2 = !C3Utility.checkFieldPermission(
                 new C3Utility.FieldPermissionRequest('CCCWA__Template_Mapping__c', 'isAccessible', null, true)
             );
             Boolean b22 = !C3Utility.checkFieldPermission(
                 new C3Utility.FieldPermissionRequest('CCCWA__Template_Mapping__c', 'isAccessible', fieldsToQuery2, false)
             );
-            
+
             Boolean b3 = !C3Utility.checkFieldPermission(
                 new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isAccessible', null, true)
             );
             Boolean b32 = !C3Utility.checkFieldPermission(
                 new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isAccessible', fieldsToQuery3, false)
             );
-            
+
             if(b1 && b2 && b3 && b12 && b22 && b32){
-                throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');                
+                throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
             }else{
                 return [SELECT Id, Name, CCCWA__Language_Code__c, CCCWA__Whatsapp_Template__c, CCCWA__Status__c, CCCWA__Template_Message__c, CCCWA__Header_Type__c, CCCWA__File_Name__c, CCCWA__Media_Type__c, CCCWA__Media_Handler__c, CCCWA__Footer__c, CCCWA__Header__c, CCCWA__Document_Url__c, (SELECT Id, CCCWA__Field_Name__c, CCCWA__Object_name__c, CCCWA__Parameter_Name__c FROM CCCWA__Template_Mappings__r WHERE CCCWA__Object_name__c =: objectName ), (SELECT Id, CCCWA__Button_text__c, CCCWA__Button_Type__c,CCCWA__Country_Code__c, CCCWA__phone_Number__c, CCCWA__Type__c, CCCWA__Type_of_Action__c,CCCWA__URL_Type__c, CCCWA__Website_URL__c FROM CCCWA__Template_Buttons__r) FROM CCCWA__Template_Object__c WHERE Id = :recordId   WITH USER_MODE];
             }
@@ -93,7 +93,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
 * @param templateRecordId The ID of the template to use for the message.
 * @return String response from the API.
 * @throws AuraHandledException When user lacks required field access.
-*/    
+*/
     @AuraEnabled
     public static String sendWhatsAppMessage(List<String> recordIds, String templateRecordId){
         try{
@@ -101,16 +101,16 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 string resbody='';
                 string phoneField ='';
                 set<String> setOfIds;
-                
+
                 List<String> lstIds = recordIds ;
                 setOfIds = new Set<String>(lstIds);
-                
+
                 Id recordId = Id.valueOf(lstIds[0]);
                 String objectName = recordId.getSObjectType().getDescribe().getName();
                 Map<String, String> mapParamNumWithFieldName = new Map<String, String>();
                 CCCWA__Template_Object__c objTemplate = getRecordData(templateRecordId, objectName);
                 //  List<SObject> lstSObject = new List<SObject>();
-                
+
                 if((objTemplate != null) && (objTemplate.CCCWA__Template_Mappings__r != null) && objTemplate.CCCWA__Template_Mappings__r.size()>0 ){
                     for(CCCWA__Template_Parameter__c objTempMapping : objTemplate.Template_Mappings__r ){
                         mapParamNumWithFieldName.put(objTempMapping.CCCWA__Parameter_Name__c, objTempMapping.CCCWA__Field_Name__c );
@@ -131,17 +131,17 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                     throw new AuraHandledException('Template field mappings do not resolve to any fields for object ' + objectName);
                 }
                 String query = 'SELECT Id, '+ String.join(fieldSet, ',') + ' FROM '+objectName+' WHERE Id IN: setOfIds';
-                List<SObject> listOfSObject = new List<SObject>();                
+                List<SObject> listOfSObject = new List<SObject>();
                 List<String> fieldsToQuery = new List<String>(fieldSet);
-                
+
                 Boolean b1 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest(objectName, 'isAccessible', null, true)
                 );
-                
+
                 Boolean b2 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest(objectName, 'isAccessible', fieldsToQuery, false)
                 );
-                
+
                 if(b1 && b2){
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }else{
@@ -149,7 +149,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 }
                 if(!listOfSObject.isEmpty()){
                     resbody = C3WhatsAppWebService.createWebserviceBody(listOfSObject, mapParamNumWithFieldName, objTemplate, phoneField);}
-                return resbody;            
+                return resbody;
             }
             return null;
         }catch(exception ex){ C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','C3WhatsAppTemplateScreenLWCCtrl','sendWhatsAppMessage',''); return null; }
@@ -160,9 +160,9 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
 * @param recordIds List of record IDs to send messages to.
 * @param templateRecordId The ID of the template to use for the message.
 * @throws AuraHandledException When user lacks required field access.
-*/ 
-    
-    
+*/
+
+
     @AuraEnabled
     public static void sendWhatsAppMessageBulk(List<String> recordIds, String templateRecordId){
         try {
@@ -171,9 +171,9 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 Id recordId = Id.valueOf(recordIds[0]);
                 String objectName = recordId.getSObjectType().getDescribe().getName();
                 C3Utility.logError('RecordId[0]: ' + recordId, '', 168, '', 'C3WhatsAppTemplateScreenLWCCtrl', 'sendWhatsAppMessageBulk', 'Object Name: ' + objectName);
-                
+
                 Map<String, String> mapParamNumWithFieldName = new Map<String, String>();
-                
+
                 CCCWA__Template_Object__c objTemplate = getRecordData(templateRecordId, objectName);
                 if (objTemplate != null && objTemplate.CCCWA__Template_Mappings__r != null && !objTemplate.CCCWA__Template_Mappings__r.isEmpty()) {
                     for (CCCWA__Template_Parameter__c objTempMapping : objTemplate.CCCWA__Template_Mappings__r) {
@@ -183,24 +183,24 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 } else {
                     C3Utility.logError('No template mappings found.', '', 179, '', 'C3WhatsAppTemplateScreenLWCCtrl', 'sendWhatsAppMessageBulk', '');
                 }
-                
+
                 Set<String> fieldSet = new Set<String>(mapParamNumWithFieldName.values());
                 String phoneField = C3Utility.getFieldName(objectName);
                 fieldSet.add(phoneField);
                 fieldSet.add('Name');
-                
+
                 String query = 'SELECT Id, ' + String.join(fieldSet, ',') + ' FROM ' + objectName + ' WHERE Id IN :setRecordIds';
                 //C3Utility.logError('Query: ' + query, objectName, 188, '', 'C3WhatsAppTemplateScreenLWCCtrl', 'sendWhatsAppMessageBulk', '');
-                
+
                 List<String> fieldsToQuery = new List<String>(fieldSet);
                 Boolean b1 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest(objectName, 'isAccessible', null, true)
                 );
-                
+
                 Boolean b2 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest(objectName, 'isAccessible', fieldsToQuery, false)
                 );
-                
+
                 if (b1 && b2) {
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 } else {
@@ -214,7 +214,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '', 'C3WhatsAppTemplateScreenLWCCtrl', 'sendWhatsAppMessageBulk', '');
         }
     }
-    
+
     /**
 * @description Saves template data.
 * @param jsonData JSON string containing template data.
@@ -223,7 +223,6 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
     @AuraEnabled
     public static String saveTemplateData(String jsonData) {
         try{
-            system.debug('jsonData---'+jsonData);
             String strDocUrl = '';
             if(String.isNotBlank(jsonData)){
                 TemplateWrapper objTemplateWrapper = (TemplateWrapper)JSON.deserialize(jsonData, TemplateWrapper.class);
@@ -247,11 +246,11 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 if(String.isNotBlank(objTemplateWrapper.publicDocUrl)){
                     objSFTemplate.CCCWA__Document_Url__c = objTemplateWrapper.publicDocUrl;
                 }
-                
+
                 if(String.isNotBlank(objTemplateWrapper.mediaHandler)){
                     objSFTemplate.CCCWA__Media_Handler__c = objTemplateWrapper.mediaHandler;
                 }
-                
+
                 if(String.isNotBlank(objTemplateWrapper.headerType)){
                     objSFTemplate.CCCWA__Header_Type__c = objTemplateWrapper.headerType;
                 }
@@ -267,28 +266,28 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 if(String.isNotBlank(objTemplateWrapper.mimeType)){
                     objSFTemplate.CCCWA__Mime_Type__c = objTemplateWrapper.mimeType;
                 }
-                String[] fieldsToQuery = new String[]{'Id', 'Name', 'CCCWA__Template_Label__c', 'CCCWA__Language_Code__c', 'CCCWA__Object__c', 'CCCWA__Whatsapp_Template__c', 'CCCWA__Template_Message__c', 'CCCWA__Category__c', 'CCCWA__Header__c', 'CCCWA__File_Name__c', 'CCCWA__Header_Type__c', 'CCCWA__Document_Url__c', 'CCCWA__Media_Handler__c', 'CCCWA__Header_Type__c', 'CCCWA__Media_Type__c', 'CCCWA__footer__c', 'CCCWA__Content_Version_Id__c', 'CCCWA__Mime_Type__c'};
+                String[] fieldsToQuery = new String[]{'Id', 'Name', 'CCCWA__Template_Label__c', 'CCCWA__Language_Code__c', 'CCCWA__Object__c', 'CCCWA__Project__c', 'CCCWA__Whatsapp_Template__c', 'CCCWA__Template_Message__c', 'CCCWA__Category__c', 'CCCWA__Header__c', 'CCCWA__File_Name__c', 'CCCWA__Header_Type__c', 'CCCWA__Document_Url__c', 'CCCWA__Media_Handler__c', 'CCCWA__Media_Type__c', 'CCCWA__footer__c', 'CCCWA__Content_Version_Id__c', 'CCCWA__Mime_Type__c'};
                     Boolean b1  = !C3Utility.checkFieldPermission(
                         new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', null, true)
                     );
                 Boolean b11 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', fieldsToQuery, false)
                 );
-                
+
                 Boolean b2  = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isCreateable', null, true)
                 );
                 Boolean b22 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isCreateable', fieldsToQuery, false)
                 );
-                
+
                 Boolean b3  = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isUpdateable', null, true)
                 );
                 Boolean b33 = !C3Utility.checkFieldPermission(
                     new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isUpdateable', fieldsToQuery, false)
                 );
-                
+
                 if(b1 && b2 && b3 && b11 && b22 && b33){
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }else{
@@ -299,7 +298,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                         if(String.isNotBlank(objMapping.fieldName)){
                             CCCWA__Template_Parameter__c objTempParam = new CCCWA__Template_Parameter__c();
                             if(String.isNotBlank(objMapping.mappingId)){
-                                objTempParam.Id = objMapping.mappingId; 
+                                objTempParam.Id = objMapping.mappingId;
                             }
                             objTempParam.CCCWA__Field_Name__c = objMapping.fieldName;
                             objTempParam.CCCWA__Parameter_Name__c = objMapping.parameterNum;
@@ -339,7 +338,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                             }
                         }
                     }
-                    
+
                     if (!listParam.isEmpty()) {
                         if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Parameter__c', 'isAccessible', null, true)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Parameter__c', 'isDeletable', null, true))) {
                             throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
@@ -349,7 +348,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                         }
                     }
                 }
-                
+
                 if(objTemplateWrapper.isActionList || objTemplateWrapper.isQuickReplyList){
                     List<CCCWA__Template_Button__c> listOfTemplateButton = new List<CCCWA__Template_Button__c>();
                     if(objTemplateWrapper.listActions !=null){
@@ -374,12 +373,12 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                                 objButton.CCCWA__Website_URL__c = objLstAct.websiteUrl;
                             }
                             if(String.isBlank(objLstAct.buttonId)){
-                                objButton.CCCWA__Template__c = objSFTemplate.Id; 
+                                objButton.CCCWA__Template__c = objSFTemplate.Id;
                             }
                             listOfTemplateButton.add(objButton);
                         }
                     }
-                    
+
                     if(objTemplateWrapper.listQuickReply !=null){
                         for(C3WhatsAppTemplateScreenLWCCtrl.ListQuickReply objLstAct : objTemplateWrapper.listQuickReply){
                             CCCWA__Template_Button__c objButton = new CCCWA__Template_Button__c();
@@ -395,7 +394,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                             listOfTemplateButton.add(objButton);
                         }
                     }
-                    
+
                     if(!listOfTemplateButton.isEmpty()){
                         String[] objButtonFields = new String[]{'Id', 'CCCWA__Button_Type__c', 'CCCWA__Type_of_Action__c', 'CCCWA__Button_text__c', 'CCCWA__Country_Code__c', 'CCCWA__phoneNumber__c', 'CCCWA__URL_Type__c', 'CCCWA__Website_URL__c', 'CCCWA__Type__c', 'CCCWA__Template__c'};
                             if ( !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isAccessible', null, true)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isAccessible', objButtonFields, false)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isCreateable', null, true)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isCreateable', objButtonFields, false)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isUpdateable', null, true)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isUpdateable', objButtonFields, false))) {
@@ -412,7 +411,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                         } else if(!objTemplateWrapper.isActionList && objTemplateWrapper.listQuickReply.size() > i){
                             objTemplateWrapper.listQuickReply[i].buttonId = listOfTemplateButton[i].Id;
                         }
-                        templateButtonIds.add(listOfTemplateButton[i].Id);                   			
+                        templateButtonIds.add(listOfTemplateButton[i].Id);
                     }
                     list<id> templateButtonsToDelete = new list<id>();
                     String[] fields = new String[]{'Id', 'CCCWA__Template__c'};
@@ -446,7 +445,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
 /*if(b1 && b2 && b3 && b11 && b22 && b33){
                       throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                    }*/
-                  
+
                   if (!Test.isRunningTest() &&b1 && b2 && b3 && b11 && b22 && b33) {
     throw new AuraHandledException(
         'User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.'
@@ -475,7 +474,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
 * @param fileName File name.
 * @return String public URL.
 */
-    
+
     @AuraEnabled
     public static String getPublicUrl(String docId, String cVId, String relatedId, String fileName){
         try{
@@ -488,7 +487,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
             else{
                 if(!Test.isRunningTest()){
                     listCDL = [SELECT Id, ContentDocumentId, LinkedEntityId FROM ContentDocumentLink WHERE ContentDocumentId =: docId AND LinkedEntityId =: relatedId WITH USER_MODE LIMIT 1   ];
-                    
+
                 }
                 else{
                     listCDL.clear();
@@ -524,7 +523,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }
                 else{
-                    list<ContentDistribution> listContentDistributions = [SELECT Id, ContentDownloadUrl FROM ContentDistribution WHERE Id=: objCD.Id  WITH USER_MODE]; 
+                    list<ContentDistribution> listContentDistributions = [SELECT Id, ContentDownloadUrl FROM ContentDistribution WHERE Id=: objCD.Id  WITH USER_MODE];
                     return listContentDistributions[0].ContentDownloadUrl;
                 }
             }
@@ -532,7 +531,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
         }catch(exception ex){
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','C3WhatsAppTemplateScreenLWCCtrl','getPublicUrl','');
             return null;
-        } 
+        }
     }
     /**
 * @description Runs media APIs.
@@ -574,9 +573,8 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                     }
             else{
                 objCV = [SELECT Id, ContentDocumentId, ContentUrl, ContentSize, VersionData, Title, FileType FROM ContentVersion WHERE Id =: contentVersionId WITH SYSTEM_MODE ];
-                System.debug('CV--' +objCV);
             }
-            
+
             if(objCV.ContentSize > 4300000 || test.isRunningTest()){
                 ContentDocument objDoc = new ContentDocument();
                 String[] listFields2 = new String[]{'Id'};
@@ -586,7 +584,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 else{
                     objDoc = [SELECT Id FROM ContentDocument WHERE Id =: objCV.ContentDocumentId WITH USER_MODE];
                 }
-                
+
                 if (!C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('ContentDocument', 'isAccessible', null, true)) && !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('ContentDocument', 'isDeletable', null, true))) {
                     throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
                 }
@@ -603,7 +601,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
 * @param documentId Document ID.
 * @return Boolean indicating success or failure.
 */
-    
+
     @AuraEnabled
     public static Boolean deleteUploadedDocument(String documentId){
         try{
@@ -632,10 +630,10 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                         String [] fieldsToQuery3 = new String [] {'Id', 'CCCWA__Button_text__c', 'CCCWA__Button_Type__c', 'CCCWA__Country_Code__c', 'CCCWA__phoneNumber__c', 'CCCWA__Type__c', 'CCCWA__Type_of_Action__c', 'CCCWA__URL_Type__c', 'CCCWA__Website_URL__c'  };
                             Boolean b1  = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', null, true));
                 Boolean b11 = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Object__c', 'isAccessible', fieldsToQuery, false));
-                
+
                 Boolean b2  = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Mapping__c', 'isAccessible', null, true));
                 Boolean b22 = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Mapping__c', 'isAccessible', fieldsToQuery2, false));
-                
+
                 Boolean b3  = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isAccessible', null, true));
                 Boolean b33 = !C3Utility.checkFieldPermission(new C3Utility.FieldPermissionRequest('CCCWA__Template_Button__c', 'isAccessible', fieldsToQuery3, false));
                 //	system.debug('Log');
@@ -644,7 +642,7 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
                 }else{
                     objTemplate = [SELECT Id, Name, CCCWA__Template_Label__c, CCCWA__Template_Message__c, CCCWA__Content_Version_Id__c, CCCWA__Mime_Type__c, CCCWA__File_Name__c, CCCWA__Media_Handler__c, CCCWA__Media_Type__c, CCCWA__Document_Url__c, CCCWA__Header_Type__c, CCCWA__Category__c, CCCWA__Object__c, CCCWA__Status__c, CCCWA__Footer__c, CCCWA__Header__c, CCCWA__Language_Code__c, CCCWA__Whatsapp_Template__c, CCCWA__TemplateID__c, (SELECT Id,CCCWA__Example_Text__c, CCCWA__Field_Name__c, CCCWA__Object_name__c, CCCWA__Parameter_Name__c FROM CCCWA__Template_Mappings__r), (SELECT Id, CCCWA__Button_text__c, CCCWA__Button_Type__c, CCCWA__Country_Code__c, CCCWA__phone_Number__c, CCCWA__Type__c, CCCWA__Type_of_Action__c, CCCWA__URL_Type__c, CCCWA__Website_URL__c FROM CCCWA__Template_Buttons__r) FROM CCCWA__Template_Object__c WHERE Id =: templateId  WITH USER_MODE LIMIT 1];
                 }
-                
+
                 objTemplateWrapper.templateName = objTemplate.Name;
                 if (String.isNotBlank(objTemplate.CCCWA__Template_Label__c)) {
                     objTemplateWrapper.templateName = objTemplate.CCCWA__Template_Label__c;
@@ -658,35 +656,35 @@ public with sharing class C3WhatsAppTemplateScreenLWCCtrl {
 if(String.isNotBlank(objTemplate.TemplateID__c)){
                     objTemplateWrapper.whatsAppTemplateId = objTemplate.CCCWA__TemplateID__c;
                 }
-                
+
                 if(String.isNotBlank(                objTemplate.Media_Handler__c)){
-                    objTemplateWrapper.mediaHandler = objTemplate.CCCWA__Media_Handler__c;   
-                }	
-                
+                    objTemplateWrapper.mediaHandler = objTemplate.CCCWA__Media_Handler__c;
+                }
+
                 if(String.isNotBlank(objTemplate.Category__c)){
-                    objTemplateWrapper.category = objTemplate.CCCWA__Category__c;   
+                    objTemplateWrapper.category = objTemplate.CCCWA__Category__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.Object__c)){
-                    objTemplateWrapper.objectName = objTemplate.CCCWA__Object__c;   
+                    objTemplateWrapper.objectName = objTemplate.CCCWA__Object__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.Content_Version_Id__c)){
-                    objTemplateWrapper.contentVersionId = objTemplate.CCCWA__Content_Version_Id__c;  
+                    objTemplateWrapper.contentVersionId = objTemplate.CCCWA__Content_Version_Id__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.Mime_Type__c)){
-                    objTemplateWrapper.mimeType = objTemplate.CCCWA__Mime_Type__c;   
+                    objTemplateWrapper.mimeType = objTemplate.CCCWA__Mime_Type__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.Footer__c)){
                     objTemplateWrapper.footer = objTemplate.CCCWA__Footer__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.File_Name__c)){
                     objTemplateWrapper.fileName = objTemplate.CCCWA__File_Name__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.Header__c)){
                     objTemplateWrapper.headerText = objTemplate.CCCWA__Header__c;
                     objTemplateWrapper.headerType = 'TEXT';
@@ -694,26 +692,26 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
                     objTemplateWrapper.isHeaderMedia = false;
                 }
                 if(String.isNotBlank(objTemplate.Header_Type__c)){
-                    objTemplateWrapper.headerType = objTemplate.CCCWA__Header_Type__c;	
+                    objTemplateWrapper.headerType = objTemplate.CCCWA__Header_Type__c;
                 }
                 if(String.isNotBlank(objTemplate.Media_Type__c)){
-                    objTemplateWrapper.mediaType = objTemplate.CCCWA__Media_Type__c;	
+                    objTemplateWrapper.mediaType = objTemplate.CCCWA__Media_Type__c;
                 }
                 if(String.isNotBlank(objTemplate.Document_Url__c)){
-                    objTemplateWrapper.publicDocUrl = objTemplate.CCCWA__Document_Url__c;	
+                    objTemplateWrapper.publicDocUrl = objTemplate.CCCWA__Document_Url__c;
                 }
                 if(String.isNotBlank(objTemplate.Language_Code__c)){
-                    objTemplateWrapper.language = objTemplate.CCCWA__Language_Code__c;    
+                    objTemplateWrapper.language = objTemplate.CCCWA__Language_Code__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.Whatsapp_Template__c)){
                     objTemplateWrapper.templateBody = objTemplate.CCCWA__Whatsapp_Template__c;
                 }
-                
+
                 if(String.isNotBlank(objTemplate.Template_Message__c)){
-                    objTemplateWrapper.templateBodyText = objTemplate.CCCWA__Template_Message__c;    
+                    objTemplateWrapper.templateBodyText = objTemplate.CCCWA__Template_Message__c;
                 }
-                
+
                 if(objTemplate.Template_Mappings__r != null && objTemplate.CCCWA__Template_Mappings__r.size()>0){
                     objTemplateWrapper.listMapping = new List<ListMapping>();
                     for(CCCWA__Template_Parameter__c objParam : objTemplate.CCCWA__Template_Mappings__r){
@@ -725,7 +723,7 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
                         objMapping.placeHolder = '{{'+objParam.CCCWA__Parameter_Name__c+'}}';
                         objTemplateWrapper.listMapping.add(objMapping);
                     }
-                }    
+                }
                 if(objTemplate.Template_Buttons__r != null && objTemplate.Template_Buttons__r.size()>0){
                     objTemplateWrapper.listActions = new List<ListActions>();
                     objTemplateWrapper.listQuickReply = new List<ListQuickReply>();
@@ -771,7 +769,7 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
                 }
                 return json.serialize(objTemplateWrapper);
             }
-            return null;   
+            return null;
         }catch(exception ex){
             C3Utility.logError(ex.getMessage(), ex.getStackTraceString(), ex.getLineNumber(), '','C3WhatsAppTemplateScreenLWCCtrl','getExistingTemplate','');
             return null;
@@ -790,7 +788,7 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
         Boolean b2 = !C3Utility.checkFieldPermission(
             new C3Utility.FieldPermissionRequest(sObjectName, 'isAccessible', null, true)
         );
-        
+
         if(b2 && b1){
             throw new AuraHandledException('User : Insufficient Privileges. You do not have the level of access necessary to perform the operation you requested.');
         }else{
@@ -811,7 +809,7 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
 */
     public static string getFormattedBody(string strText){
         String input='';
-        
+
         if(!string.isBlank(strText)){
             input = strText.replaceAll('<b>','*');
             input = input.replaceAll('</b>','*');
@@ -847,7 +845,7 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
 * @class ResponseBody
 * @description Represents the response body containing a list of dropdown options and the object name.
 */
-    
+
     public class ResponseBody{
         public list<DropdownWrapper> sfFieldsPickList;
         public string objectName;
@@ -864,7 +862,7 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
 * @class RequestBody
 * @description Represents the request body for sending a WhatsApp message.
 */
-    
+
     public class RequestBody{
         public String campaignId;
         public String ameyoLeadId;
@@ -890,21 +888,21 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
         public String whatsAppTemplateId;
         public String publicDocUrl;
         public String mediaHandler;
-        public String headerType;	
-        public String headerText;	
-        public String documentId;	
-        public String contentVersionId;	
-        public String mimeType;	
-        public String language;	
+        public String headerType;
+        public String headerText;
+        public String documentId;
+        public String contentVersionId;
+        public String mimeType;
+        public String language;
         public String project;
-        public String templateName;	
+        public String templateName;
         public String templateBody;
         public String templateBodyText;
-        public String footer;	
-        public String category;	
-        public String buttonOption;	
+        public String footer;
+        public String category;
+        public String buttonOption;
         public String mediaType;
-        public String fileName;	
+        public String fileName;
         public String objectName;
         public Boolean isHeaderMedia;
         public Boolean isHeaderText;
@@ -942,7 +940,7 @@ if(String.isNotBlank(objTemplate.TemplateID__c)){
         public String  type ;
         public Boolean  isActionPhoneNumber ;
         public Boolean  isActionUrl;
-        
+
     }
     /**
 * @class ListQuickReply

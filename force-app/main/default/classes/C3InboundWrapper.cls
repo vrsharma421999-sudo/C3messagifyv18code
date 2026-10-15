@@ -8,7 +8,7 @@
  * @usage Used to deserialize WhatsApp webhook payloads.
  * @author Asjad Ahmed
  * @version 1.0
- * @date June 2025 
+ * @date June 2025
  */
 public class C3InboundWrapper {
      /** The main object type, e.g., 'whatsappbusinessaccount'. */
@@ -33,7 +33,7 @@ public class C3InboundWrapper {
     public class ClsChanges {
         public ClsValue value;
         public String field; // messages
-    } 
+    }
     /**
      * @class ClsValue
      * @description The core structure of the payload including contacts, messages, metadata, and statuses.
@@ -44,7 +44,7 @@ public class C3InboundWrapper {
         public ClsMetadata metadata;
         public ClsContacts[] contacts;
         public ClsMessages[] messages;
-        
+
         public ClsStatuses[] statuses;
     }
      /**
@@ -159,7 +159,7 @@ public class C3InboundWrapper {
     public class ClsText {
         public String body;
     }
-    
+
        /**
      * @class ClsButton
      * @description Represents a button in a message.

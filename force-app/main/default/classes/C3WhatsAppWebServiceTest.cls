@@ -1,10 +1,10 @@
-@isTest
+@IsTest
 public class C3WhatsAppWebServiceTest {
     /**
 * @description Sets up test data for the test class.
 * Creates a test user and assigns necessary permission sets.
 */
-    @testSetup
+    @TestSetup
     public static void makeData(){
        /* Profile sysAdminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
         User testUser = new User(
@@ -36,7 +36,7 @@ public class C3WhatsAppWebServiceTest {
             }
         }
         insert psAssignments;
-        
+
         System.runAs(testUser) {
             C3TestDataFactory.insertWhatsAppAdmin();
             ContentVersion objCV = C3TestDataFactory.testInsertContentVersion(Blob.valueOf('Test Content'), 'Phone', 'file/png');
@@ -66,15 +66,15 @@ public class C3WhatsAppWebServiceTest {
             Contact con = C3TestDataFactory.createContacts(); // Test data for contact-related operations
             System.assertNotEquals(null, objCDL.Id, 'ContentDocumentLink should have been created');
             System.assertNotEquals(null, con.Id, 'Contact should have been created');
-            
+
         }
     }
-    
-    @isTest 
+
+    @IsTest
     public static void method1(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
-            
+
             CCCWA__Template_Object__c dataTemplate = [Select id, Name, CCCWA__Status__c, CCCWA__TemplateID__c,CCCWA__Header_Type__c, CCCWA__Whatsapp_Template__c,CCCWA__Template_Message__c,CCCWA__Object__c,CCCWA__Language_Code__c FROM CCCWA__Template_Object__c LIMIT 1];
             dataTemplate.Header_Type__c = 'MEDIA';
             update dataTemplate;
@@ -84,45 +84,45 @@ public class C3WhatsAppWebServiceTest {
             C3WhatsAppTemplateScreenLWCCtrl.sendWhatsAppMessage(new List<string>{conId}, dataTemplate.Id  );
             //System.assertEquals( (dataTemplate.Id != null) ,true);
             System.assertNotEquals(null, dataTemplate.Id, 'Expected Template_Object__c Id to not be null');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest 
+
+    @IsTest
     public static void method2(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
             CCCWA__Template_Object__c dataTemplate = [Select id, Name, Status__c, TemplateID__c,Header_Type__c, Whatsapp_Template__c,Template_Message__c,Object__c,Language_Code__c FROM Template_Object__c LIMIT 1];
             String jsonBody = '{"whatsAppTemplateId":"189060917316209","templateName":"send_message","templateId":"'+dataTemplate.Id+'","templateBody":"<p>Hello {{1}},</p><p><br></p><p>This side {{2}} from salesforce partner if you have the requirement of CRM software to manage your customer list efficiently, along with all the customization we are the Salesforce partner, who provide the fully CRM solution that can significantly enhance your business operations and drive sales growth. I would be more than happy to arrange a personalized demo to showcase how [CRM] can revolutionize your company&#39;s sales and customer management efforts. If you&#39;re interested, please let me know, and we can find a convenient time to discuss further. Kindly share me your contact number and email id for easy communication.</p><p><br></p><p>Best regards,</p><p>{{3}} </p><p>{{4}}</p><p>{{5}}</p><p>Powered By CCC Infotech</p>","publicDocUrl":null,"objectName":"Contact","mediaType":"IMAGE","listMapping":[{"placeHolder":"{{5}}","parameterNum":"5","mappingId":"","fieldName":"Email","exampleText":"dheeraj@cccinfotech.com"},{"placeHolder":"{{1}}","parameterNum":"1","mappingId":"","fieldName":"FirstName","exampleText":"Shreya"},{"placeHolder":"{{2}}","parameterNum":"2","mappingId":"","fieldName":"LastName","exampleText":"Singh"},{"placeHolder":"{{3}}","parameterNum":"3","mappingId":"","fieldName":"Name","exampleText":"Dheeraj"},{"placeHolder":"{{4}}","parameterNum":"4","mappingId":"","fieldName":"MobilePhone","exampleText":"917905256379"}],"listActions":[{"buttonId":"","typeOfAction":"","buttonText":"Call","countryCode":"91","phoneNumber":"9865326532","urlType":"","websiteUrl":"","isIcon":true,"iconName":"utility:call","type":"","isActionPhoneNumber":true,"isActionUrl":false,"actionType":"PHONE_NUMBER"}], "listQuickReply": null, "language":"en","isQuickReplyList":true,"isHeaderText":true,"isHeaderMedia":true,"isActionList":true,"headerType":"MEDIA","headerText":null,"footer":null,"fileName":null,"documentId":null,"contentVersionId":null,"category":"MARKETING","buttonOption":null}';
-            
+
             String conId = [SELECT Id FROM Contact LIMIT 1].Id;
             Test.startTest();
             Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageCreateTemplate'));
             C3WhatsAppWebService.sendWhatsAppTemplateToMeta( jsonBody );
             //System.assertEquals( (conId != null) ,true);
             System.assertNotEquals(null, conId, 'Expected Contact Id to not be null');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest 
+
+    @IsTest
     public static void method3(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
             Test.startTest();
             Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageText'));
-            C3WhatsAppWebService.sendWhatsAppMessage( '919891611767', 'aasdasdasdadasd' );  
+            C3WhatsAppWebService.sendWhatsAppMessage( '919891611767', 'aasdasdasdadasd' );
             String conId = [SELECT Id FROM Contact LIMIT 1].Id;
-            //System.assertEquals( (conId != null) ,true);      
+            //System.assertEquals( (conId != null) ,true);
             System.assertNotEquals(null, conId, 'Expected Contact Id to not be null');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest 
+
+    @IsTest
     public static void method4(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
@@ -130,9 +130,9 @@ public class C3WhatsAppWebServiceTest {
             Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageMedia'));
             C3WhatsAppChatPanelCtrl.getMediaWamId('919911410564', ' wwww.audio.com', 'AUDIO');
             String conId = [SELECT Id FROM Contact LIMIT 1].Id;
-            //System.assertEquals( (conId != null) ,true);      
+            //System.assertEquals( (conId != null) ,true);
             System.assertNotEquals(null, conId, 'Expected Contact Id to not be null');
-            
+
             Test.stopTest();
         }
     }
@@ -143,7 +143,7 @@ public class C3WhatsAppWebServiceTest {
 *              - WhatsAppGetMedia returns fake binary media content.
 *              - All other endpoints return a 404 error.
 */
-    
+
     class SimpleMock implements HttpCalloutMock {
         /**
 * @description Simulates the HTTP response for a given HTTP request.
@@ -152,7 +152,7 @@ public class C3WhatsAppWebServiceTest {
 */
         public HTTPResponse respond(HTTPRequest req) {
             HttpResponse res = new HttpResponse();
-            
+
             if (req.getEndpoint().contains('FacebookAPI')) {
                 // Simulate media URL response from FacebookAPI
                 res.setStatusCode(200);
@@ -168,12 +168,12 @@ public class C3WhatsAppWebServiceTest {
                 res.setStatusCode(404);
                 res.setBody('Unknown endpoint');
             }
-            
+
             return res;
         }
     }
-    
-@isTest 
+
+@IsTest
 public static void method5() {
     // Create test user
    /* User testUser = new User(
@@ -191,7 +191,7 @@ public static void method5() {
     insert testUser;*/
       User testUser = C3TestDataFactory.getRunAsUser();
 
-   
+
 
     System.runAs(testUser) {
          // Create test contact
@@ -203,15 +203,13 @@ public static void method5() {
         Test.startTest();
         String result = C3WhatsAppWebService.getMediaFromAPI('mediaId', 'fileName', '/png', testContact.Id);
         Test.stopTest();
-
-        System.debug('Result from getMediaFromAPI: ' + result);
-        
+        System.assertNotEquals(null, result, 'Expected non-null result');
     }
 }
 
 
-    
-    @isTest 
+
+    @IsTest
     public static void method6(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
@@ -219,14 +217,14 @@ public static void method5() {
             Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass(''));
             C3WhatsAppWebService.deleteTemplate( 'send_message');
             String conId = [SELECT Id FROM Contact LIMIT 1].Id;
-            //System.assertEquals( (conId != null) ,true);  
+            //System.assertEquals( (conId != null) ,true);
             System.assertNotEquals(null, conId, 'Expected Contact Id to not be null');
-            
+
             Test.stopTest();
         }
     }
-    
-    @isTest 
+
+    @IsTest
     public static void method7(){
         User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
         System.runAs(testUser) {
@@ -234,9 +232,44 @@ public static void method5() {
             Test.startTest();
             Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppUploadAPI'));
             C3WhatsAppTemplateScreenLWCCtrl.runMediaAPIs(cv.Id, 'image/png' );
-            //System.assertEquals( (cv.id != null) ,true); 
+            //System.assertEquals( (cv.id != null) ,true);
             System.assertNotEquals(null, cv.Id, 'ContentVersion Id should not be null');
-            
+
+            Test.stopTest();
+        }
+    }
+
+    @IsTest
+    public static void testBulkMessageTrackingFlag() {
+        User testUser = [SELECT Id FROM User WHERE Email = 'testuser@gmail.com' LIMIT 1];
+        System.runAs(testUser) {
+            CCCWA__Template_Object__c rawTemplate = [SELECT Id FROM CCCWA__Template_Object__c LIMIT 1];
+            CCCWA__Template_Object__c dataTemplate = C3WhatsAppTemplateScreenLWCCtrl.getRecordData(rawTemplate.Id, 'Contact');
+            Contact con = [SELECT Id, FirstName, LastName, Name, Email, MobilePhone, Phone FROM Contact LIMIT 1];
+            Map<String, String> mapParam = new Map<String, String>{
+                '1' => 'FirstName',
+                '2' => 'LastName',
+                '3' => 'Name',
+                '4' => 'MobilePhone',
+                '5' => 'Email'
+            };
+
+            Test.startTest();
+            Test.setMock(HttpCalloutMock.class, new C3HttpCalloutMockBundleClass('WhatsAppMessageSendTemplate'));
+
+            // 1. Non-bulk call (isBulk = false): lastTrackingRecords must be empty
+            C3WhatsAppWebService.createWebserviceBody(new List<SObject>{con}, mapParam, dataTemplate, 'Phone', false);
+            System.assertEquals(0, C3WhatsAppWebService.lastTrackingRecords.size(), 'Non-bulk messages must NOT create tracking records');
+
+            // 2. Default overload (isBulk omitted): lastTrackingRecords must be empty
+            C3WhatsAppWebService.createWebserviceBody(new List<SObject>{con}, mapParam, dataTemplate, 'Phone');
+            System.assertEquals(0, C3WhatsAppWebService.lastTrackingRecords.size(), 'Default createWebserviceBody must NOT create tracking records');
+
+            // 3. Bulk call (isBulk = true): lastTrackingRecords must contain tracking record
+            C3WhatsAppWebService.createWebserviceBody(new List<SObject>{con}, mapParam, dataTemplate, 'Phone', true);
+            System.assertEquals(1, C3WhatsAppWebService.lastTrackingRecords.size(), 'Bulk messaging must create tracking records');
+            System.assertEquals('Sent', C3WhatsAppWebService.lastTrackingRecords[0].Status__c, 'Status should be Sent');
+
             Test.stopTest();
         }
     }
